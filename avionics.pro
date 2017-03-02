@@ -1,4 +1,4 @@
-update=Wed 01 Mar 2017 07:37:48 PM EST
+update=Wed 01 Mar 2017 09:02:25 PM EST
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,8 +23,6 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=
@@ -59,3 +57,5 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=agg-kicad/lib/module/xbee
+[general]
+version=1
