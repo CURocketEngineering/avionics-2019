@@ -1,0 +1,473 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATMEGA328P-P IC1
+U 1 1 58B76AB6
+P 2400 2200
+F 0 "IC1" H 1650 3450 50  0000 L BNN
+F 1 "ATMEGA328P-P" H 2800 800 50  0000 L BNN
+F 2 "DIL28" H 2400 2200 50  0000 C CIN
+F 3 "" H 2400 2200 50  0000 C CNN
+	1    2400 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Crystal Y1
+U 1 1 58B76B11
+P 3950 3150
+F 0 "Y1" H 3950 3300 50  0000 C CNN
+F 1 "Crystal" H 3950 3000 50  0000 C CNN
+F 2 "" H 3950 3150 50  0000 C CNN
+F 3 "" H 3950 3150 50  0000 C CNN
+	1    3950 3150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L C C4
+U 1 1 58B76BBA
+P 4400 3300
+F 0 "C4" H 4425 3400 50  0000 L CNN
+F 1 "C" H 4425 3200 50  0000 L CNN
+F 2 "" H 4438 3150 50  0000 C CNN
+F 3 "" H 4400 3300 50  0000 C CNN
+	1    4400 3300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L C C3
+U 1 1 58B76C1D
+P 4400 3000
+F 0 "C3" H 4425 3100 50  0000 L CNN
+F 1 "C" H 4425 2900 50  0000 L CNN
+F 2 "" H 4438 2850 50  0000 C CNN
+F 3 "" H 4400 3000 50  0000 C CNN
+	1    4400 3000
+	0    1    1    0   
+$EndComp
+$Comp
+L LD1117S33TR U1
+U 1 1 58B76DD1
+P 900 2350
+F 0 "U1" H 900 2600 50  0000 C CNN
+F 1 "3.3V Reg" H 900 2550 50  0000 C CNN
+F 2 "SOT-223" H 900 2450 50  0000 C CNN
+F 3 "" H 900 2350 50  0000 C CNN
+	1    900  2350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CP C2
+U 1 1 58B76EDA
+P 1000 2800
+F 0 "C2" H 1025 2900 50  0000 L CNN
+F 1 "CP" H 1025 2700 50  0000 L CNN
+F 2 "" H 1038 2650 50  0000 C CNN
+F 3 "" H 1000 2800 50  0000 C CNN
+	1    1000 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CP C1
+U 1 1 58B76F81
+P 1000 1900
+F 0 "C1" H 1025 2000 50  0000 L CNN
+F 1 "CP" H 1025 1800 50  0000 L CNN
+F 2 "" H 1038 1750 50  0000 C CNN
+F 3 "" H 1000 1900 50  0000 C CNN
+	1    1000 1900
+	0    -1   -1   0   
+$EndComp
+Text GLabel 850  3000 3    60   Input ~ 0
+VBAT
+$Comp
+L BS107 Q4
+U 1 1 58BC9496
+P 7850 1400
+F 0 "Q4" H 8050 1475 50  0000 L CNN
+F 1 "DrogueCtrl" H 8050 1400 50  0000 L CNN
+F 2 "TO-92" H 8050 1325 50  0000 L CIN
+F 3 "" H 7850 1400 50  0000 L CNN
+	1    7850 1400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L BS107 Q2
+U 1 1 58BC95BC
+P 5950 2700
+F 0 "Q2" H 6150 2775 50  0000 L CNN
+F 1 "ArmCtrl" H 6150 2700 50  0000 L CNN
+F 2 "TO-92" H 6150 2625 50  0000 L CIN
+F 3 "" H 5950 2700 50  0000 L CNN
+	1    5950 2700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L BS107 Q3
+U 1 1 58BC9620
+P 7800 2700
+F 0 "Q3" H 8000 2775 50  0000 L CNN
+F 1 "BackupCtrl" H 8000 2700 50  0000 L CNN
+F 2 "TO-92" H 8000 2625 50  0000 L CIN
+F 3 "" H 7800 2700 50  0000 L CNN
+	1    7800 2700
+	0    1    -1   0   
+$EndComp
+$Comp
+L BS107 Q1
+U 1 1 58BC989B
+P 5950 1400
+F 0 "Q1" H 6150 1475 50  0000 L CNN
+F 1 "MainCtrl" H 6150 1400 50  0000 L CNN
+F 2 "TO-92" H 6150 1325 50  0000 L CIN
+F 3 "" H 5950 1400 50  0000 L CNN
+	1    5950 1400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Screw_Terminal_1x02 J4
+U 1 1 58BCAD2D
+P 5150 700
+F 0 "J4" H 5150 950 50  0000 C TNN
+F 1 "MainTerm" V 5000 700 50  0000 C TNN
+F 2 "" H 5150 475 50  0001 C CNN
+F 3 "" H 5125 700 50  0001 C CNN
+	1    5150 700 
+	0    1    1    0   
+$EndComp
+$Comp
+L Screw_Terminal_1x02 J5
+U 1 1 58BCAEDA
+P 7050 700
+F 0 "J5" H 7050 950 50  0000 C TNN
+F 1 "DrogueTerm" V 6900 700 50  0000 C TNN
+F 2 "" H 7050 475 50  0001 C CNN
+F 3 "" H 7025 700 50  0001 C CNN
+	1    7050 700 
+	0    1    1    0   
+$EndComp
+$Comp
+L Screw_Terminal_1x02 J7
+U 1 1 58BCAFB1
+P 10850 2700
+F 0 "J7" H 10850 2950 50  0000 C TNN
+F 1 "BackupTerm" V 10700 2700 50  0000 C TNN
+F 2 "" H 10850 2475 50  0001 C CNN
+F 3 "" H 10825 2700 50  0001 C CNN
+	1    10850 2700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Screw_Terminal_1x02 J1
+U 1 1 58BC987E
+P 1250 7150
+F 0 "J1" H 1250 7400 50  0000 C TNN
+F 1 "CtrlTerm" V 1100 7150 50  0000 C TNN
+F 2 "" H 1250 6925 50  0001 C CNN
+F 3 "" H 1225 7150 50  0001 C CNN
+	1    1250 7150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Screw_Terminal_1x02 J2
+U 1 1 58BC9B79
+P 2150 7150
+F 0 "J2" H 2150 7400 50  0000 C TNN
+F 1 "PayloadTerm" V 2000 7150 50  0000 C TNN
+F 2 "" H 2150 6925 50  0001 C CNN
+F 3 "" H 2125 7150 50  0001 C CNN
+	1    2150 7150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Screw_Terminal_1x07 J3
+U 1 1 58BC9C47
+P 3450 7150
+F 0 "J3" H 3450 7900 50  0000 C TNN
+F 1 "PanelTerm" V 3300 7150 50  0000 C TNN
+F 2 "" H 3450 6725 50  0001 C CNN
+F 3 "" H 3425 7350 50  0001 C CNN
+	1    3450 7150
+	0    -1   -1   0   
+$EndComp
+Text GLabel 5250 900  3    60   Input ~ 0
+VBAT
+Text GLabel 7150 900  3    60   Input ~ 0
+VBAT
+Text GLabel 10650 2800 0    60   Input ~ 0
+VBAT
+Text GLabel 2850 6950 1    60   Input ~ 0
+Vcc
+Text GLabel 850  950  1    60   Input ~ 0
+Vcc
+Text GLabel 3900 2550 2    60   Input ~ 0
+Vcc
+$Comp
+L Screw_Terminal_1x02 J6
+U 1 1 58BD4B0C
+P 10350 750
+F 0 "J6" H 10350 1000 50  0000 C TNN
+F 1 "BatteryTerm" V 10200 750 50  0000 C TNN
+F 2 "" H 10350 525 50  0001 C CNN
+F 3 "" H 10325 750 50  0001 C CNN
+	1    10350 750 
+	0    1    1    0   
+$EndComp
+Text GLabel 10450 1150 3    60   Input ~ 0
+VBAT
+Text GLabel 10250 1150 3    60   Input ~ 0
+GND
+Connection ~ 1150 2350
+Wire Wire Line
+	850  950  850  1950
+Wire Wire Line
+	850  1100 1500 1100
+Wire Wire Line
+	3600 3000 4250 3000
+Wire Wire Line
+	3600 3000 3600 3100
+Wire Wire Line
+	3600 3100 3400 3100
+Wire Wire Line
+	3400 3200 3600 3200
+Wire Wire Line
+	3600 3200 3600 3300
+Wire Wire Line
+	3600 3300 4250 3300
+Connection ~ 3950 3300
+Connection ~ 3950 3000
+Wire Wire Line
+	4550 3000 4550 3300
+Connection ~ 4550 3150
+Wire Wire Line
+	5750 2000 5750 2600
+Wire Wire Line
+	6150 1300 6150 2000
+Wire Wire Line
+	5750 2000 8050 2000
+Wire Wire Line
+	8050 2000 8050 1300
+Connection ~ 6150 2000
+Wire Wire Line
+	5050 1300 5750 1300
+Wire Wire Line
+	6950 900  6950 1300
+Wire Wire Line
+	6950 1300 7650 1300
+Wire Wire Line
+	5050 900  5050 1300
+Wire Wire Line
+	10650 2600 8000 2600
+Connection ~ 6400 5450
+Wire Wire Line
+	3400 2450 5150 2450
+Wire Wire Line
+	5150 2450 5150 4850
+Wire Wire Line
+	5150 4850 2050 4850
+Wire Wire Line
+	2050 4850 2050 6950
+Wire Wire Line
+	3400 2350 5250 2350
+Wire Wire Line
+	5250 2350 5250 5000
+Wire Wire Line
+	5250 5000 2250 5000
+Wire Wire Line
+	2250 5000 2250 6950
+Wire Wire Line
+	1150 1900 1150 6950
+Wire Wire Line
+	3400 3300 3500 3300
+Wire Wire Line
+	3500 3300 3500 4500
+Wire Wire Line
+	3500 4500 1350 4500
+Wire Wire Line
+	1350 4500 1350 6950
+Wire Wire Line
+	3400 2150 5450 2150
+Wire Wire Line
+	5450 2150 5450 4450
+Wire Wire Line
+	3850 6950 3850 4750
+Wire Wire Line
+	3850 4750 4800 4750
+Wire Wire Line
+	4800 4750 4800 2900
+Wire Wire Line
+	4800 2900 3400 2900
+Wire Wire Line
+	3400 1600 3700 1600
+Wire Wire Line
+	3700 1600 3700 4700
+Wire Wire Line
+	3700 4700 3250 4700
+Wire Wire Line
+	3250 4700 3250 6950
+Wire Wire Line
+	3450 6950 3450 4750
+Wire Wire Line
+	3450 4750 3750 4750
+Wire Wire Line
+	3750 4750 3750 1400
+Wire Wire Line
+	3750 1400 3400 1400
+Wire Wire Line
+	3400 1200 4200 1200
+Wire Wire Line
+	4200 1200 4200 4700
+Wire Wire Line
+	4200 4700 3800 4700
+Wire Wire Line
+	3800 4700 3800 5200
+Wire Wire Line
+	3800 5200 3650 5200
+Wire Wire Line
+	3650 5200 3650 6950
+Wire Wire Line
+	1150 3400 1500 3400
+Wire Wire Line
+	1150 3300 1500 3300
+Connection ~ 1150 3300
+Connection ~ 850  1100
+Connection ~ 1300 1100
+Wire Wire Line
+	1500 1400 1300 1400
+Wire Wire Line
+	1200 2350 1150 2350
+Connection ~ 1150 2800
+Connection ~ 850  1900
+Connection ~ 850  2800
+Wire Wire Line
+	6200 2600 6150 2600
+Wire Wire Line
+	3400 1700 6000 1700
+Wire Wire Line
+	6000 1700 6000 1600
+Wire Wire Line
+	3400 1800 7900 1800
+Wire Wire Line
+	7900 1800 7900 1600
+Text GLabel 1200 2350 2    60   Input ~ 0
+GND
+Wire Wire Line
+	850  2750 850  3000
+Text GLabel 3050 6950 1    60   Input ~ 0
+GND
+Text GLabel 4550 3150 2    60   Input ~ 0
+GND
+Text GLabel 6200 2600 2    60   Input ~ 0
+GND
+Text GLabel 7600 2600 0    60   Input ~ 0
+GND
+NoConn ~ 3400 1500
+$Comp
+L R R1
+U 1 1 58BD7E75
+P 3750 2550
+F 0 "R1" V 3830 2550 50  0000 C CNN
+F 1 "RESETPULL" V 3900 2750 50  0000 C CNN
+F 2 "" V 3680 2550 50  0000 C CNN
+F 3 "" H 3750 2550 50  0000 C CNN
+	1    3750 2550
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3600 2550 3400 2550
+Wire Wire Line
+	10450 950  10450 1150
+Wire Wire Line
+	10250 950  10250 1150
+Wire Wire Line
+	1300 1400 1300 1100
+Connection ~ 1150 3400
+$Comp
+L 74LS75 U?
+U 1 1 58BDCE55
+P 7550 4800
+F 0 "U?" H 7550 4900 50  0000 C CNN
+F 1 "74LS77" H 7550 4700 50  0000 C CNN
+F 2 "" H 7550 4800 50  0000 C CNN
+F 3 "" H 7550 4800 50  0000 C CNN
+	1    7550 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 2900 6000 3400
+Wire Wire Line
+	6000 3400 8250 3400
+$Comp
+L R R?
+U 1 1 58BDD502
+P 5600 4450
+F 0 "R?" V 5680 4450 50  0000 C CNN
+F 1 "ArmPull" V 5600 4450 50  0000 C CNN
+F 2 "" V 5530 4450 50  0000 C CNN
+F 3 "" H 5600 4450 50  0000 C CNN
+	1    5600 4450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5750 4450 6850 4450
+Wire Wire Line
+	4050 6950 4050 5100
+Wire Wire Line
+	4050 5100 5950 5100
+Wire Wire Line
+	5950 5100 5950 4450
+Connection ~ 5950 4450
+Wire Wire Line
+	8250 3400 8250 4450
+Wire Wire Line
+	8250 4950 8350 4950
+Wire Wire Line
+	8350 4950 8350 2900
+Wire Wire Line
+	8350 2900 7750 2900
+Text Notes 5650 4200 0    60   ~ 0
+Change this pull so that it will always be low at start and if button is pressed and can be pulled high by the controller
+Text Notes 5900 5800 0    60   ~ 0
+Need to connect both parachutes and disable backup if both fire
+$EndSCHEMATC
