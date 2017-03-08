@@ -84,6 +84,7 @@ LIBS:Worldsemi
 LIBS:Xicor
 LIBS:zetex
 LIBS:Zilog
+LIBS:panel-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -125,7 +126,7 @@ L SW_Push SW1
 U 1 1 58BF46A2
 P 8050 1600
 F 0 "SW1" H 8100 1700 50  0000 L CNN
-F 1 "ArmButton" H 8050 1540 50  0000 C CNN
+F 1 "ReadyButton" H 8050 1540 50  0000 C CNN
 F 2 "" H 8050 1800 50  0000 C CNN
 F 3 "" H 8050 1800 50  0000 C CNN
 	1    8050 1600
@@ -198,7 +199,7 @@ F 3 "" H 3750 3300 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	2100 1100 2100 1400
+	2100 1100 2100 1500
 Wire Wire Line
 	2100 1400 8650 1400
 Connection ~ 3500 1400
@@ -334,7 +335,7 @@ Wire Wire Line
 	1100 4400 1100 1100
 Text GLabel 2300 1100 3    60   Input ~ 0
 VCC
-Text GLabel 2100 1400 3    60   Input ~ 0
+Text GLabel 2100 1500 3    60   Input ~ 0
 GND
 Wire Wire Line
 	1700 4100 5200 4100
@@ -368,4 +369,5 @@ Wire Wire Line
 	5600 4550 5600 4000
 NoConn ~ 5700 2600
 NoConn ~ 5900 2600
+Connection ~ 2100 1400
 $EndSCHEMATC

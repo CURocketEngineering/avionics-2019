@@ -28,15 +28,72 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
+LIBS:74xgxx
+LIBS:ac-dc
+LIBS:actel
+LIBS:allegro
+LIBS:Altera
+LIBS:analog_devices
+LIBS:battery_management
+LIBS:bbd
+LIBS:brooktre
+LIBS:cmos_ieee
+LIBS:dc-dc
+LIBS:diode
+LIBS:elec-unifil
+LIBS:ESD_Protection
+LIBS:ftdi
+LIBS:gennum
+LIBS:graphic
+LIBS:hc11
+LIBS:ir
+LIBS:Lattice
+LIBS:logo
+LIBS:maxim
+LIBS:mechanical
+LIBS:microchip_dspic33dsc
+LIBS:microchip_pic10mcu
+LIBS:microchip_pic12mcu
+LIBS:microchip_pic16mcu
+LIBS:microchip_pic18mcu
+LIBS:microchip_pic32mcu
+LIBS:motor_drivers
+LIBS:motors
+LIBS:msp430
+LIBS:nordicsemi
+LIBS:nxp_armmcu
+LIBS:onsemi
+LIBS:Oscillators
+LIBS:powerint
+LIBS:Power_Management
+LIBS:pspice
+LIBS:references
+LIBS:relays
+LIBS:rfcom
+LIBS:sensors
+LIBS:silabs
+LIBS:stm8
+LIBS:stm32
+LIBS:supertex
+LIBS:switches
+LIBS:transf
+LIBS:ttl_ieee
+LIBS:video
+LIBS:wiznet
+LIBS:Worldsemi
+LIBS:Xicor
+LIBS:zetex
+LIBS:Zilog
+LIBS:main-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
+Title "Main"
+Date "2017-03-07"
+Rev "1"
+Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -47,7 +104,7 @@ L ATMEGA328P-P IC1
 U 1 1 58B76AB6
 P 2400 2200
 F 0 "IC1" H 1650 3450 50  0000 L BNN
-F 1 "ATMEGA328P-P" H 2800 800 50  0000 L BNN
+F 1 "AVR" H 2800 800 50  0000 L BNN
 F 2 "DIL28" H 2400 2200 50  0000 C CIN
 F 3 "" H 2400 2200 50  0000 C CNN
 	1    2400 2200
@@ -90,7 +147,7 @@ $Comp
 L LD1117S33TR U1
 U 1 1 58B76DD1
 P 900 2350
-F 0 "U1" H 900 2600 50  0000 C CNN
+F 0 "U1" H 900 2650 50  0000 C CNN
 F 1 "3.3V Reg" H 900 2550 50  0000 C CNN
 F 2 "SOT-223" H 900 2450 50  0000 C CNN
 F 3 "" H 900 2350 50  0000 C CNN
@@ -122,10 +179,10 @@ $EndComp
 Text GLabel 850  3000 3    60   Input ~ 0
 VBAT
 $Comp
-L BS107 Q4
+L BS107 Q3
 U 1 1 58BC9496
 P 7850 1400
-F 0 "Q4" H 8050 1475 50  0000 L CNN
+F 0 "Q3" H 8050 1475 50  0000 L CNN
 F 1 "DrogueCtrl" H 8050 1400 50  0000 L CNN
 F 2 "TO-92" H 8050 1325 50  0000 L CIN
 F 3 "" H 7850 1400 50  0000 L CNN
@@ -142,17 +199,6 @@ F 2 "TO-92" H 6150 2625 50  0000 L CIN
 F 3 "" H 5950 2700 50  0000 L CNN
 	1    5950 2700
 	0    -1   -1   0   
-$EndComp
-$Comp
-L BS107 Q3
-U 1 1 58BC9620
-P 7800 2700
-F 0 "Q3" H 8000 2775 50  0000 L CNN
-F 1 "BackupCtrl" H 8000 2700 50  0000 L CNN
-F 2 "TO-92" H 8000 2625 50  0000 L CIN
-F 3 "" H 7800 2700 50  0000 L CNN
-	1    7800 2700
-	0    1    -1   0   
 $EndComp
 $Comp
 L BS107 Q1
@@ -186,17 +232,6 @@ F 2 "" H 7050 475 50  0001 C CNN
 F 3 "" H 7025 700 50  0001 C CNN
 	1    7050 700 
 	0    1    1    0   
-$EndComp
-$Comp
-L Screw_Terminal_1x02 J7
-U 1 1 58BCAFB1
-P 10850 2700
-F 0 "J7" H 10850 2950 50  0000 C TNN
-F 1 "BackupTerm" V 10700 2700 50  0000 C TNN
-F 2 "" H 10850 2475 50  0001 C CNN
-F 3 "" H 10825 2700 50  0001 C CNN
-	1    10850 2700
-	-1   0    0    1   
 $EndComp
 $Comp
 L Screw_Terminal_1x02 J1
@@ -235,14 +270,10 @@ Text GLabel 5250 900  3    60   Input ~ 0
 VBAT
 Text GLabel 7150 900  3    60   Input ~ 0
 VBAT
-Text GLabel 10650 2800 0    60   Input ~ 0
-VBAT
 Text GLabel 2850 6950 1    60   Input ~ 0
-Vcc
+VCC
 Text GLabel 850  950  1    60   Input ~ 0
-Vcc
-Text GLabel 3900 2550 2    60   Input ~ 0
-Vcc
+VCC
 $Comp
 L Screw_Terminal_1x02 J6
 U 1 1 58BD4B0C
@@ -298,9 +329,6 @@ Wire Wire Line
 Wire Wire Line
 	5050 900  5050 1300
 Wire Wire Line
-	10650 2600 8000 2600
-Connection ~ 6400 5450
-Wire Wire Line
 	3400 2450 5150 2450
 Wire Wire Line
 	5150 2450 5150 4850
@@ -327,45 +355,7 @@ Wire Wire Line
 Wire Wire Line
 	1350 4500 1350 6950
 Wire Wire Line
-	3400 2150 5450 2150
-Wire Wire Line
-	5450 2150 5450 4450
-Wire Wire Line
-	3850 6950 3850 4750
-Wire Wire Line
-	3850 4750 4800 4750
-Wire Wire Line
-	4800 4750 4800 2900
-Wire Wire Line
-	4800 2900 3400 2900
-Wire Wire Line
-	3400 1600 3700 1600
-Wire Wire Line
-	3700 1600 3700 4700
-Wire Wire Line
-	3700 4700 3250 4700
-Wire Wire Line
-	3250 4700 3250 6950
-Wire Wire Line
-	3450 6950 3450 4750
-Wire Wire Line
-	3450 4750 3750 4750
-Wire Wire Line
-	3750 4750 3750 1400
-Wire Wire Line
-	3750 1400 3400 1400
-Wire Wire Line
-	3400 1200 4200 1200
-Wire Wire Line
-	4200 1200 4200 4700
-Wire Wire Line
-	4200 4700 3800 4700
-Wire Wire Line
-	3800 4700 3800 5200
-Wire Wire Line
-	3800 5200 3650 5200
-Wire Wire Line
-	3650 5200 3650 6950
+	3400 1400 4150 1400
 Wire Wire Line
 	1150 3400 1500 3400
 Wire Wire Line
@@ -400,22 +390,6 @@ Text GLabel 4550 3150 2    60   Input ~ 0
 GND
 Text GLabel 6200 2600 2    60   Input ~ 0
 GND
-Text GLabel 7600 2600 0    60   Input ~ 0
-GND
-NoConn ~ 3400 1500
-$Comp
-L R R1
-U 1 1 58BD7E75
-P 3750 2550
-F 0 "R1" V 3830 2550 50  0000 C CNN
-F 1 "RESETPULL" V 3900 2750 50  0000 C CNN
-F 2 "" V 3680 2550 50  0000 C CNN
-F 3 "" H 3750 2550 50  0000 C CNN
-	1    3750 2550
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	3600 2550 3400 2550
 Wire Wire Line
 	10450 950  10450 1150
 Wire Wire Line
@@ -424,50 +398,139 @@ Wire Wire Line
 	1300 1400 1300 1100
 Connection ~ 1150 3400
 $Comp
-L 74LS75 U?
-U 1 1 58BDCE55
-P 7550 4800
-F 0 "U?" H 7550 4900 50  0000 C CNN
-F 1 "74LS77" H 7550 4700 50  0000 C CNN
-F 2 "" H 7550 4800 50  0000 C CNN
-F 3 "" H 7550 4800 50  0000 C CNN
-	1    7550 4800
+L 74LS00 U2
+U 1 1 58BF5C73
+P 6600 4850
+F 0 "U2" H 6600 4900 50  0000 C CNN
+F 1 "74LS00" H 6600 4750 50  0000 C CNN
+F 2 "" H 6600 4850 50  0000 C CNN
+F 3 "" H 6600 4850 50  0000 C CNN
+	1    6600 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS00 U2
+U 2 1 58BF5EB8
+P 6600 5550
+F 0 "U2" H 6600 5600 50  0000 C CNN
+F 1 "74LS00" H 6600 5450 50  0000 C CNN
+F 2 "" H 6600 5550 50  0000 C CNN
+F 3 "" H 6600 5550 50  0000 C CNN
+	2    6600 5550
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6000 2900 6000 3400
+	6000 5450 5850 5450
 Wire Wire Line
-	6000 3400 8250 3400
+	5850 5450 5850 5100
+Wire Wire Line
+	5850 5100 7300 5100
+Wire Wire Line
+	7300 5100 7300 5550
+Wire Wire Line
+	7300 5550 7200 5550
+Wire Wire Line
+	6000 4950 6000 5250
+Wire Wire Line
+	6000 5250 7450 5250
+Wire Wire Line
+	7450 5250 7450 2900
+Wire Wire Line
+	7450 4850 7200 4850
+Connection ~ 7450 4850
+Wire Wire Line
+	7450 2900 6000 2900
+Wire Wire Line
+	4050 6950 4050 5650
+Wire Wire Line
+	4050 5650 6000 5650
+Wire Wire Line
+	3850 6950 3850 5250
+Wire Wire Line
+	3850 5250 5650 5250
+Wire Wire Line
+	5650 5250 5650 4750
+Wire Wire Line
+	5650 4750 6000 4750
+NoConn ~ 1500 1700
 $Comp
-L R R?
-U 1 1 58BDD502
-P 5600 4450
-F 0 "R?" V 5680 4450 50  0000 C CNN
-F 1 "ArmPull" V 5600 4450 50  0000 C CNN
-F 2 "" V 5530 4450 50  0000 C CNN
-F 3 "" H 5600 4450 50  0000 C CNN
-	1    5600 4450
-	0    1    1    0   
+L DIL6 P1
+U 1 1 58BF7CD7
+P 10400 2750
+F 0 "P1" H 10400 3000 50  0000 C CNN
+F 1 "ProgramHeader" H 10400 2500 50  0000 C CNN
+F 2 "" H 10400 2750 50  0000 C CNN
+F 3 "" H 10400 2750 50  0000 C CNN
+	1    10400 2750
+	1    0    0    -1  
 $EndComp
+Text GLabel 10050 2750 0    60   Input ~ 0
+VCC
+Text GLabel 10750 2650 2    60   Input ~ 0
+GND
 Wire Wire Line
-	5750 4450 6850 4450
+	10750 2750 11100 2750
 Wire Wire Line
-	4050 6950 4050 5100
+	3400 1950 4850 1950
 Wire Wire Line
-	4050 5100 5950 5100
+	3400 2050 4950 2050
 Wire Wire Line
-	5950 5100 5950 4450
-Connection ~ 5950 4450
+	3400 2150 5050 2150
 Wire Wire Line
-	8250 3400 8250 4450
+	4850 1950 4850 6000
 Wire Wire Line
-	8250 4950 8350 4950
+	4850 6000 3250 6000
 Wire Wire Line
-	8350 4950 8350 2900
+	3250 6000 3250 6950
 Wire Wire Line
-	8350 2900 7750 2900
-Text Notes 5650 4200 0    60   ~ 0
-Change this pull so that it will always be low at start and if button is pressed and can be pulled high by the controller
-Text Notes 5900 5800 0    60   ~ 0
-Need to connect both parachutes and disable backup if both fire
+	4950 2050 4950 6100
+Wire Wire Line
+	4950 6100 3450 6100
+Wire Wire Line
+	3450 6100 3450 6950
+Wire Wire Line
+	5050 2150 5050 6200
+Wire Wire Line
+	5050 6200 3650 6200
+Wire Wire Line
+	3650 6200 3650 6950
+Wire Wire Line
+	10050 2850 8300 2850
+Wire Wire Line
+	8300 2850 8300 1600
+Wire Wire Line
+	8300 1600 3400 1600
+Wire Wire Line
+	10050 2650 10050 1900
+Wire Wire Line
+	10050 1900 4100 1900
+Wire Wire Line
+	4100 1900 4100 1500
+Wire Wire Line
+	4100 1500 3400 1500
+Wire Wire Line
+	10750 2850 11150 2850
+Wire Wire Line
+	11150 2850 11150 1550
+Wire Wire Line
+	11150 1550 4150 1550
+Wire Wire Line
+	4150 1550 4150 1400
+NoConn ~ 3400 1100
+NoConn ~ 3400 1200
+NoConn ~ 3400 1300
+NoConn ~ 3400 2700
+NoConn ~ 3400 2800
+NoConn ~ 3400 2900
+NoConn ~ 3400 3000
+NoConn ~ 3400 3400
+Wire Wire Line
+	11100 2750 11100 3150
+Wire Wire Line
+	11100 3150 5500 3150
+Wire Wire Line
+	5500 3150 5500 2550
+Wire Wire Line
+	5500 2550 3400 2550
+NoConn ~ 3400 2250
 $EndSCHEMATC
