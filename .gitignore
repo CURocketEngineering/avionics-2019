@@ -1,2 +1,7 @@
+*.rules
 *.bak
 *-cache.lib
+*.kicad_pcb-bak
+*.dsn
+*.bin
+*.ses
