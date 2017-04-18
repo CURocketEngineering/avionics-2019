@@ -182,8 +182,8 @@ $Comp
 L BS107 Q3
 U 1 1 58BC9496
 P 7850 1400
-F 0 "Q3" H 8050 1475 50  0000 L CNN
-F 1 "DrogueCtrl" H 8050 1400 50  0000 L CNN
+F 0 "Q3" V 8100 1500 50  0000 L CNN
+F 1 "DrogueCtrl" V 8100 1000 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-92_Horizontal1_Inline_Narrow_Oval" H 8050 1325 50  0001 L CIN
 F 3 "" H 7850 1400 50  0000 L CNN
 	1    7850 1400
@@ -193,8 +193,8 @@ $Comp
 L BS107 Q2
 U 1 1 58BC95BC
 P 5950 2700
-F 0 "Q2" H 6150 2775 50  0000 L CNN
-F 1 "ArmCtrl" H 6150 2700 50  0000 L CNN
+F 0 "Q2" V 6200 2750 50  0000 L CNN
+F 1 "ArmCtrl" V 6200 2400 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-92_Horizontal1_Inline_Narrow_Oval" H 6150 2625 50  0001 L CIN
 F 3 "" H 5950 2700 50  0000 L CNN
 	1    5950 2700
@@ -204,8 +204,8 @@ $Comp
 L BS107 Q1
 U 1 1 58BC989B
 P 5950 1400
-F 0 "Q1" H 6150 1475 50  0000 L CNN
-F 1 "MainCtrl" H 6150 1400 50  0000 L CNN
+F 0 "Q1" V 6200 1500 50  0000 L CNN
+F 1 "MainCtrl" V 6200 1100 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-92_Horizontal1_Inline_Narrow_Oval" H 6150 1325 50  0001 L CIN
 F 3 "" H 5950 1400 50  0000 L CNN
 	1    5950 1400
@@ -275,19 +275,19 @@ VCC
 Text GLabel 850  950  1    60   Input ~ 0
 VCC
 $Comp
-L Screw_Terminal_1x02 J6
+L Screw_Terminal_1x02 J7
 U 1 1 58BD4B0C
-P 10350 750
-F 0 "J6" H 10350 1000 50  0000 C TNN
-F 1 "BatteryTerm" V 10200 750 50  0000 C TNN
-F 2 "Terminal_Blocks:TerminalBlock_Pheonix_MKDS1.5-2pol" H 10350 525 50  0001 C CNN
-F 3 "" H 10325 750 50  0001 C CNN
-	1    10350 750 
+P 10800 700
+F 0 "J7" H 10800 950 50  0000 C TNN
+F 1 "BatteryTerm" V 10650 700 50  0000 C TNN
+F 2 "Terminal_Blocks:TerminalBlock_Pheonix_MKDS1.5-2pol" H 10800 475 50  0001 C CNN
+F 3 "" H 10775 700 50  0001 C CNN
+	1    10800 700 
 	0    1    1    0   
 $EndComp
-Text GLabel 10450 1150 3    60   Input ~ 0
+Text GLabel 10900 1100 3    60   Input ~ 0
 VBAT
-Text GLabel 10250 1150 3    60   Input ~ 0
+Text GLabel 10700 1100 3    60   Input ~ 0
 GND
 Text GLabel 1200 2350 2    60   Input ~ 0
 GND
@@ -337,7 +337,6 @@ Text GLabel 10750 2650 2    60   Input ~ 0
 GND
 NoConn ~ 3400 1300
 NoConn ~ 3400 2700
-NoConn ~ 3400 2250
 $Comp
 L R R2
 U 1 1 58BFECD1
@@ -391,7 +390,7 @@ Wire Wire Line
 Wire Wire Line
 	6150 1300 6150 2000
 Wire Wire Line
-	5750 2000 8050 2000
+	5750 2000 9850 2000
 Wire Wire Line
 	8050 2000 8050 1300
 Connection ~ 6150 2000
@@ -458,9 +457,9 @@ Wire Wire Line
 Wire Wire Line
 	850  2750 850  3000
 Wire Wire Line
-	10450 950  10450 1150
+	10900 900  10900 1100
 Wire Wire Line
-	10250 950  10250 1150
+	10700 900  10700 1100
 Wire Wire Line
 	1300 1400 1300 1100
 Connection ~ 1150 3400
@@ -641,4 +640,39 @@ Wire Wire Line
 	3750 1100 3400 1100
 Wire Wire Line
 	6000 4750 6000 4350
+$Comp
+L Screw_Terminal_1x02 J6
+U 1 1 58DD1C52
+P 8950 700
+F 0 "J6" H 8950 950 50  0000 C TNN
+F 1 "IgniterTerm" V 8800 700 50  0000 C TNN
+F 2 "Terminal_Blocks:TerminalBlock_Pheonix_MKDS1.5-2pol" H 8950 475 50  0001 C CNN
+F 3 "" H 8925 700 50  0001 C CNN
+	1    8950 700 
+	0    1    1    0   
+$EndComp
+$Comp
+L BS107 Q4
+U 1 1 58DD1CDC
+P 9650 1400
+F 0 "Q4" V 9900 1500 50  0000 L CNN
+F 1 "IgniterCtrl" V 9900 1000 50  0000 L CNN
+F 2 "TO_SOT_Packages_THT:TO-92_Horizontal1_Inline_Narrow_Oval" H 9850 1325 50  0001 L CIN
+F 3 "" H 9650 1400 50  0000 L CNN
+	1    9650 1400
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3400 2250 9700 2250
+Wire Wire Line
+	9700 2250 9700 1600
+Wire Wire Line
+	9450 1300 8850 1300
+Wire Wire Line
+	8850 1300 8850 900 
+Text GLabel 9050 900  3    60   Input ~ 0
+VBAT
+Wire Wire Line
+	9850 2000 9850 1300
+Connection ~ 8050 2000
 $EndSCHEMATC
