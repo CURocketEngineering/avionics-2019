@@ -91,8 +91,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Panel"
-Date "2017-03-07"
-Rev "1"
+Date "2017-05-09"
+Rev "2"
 Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
@@ -100,7 +100,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Screw_Terminal_1x07 J1
+L Screw_Terminal_1x09 J1
 U 1 1 58BF4208
 P 1700 900
 F 0 "J1" H 1700 1650 50  0000 C TNN
@@ -181,7 +181,7 @@ L LED_RCBG D5
 U 1 1 58BF485D
 P 7100 1600
 F 0 "D5" H 7100 1970 50  0000 C CNN
-F 1 "Debug5" H 7100 1250 50  0000 C CNN
+F 1 "Arm" H 7100 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 7100 1550 50  0001 C CNN
 F 3 "" H 7100 1550 50  0000 C CNN
 	1    7100 1600
@@ -198,10 +198,6 @@ F 3 "" H 3750 3300 50  0000 C CNN
 	1    3750 3300
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	2100 1100 2100 1500
-Wire Wire Line
-	2100 1400 8650 1400
 Connection ~ 3500 1400
 Connection ~ 4400 1400
 Connection ~ 5300 1400
@@ -296,56 +292,24 @@ Wire Wire Line
 Wire Wire Line
 	6900 2350 6900 1800
 Wire Wire Line
-	5500 2600 5500 2400
-Wire Wire Line
-	5500 2400 7100 2400
-Wire Wire Line
-	7100 2400 7100 1800
-Wire Wire Line
-	5600 2600 5600 2450
-Wire Wire Line
-	5600 2450 7300 2450
-Wire Wire Line
-	7300 2450 7300 1800
-Wire Wire Line
 	4200 2600 4700 2600
 Wire Wire Line
 	4700 2600 4700 4000
 Wire Wire Line
 	4700 4000 5000 4000
 Wire Wire Line
-	1500 4150 1500 1100
-Wire Wire Line
-	3300 4000 1900 4000
-Wire Wire Line
-	1900 4000 1900 1100
-Wire Wire Line
-	1700 4100 1700 1100
-Wire Wire Line
-	1300 1100 1300 4300
-Wire Wire Line
-	1300 4300 8250 4300
-Wire Wire Line
 	8250 4300 8250 1600
 Wire Wire Line
 	9050 1600 9050 4400
-Wire Wire Line
-	9050 4400 1100 4400
-Wire Wire Line
-	1100 4400 1100 1100
-Text GLabel 2300 1100 3    60   Input ~ 0
+Text GLabel 2500 1100 3    60   Input ~ 0
 VCC
-Text GLabel 2100 1500 3    60   Input ~ 0
+Text GLabel 2300 1500 3    60   Input ~ 0
 GND
-Wire Wire Line
-	1700 4100 5200 4100
 Wire Wire Line
 	3500 4100 3500 4000
 Wire Wire Line
 	5200 4100 5200 4000
 Connection ~ 3500 4100
-Wire Wire Line
-	1500 4150 5500 4150
 Wire Wire Line
 	3800 4150 3800 4000
 Wire Wire Line
@@ -369,5 +333,43 @@ Wire Wire Line
 	5600 4550 5600 4000
 NoConn ~ 5700 2600
 NoConn ~ 5900 2600
-Connection ~ 2100 1400
+Wire Wire Line
+	1900 4100 5200 4100
+Wire Wire Line
+	2300 1400 8650 1400
+Wire Wire Line
+	2300 1100 2300 1500
+Connection ~ 2300 1400
+Wire Wire Line
+	3300 4000 2100 4000
+Wire Wire Line
+	2100 4000 2100 1100
+Wire Wire Line
+	1900 4100 1900 1100
+Wire Wire Line
+	1700 4150 5500 4150
+Wire Wire Line
+	1700 4150 1700 1100
+Wire Wire Line
+	8250 4300 1500 4300
+Wire Wire Line
+	1500 4300 1500 1100
+Wire Wire Line
+	9050 4400 1300 4400
+Wire Wire Line
+	1300 4400 1300 1100
+Wire Wire Line
+	1100 1100 1100 4900
+Wire Wire Line
+	1100 4900 7100 4900
+Wire Wire Line
+	7100 4900 7100 1800
+Wire Wire Line
+	900  1100 900  5050
+Wire Wire Line
+	900  5050 7300 5050
+Wire Wire Line
+	7300 5050 7300 1800
+NoConn ~ 5600 2600
+NoConn ~ 5500 2600
 $EndSCHEMATC
