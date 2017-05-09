@@ -420,6 +420,7 @@ F 3 "" H 9650 1400 50  0000 L CNN
 $EndComp
 Text GLabel 9050 900  3    60   Input ~ 0
 VBAT
+NoConn ~ 3400 1300
 Connection ~ 8050 2000
 Wire Wire Line
 	9850 2000 9850 1300
@@ -658,7 +659,6 @@ Wire Wire Line
 Wire Wire Line
 	850  950  850  1950
 Connection ~ 1150 2350
-NoConn ~ 3400 1300
 Wire Wire Line
 	3150 6000 3150 6950
 Wire Wire Line
@@ -685,4 +685,18 @@ Wire Wire Line
 Wire Wire Line
 	7300 5250 7300 6350
 Connection ~ 7450 5100
+$Comp
+L R R3
+U 1 1 59124B82
+P 7950 3000
+F 0 "R3" V 8030 3000 50  0000 C CNN
+F 1 "10 kΩ" V 7800 3000 50  0000 C CNN
+F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 7880 3000 50  0001 C CNN
+F 3 "" H 7950 3000 50  0000 C CNN
+	1    7950 3000
+	1    0    0    -1  
+$EndComp
+Connection ~ 7950 3150
+Text GLabel 7950 2850 1    60   Input ~ 0
+VCC
 $EndSCHEMATC
