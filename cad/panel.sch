@@ -113,12 +113,12 @@ $EndComp
 $Comp
 L SW_Push SW2
 U 1 1 58BF4463
-P 8850 1600
-F 0 "SW2" H 8900 1700 50  0000 L CNN
-F 1 "ResetButton" H 8850 1540 50  0000 C CNN
-F 2 "Buttons_Switches_ThroughHole:SW_PUSH-12mm" H 8850 1800 50  0001 C CNN
-F 3 "" H 8850 1800 50  0000 C CNN
-	1    8850 1600
+P 8950 1600
+F 0 "SW2" H 9000 1700 50  0000 L CNN
+F 1 "ResetButton" H 8950 1540 50  0000 C CNN
+F 2 "Buttons_Switches_ThroughHole:SW_PUSH-12mm" H 8950 1800 50  0001 C CNN
+F 3 "" H 8950 1800 50  0000 C CNN
+	1    8950 1600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -206,7 +206,7 @@ Wire Wire Line
 	7850 1400 7850 1600
 Connection ~ 7100 1400
 Wire Wire Line
-	8650 1400 8650 1600
+	8750 1400 8750 1600
 Connection ~ 7850 1400
 $Comp
 L 74HC595 U2
@@ -300,7 +300,7 @@ Wire Wire Line
 Wire Wire Line
 	8250 4300 8250 1600
 Wire Wire Line
-	9050 1600 9050 4400
+	9150 4400 9150 1600
 Text GLabel 2500 1100 3    60   Input ~ 0
 VCC
 Text GLabel 2300 1500 3    60   Input ~ 0
@@ -336,7 +336,7 @@ NoConn ~ 5900 2600
 Wire Wire Line
 	1900 4100 5200 4100
 Wire Wire Line
-	2300 1400 8650 1400
+	2400 1400 8750 1400
 Wire Wire Line
 	2300 1100 2300 1500
 Connection ~ 2300 1400
@@ -355,7 +355,7 @@ Wire Wire Line
 Wire Wire Line
 	1500 4300 1500 1100
 Wire Wire Line
-	9050 4400 1300 4400
+	1300 4400 9150 4400
 Wire Wire Line
 	1300 4400 1300 1100
 Wire Wire Line
@@ -375,32 +375,32 @@ NoConn ~ 5500 2600
 $Comp
 L C C1
 U 1 1 59136225
-P 7750 1900
-F 0 "C1" H 7775 2000 50  0000 L CNN
-F 1 "0.1 µF" H 7700 1650 50  0000 L CNN
-F 2 "Capacitors_ThroughHole:C_Disc_D3.8mm_W2.6mm_P2.50mm" H 7788 1750 50  0001 C CNN
-F 3 "" H 7750 1900 50  0000 C CNN
-	1    7750 1900
+P 8650 1900
+F 0 "C1" H 8675 2000 50  0000 L CNN
+F 1 "0.1 µF" H 8600 1650 50  0000 L CNN
+F 2 "Capacitors_ThroughHole:C_Disc_D3.8mm_W2.6mm_P2.50mm" H 8688 1750 50  0001 C CNN
+F 3 "" H 8650 1900 50  0000 C CNN
+	1    8650 1900
 	1    0    0    -1  
 $EndComp
 $Comp
 L R R1
 U 1 1 59136B3F
-P 7500 1900
-F 0 "R1" V 7580 1900 50  0000 C CNN
-F 1 "100 kΩ" H 7500 1650 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 7430 1900 50  0001 C CNN
-F 3 "" H 7500 1900 50  0000 C CNN
-	1    7500 1900
+P 8400 1900
+F 0 "R1" V 8480 1900 50  0000 C CNN
+F 1 "100 kΩ" H 8400 1650 50  0000 C CNN
+F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 8330 1900 50  0001 C CNN
+F 3 "" H 8400 1900 50  0000 C CNN
+	1    8400 1900
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7500 2050 8250 2050
+	8400 2050 9150 2050
 Wire Wire Line
-	7750 1750 7500 1750
-Connection ~ 8250 2050
-Connection ~ 7750 2050
+	8650 1750 8400 1750
+Connection ~ 8650 2050
 Wire Wire Line
-	7750 1750 7750 1400
-Connection ~ 7750 1400
+	8650 1750 8650 1400
+Connection ~ 9150 2050
+Connection ~ 8650 1400
 $EndSCHEMATC
