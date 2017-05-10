@@ -113,35 +113,35 @@ $EndComp
 $Comp
 L Crystal Y1
 U 1 1 58B76B11
-P 3950 3150
-F 0 "Y1" H 3950 3300 50  0000 C CNN
-F 1 "Crystal" H 3950 3000 50  0000 C CNN
-F 2 "Crystals:Crystal_HC49-U_Vertical" H 3950 3150 50  0001 C CNN
-F 3 "" H 3950 3150 50  0000 C CNN
-	1    3950 3150
-	0    -1   -1   0   
+P 4050 1100
+F 0 "Y1" H 4050 1250 50  0000 C CNN
+F 1 "Crystal" H 4050 950 50  0000 C CNN
+F 2 "Crystals:Crystal_HC49-U_Vertical" H 4050 1100 50  0001 C CNN
+F 3 "" H 4050 1100 50  0000 C CNN
+	1    4050 1100
+	1    0    0    1   
 $EndComp
 $Comp
 L C C4
 U 1 1 58B76BBA
-P 4400 3300
-F 0 "C4" H 4425 3400 50  0000 L CNN
-F 1 "22 pF" V 4250 3250 50  0000 L CNN
-F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 4438 3150 50  0001 C CNN
-F 3 "" H 4400 3300 50  0000 C CNN
-	1    4400 3300
-	0    -1   -1   0   
+P 3900 850
+F 0 "C4" H 3700 850 50  0000 L CNN
+F 1 "22 pF" H 3650 1000 50  0000 L CNN
+F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 3938 700 50  0001 C CNN
+F 3 "" H 3900 850 50  0000 C CNN
+	1    3900 850 
+	1    0    0    1   
 $EndComp
 $Comp
 L C C3
 U 1 1 58B76C1D
-P 4400 3000
-F 0 "C3" H 4425 3100 50  0000 L CNN
-F 1 "22 pF" V 4250 3000 50  0000 L CNN
-F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 4438 2850 50  0001 C CNN
-F 3 "" H 4400 3000 50  0000 C CNN
-	1    4400 3000
-	0    1    1    0   
+P 4200 850
+F 0 "C3" H 4000 850 50  0000 L CNN
+F 1 "22 pF" H 3900 700 50  0000 L CNN
+F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 4238 700 50  0001 C CNN
+F 3 "" H 4200 850 50  0000 C CNN
+	1    4200 850 
+	-1   0    0    -1  
 $EndComp
 $Comp
 L LD1117S33TR U1
@@ -293,7 +293,7 @@ Text GLabel 1200 2350 2    60   Input ~ 0
 GND
 Text GLabel 2950 6950 1    60   Input ~ 0
 GND
-Text GLabel 4550 3150 2    60   Input ~ 0
+Text GLabel 4500 700  2    60   Input ~ 0
 GND
 Text GLabel 6200 2600 2    60   Input ~ 0
 GND
@@ -571,11 +571,7 @@ Wire Wire Line
 Wire Wire Line
 	7900 1800 7900 1600
 Wire Wire Line
-	3400 1800 7900 1800
-Wire Wire Line
 	6000 1700 6000 1600
-Wire Wire Line
-	3400 1700 6000 1700
 Wire Wire Line
 	6200 2600 6150 2600
 Connection ~ 850  2800
@@ -637,23 +633,6 @@ Wire Wire Line
 	6150 1300 6150 2000
 Wire Wire Line
 	5750 2000 5750 2600
-Connection ~ 4550 3150
-Wire Wire Line
-	4550 3000 4550 3300
-Connection ~ 3950 3000
-Connection ~ 3950 3300
-Wire Wire Line
-	3600 3300 4250 3300
-Wire Wire Line
-	3600 3200 3600 3300
-Wire Wire Line
-	3400 3200 3600 3200
-Wire Wire Line
-	3600 3100 3400 3100
-Wire Wire Line
-	3600 3000 3600 3100
-Wire Wire Line
-	3600 3000 4250 3000
 Wire Wire Line
 	850  1100 1500 1100
 Wire Wire Line
@@ -699,4 +678,33 @@ $EndComp
 Connection ~ 7950 3150
 Text GLabel 7950 2850 1    60   Input ~ 0
 VCC
+Wire Wire Line
+	6000 1700 5550 1700
+Wire Wire Line
+	5550 1700 5550 3100
+Wire Wire Line
+	5550 3100 3400 3100
+Wire Wire Line
+	7900 1800 6650 1800
+Wire Wire Line
+	6650 1800 6650 3250
+Wire Wire Line
+	6650 3250 3900 3250
+Wire Wire Line
+	3900 3250 3900 3200
+Wire Wire Line
+	3900 3200 3400 3200
+Connection ~ 4200 700 
+Wire Wire Line
+	4200 1000 4200 1800
+Wire Wire Line
+	3900 1000 3900 1700
+Wire Wire Line
+	3900 700  4500 700 
+Wire Wire Line
+	4200 1800 3400 1800
+Connection ~ 4200 1100
+Wire Wire Line
+	3900 1700 3400 1700
+Connection ~ 3900 1100
 $EndSCHEMATC

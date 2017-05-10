@@ -372,4 +372,35 @@ Wire Wire Line
 	7300 5050 7300 1800
 NoConn ~ 5600 2600
 NoConn ~ 5500 2600
+$Comp
+L C C1
+U 1 1 59136225
+P 7750 1900
+F 0 "C1" H 7775 2000 50  0000 L CNN
+F 1 "0.1 µF" H 7700 1650 50  0000 L CNN
+F 2 "Capacitors_ThroughHole:C_Disc_D3.8mm_W2.6mm_P2.50mm" H 7788 1750 50  0001 C CNN
+F 3 "" H 7750 1900 50  0000 C CNN
+	1    7750 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R1
+U 1 1 59136B3F
+P 7500 1900
+F 0 "R1" V 7580 1900 50  0000 C CNN
+F 1 "100 kΩ" H 7500 1650 50  0000 C CNN
+F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 7430 1900 50  0001 C CNN
+F 3 "" H 7500 1900 50  0000 C CNN
+	1    7500 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7500 2050 8250 2050
+Wire Wire Line
+	7750 1750 7500 1750
+Connection ~ 8250 2050
+Connection ~ 7750 2050
+Wire Wire Line
+	7750 1750 7750 1400
+Connection ~ 7750 1400
 $EndSCHEMATC
