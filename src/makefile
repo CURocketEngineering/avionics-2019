@@ -4,6 +4,7 @@
 #_______________________________________________________________________________
 #                                                                    version 0.5
 #
+# Copyright (C) 2017 Foster McLane <fkmclane@gmail.com>
 # Copyright (C) 2011, 2012, 2013 Tim Marston <tim@ed.am>.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -119,6 +120,8 @@
 #              "libraries" (in the project directory), then your sketchbook
 #              "libraries" directory, then the Arduino libraries directory.
 #
+# SERIALBAUD   The rate of serial transfer. Defaults to 9600.
+#
 # SERIALDEV    The POSIX device name of the serial device that is the Arduino.
 #              If unspecified, an attempt is made to guess the name of a
 #              connected Arduino's serial device, which may work in some cases.
@@ -147,8 +150,7 @@
 # boards       Display a list of available board names, so that you can set the
 #              BOARD environment variable appropriately.
 #
-# monitor      Start `screen` on the serial device.  This is meant to be an
-#              equivalent to the Arduino serial monitor.
+# monitor      Start a serial monitor session with the Arduino.
 #
 # size         Displays size information about the built target.
 #
@@ -159,7 +161,8 @@
 #_______________________________________________________________________________
 #
 
-BOARD=uno
+BOARD?=mega
+PROCESSOR?=atmega2560
 
 # default arduino software directory, check software exists
 ifndef ARDUINODIR
@@ -179,7 +182,11 @@ AVRTOOLSPATH ?= $(subst :, , $(PATH)) $(ARDUINODIR)/hardware/tools \
 	$(ARDUINODIR)/hardware/tools/avr/bin
 
 # default path to find libraries
-LIBRARYPATH ?= libraries libs $(SKETCHBOOKDIR)/libraries $(ARDUINODIR)/libraries
+LIBRARYPATH ?= libraries libs $(SKETCHBOOKDIR)/libraries $(ARDUINODIR)/libraries $(ARDUINODIR)/hardware/arduino/avr/libraries
+
+ifeq "$(SERIALBAUD)" ""
+    SERIALBAUD := 9600
+endif
 
 # default serial device to a poor guess (something that might be an arduino)
 SERIALDEVGUESS := 0
@@ -200,7 +207,8 @@ endif
 
 # obtain board parameters from the arduino boards.txt file
 BOARDSFILE := $(ARDUINODIR)/hardware/arduino/avr/boards.txt
-readboardsparam = $(shell sed -ne "s/$(BOARD).$(1)=\(.*\)/\1/p" $(BOARDSFILE))
+BOARD_MENU_CPU := $(shell grep "$(BOARD)\.menu\.cpu" $(BOARDSFILE))
+readboardsparam = $(shell sed -ne "s/^$(BOARD)\.$(1)=\(.*\)/\1/p" $(BOARDSFILE))
 BOARD_BUILD_MCU := $(call readboardsparam,build.mcu)
 BOARD_BUILD_FCPU := $(call readboardsparam,build.f_cpu)
 BOARD_BUILD_VARIANT := $(call readboardsparam,build.variant)
@@ -218,17 +226,62 @@ BOARD_BOOTLOADER_FILE := $(call readboardsparam,bootloader.file)
 
 # obtain preferences from the IDE's preferences.txt
 PREFERENCESFILE := $(firstword $(wildcard \
-	$(HOME)/.arduino/preferences.txt $(HOME)/Library/Arduino/preferences.txt))
+	$(HOME)/.arduino15/preferences.txt $(HOME)/Library/Arduino/preferences.txt))
 ifneq "$(PREFERENCESFILE)" ""
-readpreferencesparam = $(shell sed -ne "s/$(1)=\(.*\)/\1/p" $(PREFERENCESFILE))
+readpreferencesparam = $(shell sed -ne "s/^$(1)=\(.*\)/\1/p" $(PREFERENCESFILE))
 SKETCHBOOKDIR := $(call readpreferencesparam,sketchbook.path)
+endif
+
+ifneq "$(BOARD_MENU_CPU)" ""
+ifdef PROCESSOR
+readmenuparam = $(shell sed -ne "s/^$(BOARD)\.menu\.cpu\.$(PROCESSOR)\.$(1)=\(.*\)/\1/p" $(BOARDSFILE))
+PROCESSOR_BUILD_MCU := $(call readmenuparam,build.mcu)
+PROCESSOR_BUILD_FCPU := $(call readmenuparam,build.f_cpu)
+PROCESSOR_BUILD_VARIANT := $(call readmenuparam,build.variant)
+PROCESSOR_UPLOAD_SPEED := $(call readmenuparam,upload.speed)
+PROCESSOR_UPLOAD_PROTOCOL := $(call readmenuparam,upload.protocol)
+PROCESSOR_USB_VID := $(call readmenuparam,build.vid)
+PROCESSOR_USB_PID := $(call readmenuparam,build.pid)
+PROCESSOR_BOOTLOADER_UNLOCK := $(call readmenuparam,bootloader.unlock_bits)
+PROCESSOR_BOOTLOADER_LOCK := $(call readmenuparam,bootloader.lock_bits)
+PROCESSOR_BOOTLOADER_LFUSES := $(call readmenuparam,bootloader.low_fuses)
+PROCESSOR_BOOTLOADER_HFUSES := $(call readmenuparam,bootloader.high_fuses)
+PROCESSOR_BOOTLOADER_EFUSES := $(call readmenuparam,bootloader.extended_fuses)
+PROCESSOR_BOOTLOADER_PATH := $(call readmenuparam,bootloader.path)
+PROCESSOR_BOOTLOADER_FILE := $(call readmenuparam,bootloader.file)
+
+BOARD_BUILD_MCU := $(if $(PROCESSOR_BUILD_MCU),$(PROCESSOR_BUILD_MCU),$(BOARD_BUILD_MCU))
+BOARD_BUILD_FCPU := $(if $(PROCESSOR_BUILD_FCPU),$(PROCESSOR_BUILD_FCPU),$(BOARD_BUILD_FCPU))
+BOARD_BUILD_VARIANT := $(if $(PROCESSOR_BUILD_VARIANT),$(PROCESSOR_BUILD_VARIANT),$(BOARD_BUILD_VARIANT))
+BOARD_UPLOAD_SPEED := $(if $(PROCESSOR_UPLOAD_SPEED),$(PROCESSOR_UPLOAD_SPEED),$(BOARD_UPLOAD_SPEED))
+BOARD_UPLOAD_PROTOCOL := $(if $(PROCESSOR_UPLOAD_PROTOCOL),$(PROCESSOR_UPLOAD_PROTOCOL),$(BOARD_UPLOAD_PROTOCOL))
+BOARD_USB_VID := $(if $(PROCESSOR_USB_VID),$(PROCESSOR_USB_VID),$(BOARD_USB_VID))
+BOARD_USB_PID := $(if $(PROCESSOR_USB_PID),$(PROCESSOR_USB_PID),$(BOARD_USB_PID))
+BOARD_BOOTLOADER_UNLOCK := $(if $(PROCESSOR_BOOTLOADER_UNLOCK),$(PROCESSOR_BOOTLOADER_UNLOCK),$(BOARD_BOOTLOADER_UNLOCK))
+BOARD_BOOTLOADER_LOCK := $(if $(PROCESSOR_BOOTLOADER_LOCK),$(PROCESSOR_BOOTLOADER_LOCK),$(BOARD_BOOTLOADER_LOCK))
+BOARD_BOOTLOADER_LFUSES := $(if $(PROCESSOR_BOOTLOADER_LFUSES),$(PROCESSOR_BOOTLOADER_LFUSES),$(BOARD_BOOTLOADER_LFUSES))
+BOARD_BOOTLOADER_HFUSES := $(if $(PROCESSOR_BOOTLOADER_HFUSES),$(PROCESSOR_BOOTLOADER_HFUSES),$(BOARD_BOOTLOADER_HFUSES))
+BOARD_BOOTLOADER_EFUSES := $(if $(PROCESSOR_BOOTLOADER_EFUSES),$(PROCESSOR_BOOTLOADER_EFUSES),$(BOARD_BOOTLOADER_EFUSES))
+BOARD_BOOTLOADER_PATH := $(if $(PROCESSOR_BOOTLOADER_PATH),$(PROCESSOR_BOOTLOADER_PATH),$(BOARD_BOOTLOADER_PATH))
+BOARD_BOOTLOADER_FILE := $(if $(PROCESSOR_BOOTLOADER_FILE),$(PROCESSOR_BOOTLOADER_FILE),$(BOARD_BOOTLOADER_FILE))
+else
+ifneq "$(MAKECMDGOALS)" "processors"
+ifneq "$(MAKECMDGOALS)" "boards"
+ifneq "$(MAKECMDGOALS)" "clean"
+$(error Board '$(BOARD)' requires PROCESSOR.  Type 'make processors' to see possible values)
+endif
+endif
+endif
+endif
 endif
 
 # invalid board?
 ifeq "$(BOARD_BUILD_MCU)" ""
+ifneq "$(MAKECMDGOALS)" "processors"
 ifneq "$(MAKECMDGOALS)" "boards"
 ifneq "$(MAKECMDGOALS)" "clean"
-$(error BOARD is invalid.  Type 'make boards' to see possible values)
+$(error BOARD or PROCESSOR is invalid.  Type 'make boards' or 'make processors' to see possible values)
+endif
 endif
 endif
 endif
@@ -268,6 +321,7 @@ ARDUINOCOREDIR := $(ARDUINODIR)/hardware/arduino/avr/cores/arduino
 LIBRARYDIRS := $(foreach lib, $(LIBRARIES), \
 	$(firstword $(wildcard $(addsuffix /$(lib), $(LIBRARYPATH)))))
 LIBRARYDIRS += $(addsuffix /utility, $(LIBRARYDIRS))
+LIBRARYDIRS += $(addsuffix /src, $(LIBRARYDIRS))
 
 # files
 TARGET := $(if $(TARGET),$(TARGET),a.out)
@@ -327,7 +381,7 @@ all: target
 target: $(TARGET).hex
 
 upload: target
-	@echo "\nUploading to board..."
+	@echo "Uploading to board..."
 	@test -n "$(SERIALDEV)" || { \
 		echo "error: SERIALDEV could not be determined automatically." >&2; \
 		exit 1; }
@@ -347,6 +401,12 @@ clean:
 	rm -f $(TARGET).elf $(TARGET).hex $(ARDUINOLIB) *~
 	rm -rf .lib .dep
 
+processors:
+	@echo "Available values for PROCESSOR for '$(BOARD)':"
+	@sed -nEe "s/^$(BOARD)\.menu\.cpu\.([^.=]*)=(.*)/\1            \2/p" $(BOARDSFILE) \
+		-e 's/(.{12}) *(.*)/\1 \2/'
+	@for cpu in $(BOARD_MENU_CPUS); do echo $$cpu; done
+
 boards:
 	@echo "Available values for BOARD:"
 	@sed -nEe '/^#/d; /^[^.]+\.name=/p' $(BOARDSFILE) | \
@@ -354,16 +414,10 @@ boards:
 			-e 's/(.{12}) *(.*)/\1 \2/'
 
 monitor:
-	@test -n "$(SERIALDEV)" || { \
-		echo "error: SERIALDEV could not be determined automatically." >&2; \
-		exit 1; }
-	@test -n `which screen` || { \
-		echo "error: can't find GNU screen, you might need to install it." >&2 \
-		exit 1; }
-	@test 0 -eq $(SERIALDEVGUESS) || { \
-		echo "*GUESSING* at serial device:" $(SERIALDEV); \
-		echo; }
-	screen $(SERIALDEV)
+	stty raw $(SERIALBAUD) igncr hupcl -echo -F $(SERIALDEV)
+	@echo Connected. Press Ctrl+D to close the monitor.
+	@sh -c 'trap "kill %1" INT; cat -v $(SERIALDEV) & cat >$(SERIALDEV); kill %1'
+	stty sane -F $(SERIALDEV)
 
 size: $(TARGET).elf
 	echo && $(AVRSIZE) --format=avr --mcu=$(BOARD_BUILD_MCU) $(TARGET).elf
