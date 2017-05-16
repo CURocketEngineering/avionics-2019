@@ -32,19 +32,21 @@
 #include <SoftSPI.h>
 
 struct {
+	// 0 -> -200 g, 1023 -> 200 g
 	unsigned int x, y, z;
 } acc;
 
 struct {
+	// 0 -> 50 kPa, 1023 -> 115 kPa
 	unsigned int p;
 } bar;
 
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 
 void readAccelerometer() {
-	acc.x = map(analogRead(ACCEL_X), 0, 1023, -200, 200);
-	acc.y = map(analogRead(ACCEL_Y), 0, 1023, -200, 200);
-	acc.z = map(analogRead(ACCEL_Z), 0, 1023, -200, 200);
+	acc.x = analogRead(ACCEL_X);
+	acc.y = analogRead(ACCEL_Y);
+	acc.z = analogRead(ACCEL_Z);
 }
 
 void barometerWrite(byte address, byte data) {
