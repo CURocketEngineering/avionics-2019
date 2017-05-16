@@ -1402,7 +1402,7 @@
   (gr_line (start 165.1 48.26) (end 165.1 124.46) (angle 90) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 165.1 43.18) (end 165.1 48.26) (angle 90) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 73.66 43.18) (end 165.1 43.18) (angle 90) (layer Edge.Cuts) (width 0.15))
-  (gr_text "CU Rocket Engineering\nMain Board\nRevision 2" (at 105.41 73.66) (layer F.SilkS)
+  (gr_text "CU Rocket Engineering\nMain Board\nRevision 2" (at 108.585 80.01) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)) (justify left))
   )
 
