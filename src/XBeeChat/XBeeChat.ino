@@ -1,3 +1,9 @@
+/*
+ * XBeeChat v0.1
+ *
+ * A simple radio chat using the serial monitor.
+ */
+
 #include <SoftwareSerial.h>
 
 // note: these are the opposite of what is on the dev board

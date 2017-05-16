@@ -1,3 +1,11 @@
+/*
+ * XBeeProgram v0.1
+ *
+ * A program to allow one to communicate with the XBee over the Arduino's
+ * serial line. This is generally used to modify the XBee using Digi's
+ * software.
+ */
+
 #include <SoftwareSerial.h>
 
 // note: these are the opposite of what is on the dev board

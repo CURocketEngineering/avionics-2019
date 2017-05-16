@@ -1,3 +1,9 @@
+/*
+ * XBeeEcho v0.1
+ *
+ * A program that repeats anything received over the radio.
+ */
+
 #include <SoftwareSerial.h>
 
 // note: these are the opposite of what is on the dev board

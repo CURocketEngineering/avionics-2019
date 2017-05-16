@@ -1,3 +1,9 @@
+/*
+ * XBeeLatency v0.1
+ *
+ * A program to test latency to a single radio running XBeeEcho.
+ */
+
 #include <SoftwareSerial.h>
 
 // note: these are the opposite of what is on the dev board
