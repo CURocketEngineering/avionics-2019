@@ -363,19 +363,19 @@ $EndComp
 Text GLabel 6000 4050 1    60   Input ~ 0
 VCC
 $Comp
-L CONN_01X05 P2
+L CONN_01X06 P2
 U 1 1 58C02A3F
-P 10700 3700
-F 0 "P2" H 10700 4000 50  0000 C CNN
-F 1 "Accelerometer" V 10800 3700 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x05_Pitch2.54mm" H 10700 3700 50  0001 C CNN
-F 3 "" H 10700 3700 50  0000 C CNN
-	1    10700 3700
+P 10700 3550
+F 0 "P2" H 10700 3900 50  0000 C CNN
+F 1 "Accelerometer" V 10800 3550 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x06_Pitch2.54mm" H 10700 3550 50  0001 C CNN
+F 3 "" H 10700 3550 50  0000 C CNN
+	1    10700 3550
 	1    0    0    -1  
 $EndComp
-Text GLabel 10500 3900 0    60   Input ~ 0
+Text GLabel 10500 3300 0    60   Input ~ 0
 VCC
-Text GLabel 10250 3800 0    60   Input ~ 0
+Text GLabel 10500 3800 0    60   Input ~ 0
 GND
 $Comp
 L CONN_01X07 P3
@@ -460,8 +460,6 @@ Wire Wire Line
 	5300 3600 10500 3600
 Wire Wire Line
 	5200 3700 10500 3700
-Wire Wire Line
-	10500 3800 10250 3800
 Wire Wire Line
 	5500 2550 3400 2550
 Wire Wire Line
@@ -691,4 +689,8 @@ Wire Wire Line
 	3950 6950 3950 5550
 Wire Wire Line
 	3950 5550 5650 5550
+Text GLabel 10250 3400 0    60   Input ~ 0
+GND
+Wire Wire Line
+	10250 3400 10500 3400
 $EndSCHEMATC
