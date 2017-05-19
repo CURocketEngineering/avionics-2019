@@ -322,6 +322,7 @@ LIBRARYDIRS := $(foreach lib, $(LIBRARIES), \
 	$(firstword $(wildcard $(addsuffix /$(lib), $(LIBRARYPATH)))))
 LIBRARYDIRS += $(addsuffix /utility, $(LIBRARYDIRS))
 LIBRARYDIRS += $(addsuffix /src, $(LIBRARYDIRS))
+LIBRARYDIRS += $(addsuffix /src/utility, $(LIBRARYDIRS))
 
 # files
 TARGET := $(if $(TARGET),$(TARGET),a.out)

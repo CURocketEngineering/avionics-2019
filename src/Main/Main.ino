@@ -7,6 +7,8 @@
  * Everything else is a critical function.
  */
 
+// definitions
+
 #define ACCEL_X -1
 #define ACCEL_Y -1
 #define ACCEL_Z -1
@@ -28,20 +30,47 @@
 #define TERM_DROGUE -1
 #define TERM_IGNITE -1
 
+#define PAYLOAD_ADDR 1
+
+// libraries
+
+#include <avr/sleep.h>
+
 #include <SPI.h>
 #include <SoftSPI.h>
+#include <Wire.h>
 
-struct {
+// global data
+
+static enum {
+	INIT,
+	IDLE,
+	HALT,
+	TEST,
+	ARM,
+	IGNITE,
+	BURN,
+	COAST,
+	EJECT,
+	FALL,
+	RECOVER
+} state;
+
+static struct {
 	// 0 -> -200 g, 1023 -> 200 g
 	unsigned int x, y, z;
 } acc;
 
-struct {
+static struct {
 	// 0 -> 50 kPa, 1023 -> 115 kPa
 	unsigned int p;
 } bar;
 
+// global variables
+
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
+
+// sensor functions
 
 void readAccelerometer() {
 	acc.x = analogRead(ACCEL_X);
@@ -82,15 +111,147 @@ void readBarometer() {
 	unsigned short b1 = barometerRead(0x0c);
 	unsigned short b2 = barometerRead(0x10);
 	unsigned short c12 = barometerRead(0x14);
+	unsigned short c11 = barometerRead(0x18);
 	unsigned short c22 = barometerRead(0x1c);
 
 	// calculate compensated pressure
 	bar.p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
 }
 
+// communication functions
+
+void sendPayload(char type, long data) {
+	// transmit message type and 32-bit data
+	Wire.beginTransmission(PAYLOAD_ADDR);
+	Wire.write(type);
+	Wire.write((char *)(&data), 4);
+	Wire.endTransmission();
+}
+
+char recvPayload() {
+	// request and read a single char from payload
+	Wire.requestFrom(PAYLOAD_ADDR, 1);
+	return Wire.read();
+}
+
+// state functions
+
+void idle() {
+}
+
+void halt() {
+	// clear interrupts and put processor to sleep
+	cli();
+	sleep_enable();
+	sleep_cpu();
+}
+
+void test() {
+}
+
+void arm() {
+}
+
+void ignite() {
+}
+
+void burn() {
+}
+
+void coast() {
+}
+
+void eject() {
+}
+
+void fall() {
+}
+
+void recover() {
+}
+
+// program functions
+
 void setup() {
+	// set inputs and outputs
+	pinMode(ACCEL_X, INPUT);
+	pinMode(ACCEL_Y, INPUT);
+	pinMode(ACCEL_Z, INPUT);
+
+	pinMode(BARO_MOSI, OUTPUT);
+	pinMode(BARO_MISO, INPUT);
+	pinMode(BARO_SCK, OUTPUT);
+
+	pinMode(CTRL, INPUT_PULLUP);
+
+	pinMode(PANEL_CLOCK, OUTPUT);
+	pinMode(PANEL_DATA, OUTPUT);
+	pinMode(PANEL_LATCH, OUTPUT);
+
+	pinMode(TERM_MAIN, OUTPUT);
+	pinMode(TERM_DROGUE, OUTPUT);
+	pinMode(TERM_IGNITE, OUTPUT);
+
+	// initialize communication with the barometer
 	barometer.begin();
+
+	// initialize communication with the payload
+	Wire.begin();
+
+	// set initial state
+	state = INIT;
 }
 
 void loop() {
+	// run appropriate state function
+	switch (state) {
+		// go to idle from init state
+		case INIT:
+			state = IDLE;
+			break;
+
+		case IDLE:
+			idle();
+			break;
+
+		case HALT:
+			halt();
+			break;
+
+		case TEST:
+			test();
+			break;
+
+		case ARM:
+			arm();
+			break;
+
+		case IGNITE:
+			ignite();
+			break;
+
+		case BURN:
+			burn();
+			break;
+
+		case COAST:
+			coast();
+			break;
+
+		case EJECT:
+			eject();
+			break;
+
+		case FALL:
+			fall();
+			break;
+
+		case RECOVER:
+			recover();
+			break;
+
+		// halt program in invalid state
+		default:
+			state = HALT;
+	}
 }
