@@ -10,7 +10,8 @@
 #define XBEE_RX 10
 #define XBEE_TX 11
 
-#define TIMEOUT 5000
+#define TIMEOUT 1000
+#define ATTEMPTS 5
 
 SoftwareSerial xbee(XBEE_RX, XBEE_TX);
 
@@ -24,6 +25,8 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
+    byte attempt = 0;
+
     unsigned long startTime, stopTime;
 
     String message = Serial.readStringUntil('\n');
@@ -33,25 +36,42 @@ void loop() {
     while (xbee.available())
       xbee.read();
 
-    startTime = millis();
+    while (attempt < ATTEMPTS) {
+      startTime = millis();
 
-    xbee.println(message);
+      xbee.println(message);
 
-    while (!xbee.available()) {
-      if (millis() - startTime > TIMEOUT) {
-        Serial.println("ERROR: Timeout");
-        return;
+      while (!xbee.available()) {
+        if (millis() - startTime > TIMEOUT)
+          break;
       }
+
+      if (xbee.available())
+        break;
+
+      attempt++;
     }
 
-    message = xbee.readStringUntil('\n');
+    if (xbee.available()) {
+      message = xbee.readStringUntil('\n');
 
-    stopTime = millis();
+      stopTime = millis();
 
-    Serial.print("Rply: ");
-    Serial.print(message);
-    Serial.print(" (");
-    Serial.print(stopTime - startTime);
-    Serial.println(" ms)");
+      Serial.print("Rply: ");
+      Serial.print(message);
+      Serial.print(" (");
+      Serial.print(stopTime - startTime);
+      if (attempt > 1) {
+        Serial.print(" ms) (");
+        Serial.print(attempt);
+        Serial.println(" attempts)");
+      }
+      else {
+        Serial.println(" ms)");
+      }
+    }
+    else {
+      Serial.println("Fail: No Reply");
+    }
   }
 }
