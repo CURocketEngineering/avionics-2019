@@ -126,7 +126,7 @@ void readBarometer() {
 
 // communication functions
 
-void sendPayload(char type, const byte * data, unsigned int len) {
+void sendPayload(char type, const char * data, unsigned int len) {
 	// transmit message type and data
 	Wire.beginTransmission(PAYLOAD_ADDR);
 	Wire.write(type);
@@ -155,19 +155,19 @@ void sendDebug() {
 }
 
 void updateTelemetry() {
-	static byte data[8];
+	static char data[8];
 
 	readAccelerometer();
 	readBarometer();
 
-	data[0] = acc->x >> 8;
-	data[1] = acc->x | 0xff;
-	data[2] = acc->y >> 8;
-	data[3] = acc->y | 0xff;
-	data[4] = acc->z >> 8;
-	data[5] = acc->z | 0xff;
-	data[6] = bar->p >> 8;
-	data[7] = bar->p | 0xff;
+	data[0] = acc.x >> 8;
+	data[1] = acc.x | 0xff;
+	data[2] = acc.y >> 8;
+	data[3] = acc.y | 0xff;
+	data[4] = acc.z >> 8;
+	data[5] = acc.z | 0xff;
+	data[6] = bar.p >> 8;
+	data[7] = bar.p | 0xff;
 
 	sendPayload('u', data, 8);
 }
@@ -240,6 +240,11 @@ void halt() {
 	// Debug 1-4 Red - halt
 	debug = 0b0010010010010000;
 	sendDebug();
+
+	// turn off all important lines
+	digitalWrite(TERM_MAIN, LOW);
+	digitalWrite(TERM_DROGUE, LOW);
+	digitalWrite(TERM_IGNITE, LOW);
 
 	// clear interrupts and put processor to sleep
 	cli();
