@@ -32,9 +32,20 @@
 
 #define PAYLOAD_ADDR 1
 
-#define MAX_IGNITE 2000
-#define MIN_ACCEL 514
+#define TARGET_ALT 10000
+
 #define DELAY_PARACHUTE 1000
+
+#define MAX_IGNITE 30000
+
+#define MIN_ACCEL 514
+#define THRUST_ACCEL 512
+
+#define APOGEE_DPRES 1
+
+#define MAIN_ALT 2000
+
+#define MIN_DPRES 1
 
 // libraries
 
@@ -55,6 +66,8 @@ static enum {
 	IGNITE,
 	BURN,
 	COAST,
+	APOGEE,
+	WAIT,
 	EJECT,
 	FALL,
 	RECOVER
@@ -67,7 +80,8 @@ static struct {
 
 static struct {
 	// 0 -> 50 kPa, 1023 -> 115 kPa
-	unsigned int p;
+	unsigned int p, dp, alt;
+	unsigned int i, f;
 } bar;
 
 //                      1  2  3  4  A
@@ -121,7 +135,16 @@ void readBarometer() {
 	unsigned short c22 = barometerRead(0x1c);
 
 	// calculate compensated pressure
-	bar.p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
+	unsigned int p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
+
+	bar.dp = p - bar.p;
+	bar.p = p;
+
+	// calculate altitude
+	if (bar.i != 0 && bar.f != 0)
+		bar.alt = map(bar.p, bar.i, bar.f, 0, TARGET_ALT);
+	else
+		bar.alt = 0;
 }
 
 // communication functions
@@ -300,6 +323,9 @@ void arm() {
 	// update payload state
 	sendPayload('s', "a", 1);
 
+	// sample pressure
+	bar.i = bar.p;
+
 	while (state == ARM) {
 		updateTelemetry();
 
@@ -371,9 +397,16 @@ void ignite() {
 	// wait for rocket to move up
 	updateTelemetry();
 	while (acc.z < MIN_ACCEL) {
-		if (millis() - start > MAX_IGNITE) {
-			state = HALT;
-			return;
+		// halt if button pressed after still time
+		if (millis() - start > MAX_IGNITE && digitalRead(CTRL) == LOW) {
+			// wait for debounce and intent
+			delay(500);
+
+			// cancel launch if button still pressed
+			if (digitalRead(CTRL) == LOW) {
+				state = HALT;
+				return;
+			}
 		}
 
 		updateTelemetry();
@@ -395,7 +428,7 @@ void burn() {
 	sendPayload('s', "b", 1);
 
 	// update telemetry during burn
-	while (<burning>)
+	while (acc.z > THRUST_ACCEL)
 		updateTelemetry();
 
 	// change to coast
@@ -403,15 +436,54 @@ void burn() {
 }
 
 void coast() {
-	// Debug 3 Green - coasting
+	// Debug 3 Blue - coasting
 	debug &= ~(1 << 7);
+	debug &= ~(1 << 8);
+	debug |= (1 << 9);
 	sendDebug();
 
 	// update payload state
 	sendPayload('s', "c", 1);
 
 	// update telemetry during coast
-	while (<coasting>)
+	while (bar.dp < APOGEE_DPRES)
+		updateTelemetry();
+
+	// change to apogee
+	state = APOGEE;
+}
+
+void apogee() {
+	// Debug 3 Green - apogee
+	debug &= ~(1 << 9);
+	debug |= (1 << 8);
+	sendDebug();
+
+	// update payload state
+	sendPayload('s', "d", 1);
+
+	// sample pressure
+	bar.f = bar.p;
+
+	// send parachute signal
+	digitalWrite(TERM_DROGUE, HIGH);
+	delay(DELAY_PARACHUTE);
+	digitalWrite(TERM_DROGUE, LOW);
+
+	// change to wait
+	state = WAIT;
+}
+
+void wait() {
+	// Debug 4 Blue - waiting
+	debug |= (1 << 6);
+	sendDebug();
+
+	// update payload state
+	sendPayload('s', "w", 1);
+
+	// update telemetry during descent
+	while (bar.alt > MAIN_ALT)
 		updateTelemetry();
 
 	// change to eject
@@ -419,38 +491,40 @@ void coast() {
 }
 
 void eject() {
-	// Debug 3 Blue - ejecting
-	debug &= ~(1 << 8);
-	debug |= (1 << 9);
+	// Debug 4 Yellow - ejecting
+	debug &= ~(1 << 6);
+	debug |= (1 << 4);
+	debug |= (1 << 5);
 	sendDebug();
 
 	// update payload state
 	sendPayload('s', "e", 1);
 
-	// send parachute signals
+	// send parachute signal
 	digitalWrite(TERM_MAIN, HIGH);
 	delay(DELAY_PARACHUTE);
 	digitalWrite(TERM_MAIN, LOW);
 
-	digitalWrite(TERM_DROGUE, HIGH);
-	delay(DELAY_PARACHUTE);
-	digitalWrite(TERM_DROGUE, LOW);
+	// change to fall
+	state = FALL;
 }
 
 void fall() {
 	// Debug 4 Green - falling
-	debug |= (1 << 5);
+	debug &= ~(1 << 4);
 	sendDebug();
 
 	// update telemetry during descent
-	while (<falling>)
+	while (bar.dp > MIN_DPRES)
 		updateTelemetry();
+
+	// change to recover
+	state = RECOVER;
 }
 
 void recover() {
-	// Debug 4 Blue - recovery
-	debug &= ~(1 << 5);
-	debug |= (1 << 6);
+	// Arm Green - recovery
+	debug &= (1 << 3);
 	sendDebug();
 
 	// clear interrupts and put processor to sleep
@@ -490,6 +564,10 @@ void setup() {
 	// initialize communication with the payload
 	Wire.begin();
 
+	// intialize barometer data
+	bar.i = 0;
+	bar.f = 0;
+
 	// set initial state
 	state = INIT;
 }
@@ -528,6 +606,14 @@ void loop() {
 
 		case COAST:
 			coast();
+			break;
+
+		case APOGEE:
+			apogee();
+			break;
+
+		case WAIT:
+			wait();
 			break;
 
 		case EJECT:
