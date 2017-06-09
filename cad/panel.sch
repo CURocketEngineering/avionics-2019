@@ -300,7 +300,7 @@ Wire Wire Line
 Wire Wire Line
 	8250 4300 8250 1600
 Wire Wire Line
-	9150 4400 9150 1600
+	9150 1600 9150 4400
 Text GLabel 2500 1100 3    60   Input ~ 0
 VCC
 Text GLabel 2300 1500 3    60   Input ~ 0
@@ -336,7 +336,7 @@ NoConn ~ 5900 2600
 Wire Wire Line
 	1900 4100 5200 4100
 Wire Wire Line
-	2400 1400 8750 1400
+	2300 1400 8750 1400
 Wire Wire Line
 	2300 1100 2300 1500
 Connection ~ 2300 1400
@@ -355,7 +355,7 @@ Wire Wire Line
 Wire Wire Line
 	1500 4300 1500 1100
 Wire Wire Line
-	1300 4400 9150 4400
+	9150 4400 1300 4400
 Wire Wire Line
 	1300 4400 1300 1100
 Wire Wire Line
