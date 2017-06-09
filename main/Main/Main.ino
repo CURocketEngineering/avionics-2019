@@ -9,7 +9,10 @@
 
 // definitions
 
-// must be set before flight from Nation Weather Service altimeter reading
+// set when testing
+#define DEBUG
+
+// must be set before flight from Nation Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 30
 
 // pins
@@ -106,9 +109,11 @@ SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 // sensor functions
 
 void readAccelerometer() {
+#ifndef DEBUG
 	acc.x = ACCEL_GAIN*analogRead(ACCEL_X) + (1.0 - ACCEL_GAIN)*acc.x;
 	acc.y = ACCEL_GAIN*analogRead(ACCEL_Y) + (1.0 - ACCEL_GAIN)*acc.y;
 	acc.z = ACCEL_GAIN*analogRead(ACCEL_Z) + (1.0 - ACCEL_GAIN)*acc.z;
+#endif
 }
 
 void barometerWrite(byte address, byte data) {
@@ -131,6 +136,7 @@ unsigned short barometerRead(byte address) {
 }
 
 void readBarometer() {
+#ifndef DEBUG
 	// start read
 	barometerWrite(0x24, 0x00);
 	delay(10);
@@ -153,6 +159,7 @@ void readBarometer() {
 	bar.dp = p - bar.p;
 	bar.p = BARO_GAIN*p + (1.0 - BARO_GAIN)*bar.p;
 
+#endif
 	// calculate altitude
 	//                                                                 inHg/Pa
 	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50000, 115000) / NWS_ALTI / 0.000295299830714, (1 / 5.25587611))) / 0.0000068756;
@@ -289,7 +296,7 @@ void halt() {
 }
 
 void test() {
-	// Debug 1 Green - run test
+	// Debug 1 Blue - run test
 	debug |= (1 << 15);
 	sendDebug();
 
@@ -583,6 +590,14 @@ void setup() {
 
 	// set initial state
 	state = INIT;
+#ifdef DEBUG
+
+	Serial.begin(9600);
+	Serial.write('D');
+
+	// Debug 2 Blue - debug
+	debug |= (1 << 12);
+#endif
 }
 
 void loop() {
@@ -645,4 +660,24 @@ void loop() {
 		default:
 			state = HALT;
 	}
+#ifdef DEBUG
+
+	if (Serial.available()) {
+		struct {
+			unsigned int acc_x;
+			unsigned int acc_y;
+			unsigned int acc_z;
+			unsigned int bar_p;
+		} data;
+
+		Serial.readBytes((char *)&data, 8);
+
+		acc.x = ACCEL_GAIN*data.acc_x + (1.0 - ACCEL_GAIN)*acc.x;
+		acc.y = ACCEL_GAIN*data.acc_y + (1.0 - ACCEL_GAIN)*acc.y;
+		acc.z = ACCEL_GAIN*data.acc_z + (1.0 - ACCEL_GAIN)*acc.z;
+
+		bar.dp = data.bar_p - bar.p;
+		bar.p = BARO_GAIN*data.bar_p + (1.0 - BARO_GAIN)*bar.p;
+	}
+#endif
 }
