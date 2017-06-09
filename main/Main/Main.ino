@@ -154,8 +154,8 @@ void readBarometer() {
 	bar.p = BARO_GAIN*p + (1.0 - BARO_GAIN)*bar.p;
 
 	// calculate altitude
-	//                                                           inHg/kPa
-	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50, 115) / NWS_ALTI / 0.295299830714, (1 / 5.25587611))) / 0.0000068756;
+	//                                                                 inHg/Pa
+	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50000, 115000) / NWS_ALTI / 0.000295299830714, (1 / 5.25587611))) / 0.0000068756;
 }
 
 // communication functions
