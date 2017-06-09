@@ -103,6 +103,8 @@
 #              when looking for the avr build tools.  This defaults to PATH,
 #              followed by subdirectories in ARDUINODIR.
 #
+# PROGRAMMER   Specify the programmer to use instead of the default.
+#
 # BOARD        Specify a target board type.  Run `make boards` to see available
 #              board types.
 #
@@ -356,8 +358,12 @@ CPPFLAGS += $(addprefix -I , $(LIBRARYDIRS))
 CPPDEPFLAGS = -MMD -MP -MF .dep/$<.dep
 CPPINOFLAGS := -x c++ -include $(ARDUINOCOREDIR)/Arduino.h
 AVRDUDEFLAGS += $(addprefix -C , $(AVRDUDECONF)) -DV
-AVRDUDEFLAGS += -p $(BOARD_BUILD_MCU) -P $(SERIALDEV)
-AVRDUDEFLAGS += -c $(BOARD_UPLOAD_PROTOCOL) -b $(BOARD_UPLOAD_SPEED)
+AVRDUDEFLAGS += -p $(BOARD_BUILD_MCU)
+ifeq "$(PROGRAMMER)" ""
+AVRDUDEFLAGS += -c $(BOARD_UPLOAD_PROTOCOL) -b $(BOARD_UPLOAD_SPEED) -P $(SERIALDEV)
+else
+AVRDUDEFLAGS += -c $(PROGRAMMER)
+endif
 LINKFLAGS += -Os -Wl,--gc-sections -mmcu=$(BOARD_BUILD_MCU)
 
 # figure out which arg to use with stty (for OS X, GNU and busybox stty)
@@ -383,6 +389,7 @@ target: $(TARGET).hex
 
 upload: target
 	@echo "Uploading to board..."
+ifeq "$(PROGRAMMER)" ""
 	@test -n "$(SERIALDEV)" || { \
 		echo "error: SERIALDEV could not be determined automatically." >&2; \
 		exit 1; }
@@ -394,6 +401,7 @@ ifeq "$(BOARD_BOOTLOADER_PATH)" "caterina"
 	sleep 1
 else
 	stty $(STTYFARG) $(SERIALDEV) hupcl
+endif
 endif
 	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$(TARGET).hex:i
 
@@ -425,6 +433,7 @@ size: $(TARGET).elf
 
 bootloader:
 	@echo "Burning bootloader to board..."
+ifeq "$(PROGRAMMER)" ""
 	@test -n "$(SERIALDEV)" || { \
 		echo "error: SERIALDEV could not be determined automatically." >&2; \
 		exit 1; }
@@ -432,6 +441,7 @@ bootloader:
 		echo "*GUESSING* at serial device:" $(SERIALDEV); \
 		echo; }
 	stty $(STTYFARG) $(SERIALDEV) hupcl
+endif
 	$(AVRDUDE) $(AVRDUDEFLAGS) -U lock:w:$(BOARD_BOOTLOADER_UNLOCK):m
 	$(AVRDUDE) $(AVRDUDEFLAGS) -eU lfuse:w:$(BOARD_BOOTLOADER_LFUSES):m
 	$(AVRDUDE) $(AVRDUDEFLAGS) -U hfuse:w:$(BOARD_BOOTLOADER_HFUSES):m

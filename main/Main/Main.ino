@@ -16,26 +16,23 @@
 #define NWS_ALTI 30
 
 // pins
-#define ACCEL_X -1
-#define ACCEL_Y -1
-#define ACCEL_Z -1
+#define ACCEL_X PC0
+#define ACCEL_Y PC1
+#define ACCEL_Z PC2
 
-#define BARO_MOSI -1
-#define BARO_MISO -1
-#define BARO_SCK -1
+#define BARO_MOSI PB1
+#define BARO_MISO PD7
+#define BARO_SCK PB0
 
-#define CTRL -1
+#define CTRL PD6
 
-#define PAYLOAD_SCL -1
-#define PAYLOAD_SDA -1
+#define PANEL_CLOCK PD3
+#define PANEL_DATA PD1
+#define PANEL_LATCH PD2
 
-#define PANEL_CLOCK -1
-#define PANEL_DATA -1
-#define PANEL_LATCH -1
-
-#define TERM_MAIN -1
-#define TERM_DROGUE -1
-#define TERM_IGNITE -1
+#define TERM_MAIN PD4
+#define TERM_DROGUE PD5
+#define TERM_IGNITE PC3
 
 // I²C address of payload
 #define PAYLOAD_ADDR 1
@@ -597,6 +594,7 @@ void setup() {
 
 	// Debug 2 Blue - debug
 	debug |= (1 << 12);
+	sendDebug();
 #endif
 }
 
