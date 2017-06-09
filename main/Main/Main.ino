@@ -9,6 +9,10 @@
 
 // definitions
 
+// must be set before flight from Nation Weather Service altimeter reading
+#define NWS_ALTI 30
+
+// pins
 #define ACCEL_X -1
 #define ACCEL_Y -1
 #define ACCEL_Z -1
@@ -30,22 +34,29 @@
 #define TERM_DROGUE -1
 #define TERM_IGNITE -1
 
+// I²C address of payload
 #define PAYLOAD_ADDR 1
 
-#define TARGET_ALT 10000
+// gain values for sensor filter
+#define ACCEL_GAIN 0.2
+#define BARO_GAIN 0.2
 
+// time to hold pin high for parachute charge
 #define DELAY_PARACHUTE 1000
 
+// time before allowing the rocket to be controlled from ignite to halt
 #define MAX_IGNITE 30000
 
+// accelerometer values to determine changes in state
 #define MIN_ACCEL 514
 #define THRUST_ACCEL 512
 
+// barometer values to determine changes in state
 #define APOGEE_DPRES 1
-
-#define MAIN_ALT 2000
-
 #define MIN_DPRES 1
+
+// altitude to deploy main parachute
+#define MAIN_ALT 2000
 
 // libraries
 
@@ -80,8 +91,10 @@ static struct {
 
 static struct {
 	// 0 -> 50 kPa, 1023 -> 115 kPa
-	unsigned int p, dp, alt;
-	unsigned int i, f;
+	unsigned int p, dp;
+	// ft
+	unsigned int alt;
+	unsigned int gnd;
 } bar;
 
 //                      1  2  3  4  A
@@ -93,9 +106,9 @@ SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 // sensor functions
 
 void readAccelerometer() {
-	acc.x = analogRead(ACCEL_X);
-	acc.y = analogRead(ACCEL_Y);
-	acc.z = analogRead(ACCEL_Z);
+	acc.x = ACCEL_GAIN*analogRead(ACCEL_X) + (1.0 - ACCEL_GAIN)*acc.x;
+	acc.y = ACCEL_GAIN*analogRead(ACCEL_Y) + (1.0 - ACCEL_GAIN)*acc.y;
+	acc.z = ACCEL_GAIN*analogRead(ACCEL_Z) + (1.0 - ACCEL_GAIN)*acc.z;
 }
 
 void barometerWrite(byte address, byte data) {
@@ -138,13 +151,11 @@ void readBarometer() {
 	unsigned int p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
 
 	bar.dp = p - bar.p;
-	bar.p = p;
+	bar.p = BARO_GAIN*p + (1.0 - BARO_GAIN)*bar.p;
 
 	// calculate altitude
-	if (bar.i != 0 && bar.f != 0)
-		bar.alt = map(bar.p, bar.i, bar.f, 0, TARGET_ALT);
-	else
-		bar.alt = 0;
+	//                                                           inHg/kPa
+	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50, 115) / NWS_ALTI / 0.295299830714, (1 / 5.25587611))) / 0.0000068756;
 }
 
 // communication functions
@@ -178,7 +189,7 @@ void sendDebug() {
 }
 
 void updateTelemetry() {
-	static char data[8];
+	static char data[10];
 
 	readAccelerometer();
 	readBarometer();
@@ -191,8 +202,10 @@ void updateTelemetry() {
 	data[5] = acc.z | 0xff;
 	data[6] = bar.p >> 8;
 	data[7] = bar.p | 0xff;
+	data[8] = bar.alt >> 8;
+	data[9] = bar.alt | 0xff;
 
-	sendPayload('u', data, 8);
+	sendPayload('u', data, 10);
 }
 
 // state functions
@@ -323,11 +336,11 @@ void arm() {
 	// update payload state
 	sendPayload('s', "a", 1);
 
-	// sample pressure
-	bar.i = bar.p;
-
 	while (state == ARM) {
 		updateTelemetry();
+
+		// sample ground altitude
+		bar.gnd = bar.alt;
 
 		// check on ctrl term
 		if (digitalRead(CTRL) == LOW) {
@@ -462,9 +475,6 @@ void apogee() {
 	// update payload state
 	sendPayload('s', "d", 1);
 
-	// sample pressure
-	bar.f = bar.p;
-
 	// send parachute signal
 	digitalWrite(TERM_DROGUE, HIGH);
 	delay(DELAY_PARACHUTE);
@@ -483,7 +493,7 @@ void wait() {
 	sendPayload('s', "w", 1);
 
 	// update telemetry during descent
-	while (bar.alt > MAIN_ALT)
+	while (bar.alt > MAIN_ALT + bar.gnd)
 		updateTelemetry();
 
 	// change to eject
@@ -564,9 +574,12 @@ void setup() {
 	// initialize communication with the payload
 	Wire.begin();
 
-	// intialize barometer data
-	bar.i = 0;
-	bar.f = 0;
+	// intialize sensor data
+	acc.x = acc.y = acc.z = 512;
+	bar.p = 808;
+	bar.dp = 0;
+	bar.alt = 0;
+	bar.gnd = 0;
 
 	// set initial state
 	state = INIT;
