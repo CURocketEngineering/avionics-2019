@@ -163,8 +163,15 @@
 #_______________________________________________________________________________
 #
 
-BOARD?=mega
-PROCESSOR?=atmega2560
+CWD := $(shell basename $(shell pwd))
+
+ifeq "$(CWD)" "Main"
+BOARD ?= uno
+PROGRAMMER ?= usbtiny
+else
+BOARD ?= mega
+PROCESSOR ?= atmega2560
+endif
 
 # default arduino software directory, check software exists
 ifndef ARDUINODIR
