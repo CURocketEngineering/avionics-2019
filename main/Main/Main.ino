@@ -10,29 +10,29 @@
 // definitions
 
 // set when testing
-//#define DEBUG
+#define DEBUG
 
 // must be set before flight from Nation Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 30
 
 // pins
-#define ACCEL_X PC0
-#define ACCEL_Y PC1
-#define ACCEL_Z PC2
+#define ACCEL_X 14
+#define ACCEL_Y 15
+#define ACCEL_Z 16
 
-#define BARO_MOSI PB1
-#define BARO_MISO PD7
-#define BARO_SCK PB0
+#define BARO_MOSI 9
+#define BARO_MISO 7
+#define BARO_SCK 8
 
-#define CTRL PD6
+#define CTRL 6
 
-#define PANEL_CLOCK PD3
-#define PANEL_DATA PD1
-#define PANEL_LATCH PD2
+#define PANEL_CLOCK 3
+#define PANEL_DATA 10
+#define PANEL_LATCH 2
 
-#define TERM_MAIN PD4
-#define TERM_DROGUE PD5
-#define TERM_IGNITE PC3
+#define TERM_MAIN 4
+#define TERM_DROGUE 5
+#define TERM_IGNITE 17
 
 // header bytes for EEPROM
 #define EEPROM_HEADER "MainRev3"
@@ -111,6 +111,7 @@ unsigned int debug = 0b0000000000000000;
 
 String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
+int eeprom_debug = eeprom_header.length() + sizeof(eeprom_state);
 
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 
@@ -630,6 +631,9 @@ void setup() {
 	// initialize communication with the payload
 	Wire.begin();
 
+	// define initial state
+	state = INIT;
+
 	// initialize sensor data
 	acc.x = acc.y = acc.z = 512;
 	bar.p = 808;
@@ -664,7 +668,7 @@ void setup() {
 	bar.dp = bar_dp/SENSOR_INIT;
 	bar.alt = bar_alt/SENSOR_INIT;
 
-	// set initial state
+	// check for saved data in EEPROM
 	bool stored = true;
 	for (byte idx = 0; idx < eeprom_header.length(); idx++) {
 		if (EEPROM[idx] != eeprom_header[idx]) {
@@ -673,8 +677,11 @@ void setup() {
 		}
 	}
 
-	if (stored && digitalRead(CTRL))
+	// set state from EEPROM if CTRL is not pressed
+	if (stored && digitalRead(CTRL)) {
 		EEPROM.get(eeprom_state, state);
+		EEPROM.get(eeprom_debug, debug);
+	}
 #ifdef DEBUG
 
 	Serial.begin(9600);
@@ -694,6 +701,7 @@ void loop() {
 		// go to idle from init state
 		case INIT:
 			state = IDLE;
+			debug = 0b0000000000000000;
 			break;
 
 		case IDLE:
