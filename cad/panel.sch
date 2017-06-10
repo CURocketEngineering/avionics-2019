@@ -91,8 +91,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Panel"
-Date "2017-05-09"
-Rev "2"
+Date "2017-06-10"
+Rev "3"
 Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
@@ -133,7 +133,7 @@ F 3 "" H 8050 1800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED_RCBG D1
+L LED_RABG D1
 U 1 1 58BF46E2
 P 3500 1600
 F 0 "D1" H 3500 1970 50  0000 C CNN
@@ -141,10 +141,10 @@ F 1 "Debug1" H 3500 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 3500 1550 50  0001 C CNN
 F 3 "" H 3500 1550 50  0000 C CNN
 	1    3500 1600
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
-L LED_RCBG D2
+L LED_RABG D2
 U 1 1 58BF478B
 P 4400 1600
 F 0 "D2" H 4400 1970 50  0000 C CNN
@@ -152,10 +152,10 @@ F 1 "Debug2" H 4400 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 4400 1550 50  0001 C CNN
 F 3 "" H 4400 1550 50  0000 C CNN
 	1    4400 1600
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
-L LED_RCBG D3
+L LED_RABG D3
 U 1 1 58BF47CA
 P 5300 1600
 F 0 "D3" H 5300 1970 50  0000 C CNN
@@ -163,10 +163,10 @@ F 1 "Debug3" H 5300 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 5300 1550 50  0001 C CNN
 F 3 "" H 5300 1550 50  0000 C CNN
 	1    5300 1600
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
-L LED_RCBG D4
+L LED_RABG D4
 U 1 1 58BF4814
 P 6200 1600
 F 0 "D4" H 6200 1970 50  0000 C CNN
@@ -174,10 +174,10 @@ F 1 "Debug4" H 6200 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 6200 1550 50  0001 C CNN
 F 3 "" H 6200 1550 50  0000 C CNN
 	1    6200 1600
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
-L LED_RCBG D5
+L LED_RABG D5
 U 1 1 58BF485D
 P 7100 1600
 F 0 "D5" H 7100 1970 50  0000 C CNN
@@ -185,7 +185,7 @@ F 1 "Arm" H 7100 1250 50  0000 C CNN
 F 2 "LEDs:LED_D5.0mm-4" H 7100 1550 50  0001 C CNN
 F 3 "" H 7100 1550 50  0000 C CNN
 	1    7100 1600
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
 L 74HC595 U1
@@ -203,11 +203,13 @@ Connection ~ 4400 1400
 Connection ~ 5300 1400
 Connection ~ 6200 1400
 Wire Wire Line
-	7850 1400 7850 1600
+	2300 1300 8750 1300
+Wire Wire Line
+	7850 1300 7850 1600
 Connection ~ 7100 1400
 Wire Wire Line
-	8750 1400 8750 1600
-Connection ~ 7850 1400
+	8750 1300 8750 1600
+Connection ~ 7850 1300
 $Comp
 L 74HC595 U2
 U 1 1 58BF4B51
@@ -288,9 +290,7 @@ Wire Wire Line
 Wire Wire Line
 	5400 2600 5400 2350
 Wire Wire Line
-	5400 2350 6900 2350
-Wire Wire Line
-	6900 2350 6900 1800
+	5400 2350 7300 2350
 Wire Wire Line
 	4200 2600 4700 2600
 Wire Wire Line
@@ -301,7 +301,7 @@ Wire Wire Line
 	8250 4300 8250 1600
 Wire Wire Line
 	9150 1600 9150 4400
-Text GLabel 2500 1100 3    60   Input ~ 0
+Text GLabel 2500 1500 3    60   Input ~ 0
 VCC
 Text GLabel 2300 1500 3    60   Input ~ 0
 GND
@@ -336,11 +336,6 @@ NoConn ~ 5900 2600
 Wire Wire Line
 	1900 4100 5200 4100
 Wire Wire Line
-	2300 1400 8750 1400
-Wire Wire Line
-	2300 1100 2300 1500
-Connection ~ 2300 1400
-Wire Wire Line
 	3300 4000 2100 4000
 Wire Wire Line
 	2100 4000 2100 1100
@@ -361,15 +356,11 @@ Wire Wire Line
 Wire Wire Line
 	1100 1100 1100 4900
 Wire Wire Line
-	1100 4900 7100 4900
-Wire Wire Line
-	7100 4900 7100 1800
+	1100 4900 6900 4900
 Wire Wire Line
 	900  1100 900  5050
 Wire Wire Line
-	900  5050 7300 5050
-Wire Wire Line
-	7300 5050 7300 1800
+	900  5050 7100 5050
 NoConn ~ 5600 2600
 NoConn ~ 5500 2600
 $Comp
@@ -400,7 +391,21 @@ Wire Wire Line
 	8650 1750 8400 1750
 Connection ~ 8650 2050
 Wire Wire Line
-	8650 1750 8650 1400
+	8650 1300 8650 1750
 Connection ~ 9150 2050
-Connection ~ 8650 1400
+Wire Wire Line
+	2300 1100 2300 1500
+Wire Wire Line
+	2500 1100 2500 1500
+Wire Wire Line
+	2500 1400 7100 1400
+Connection ~ 2500 1400
+Connection ~ 2300 1300
+Connection ~ 8650 1300
+Wire Wire Line
+	7300 2350 7300 1800
+Wire Wire Line
+	6900 4900 6900 1800
+Wire Wire Line
+	7100 5050 7100 1800
 $EndSCHEMATC

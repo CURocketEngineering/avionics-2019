@@ -91,8 +91,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Main"
-Date "2017-05-09"
-Rev "2"
+Date "2017-06-10"
+Rev "3"
 Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
@@ -115,7 +115,7 @@ L Crystal Y1
 U 1 1 58B76B11
 P 4050 1100
 F 0 "Y1" H 4050 1250 50  0000 C CNN
-F 1 "Crystal" H 4050 950 50  0000 C CNN
+F 1 "8 MHz Crystal" H 4500 1150 50  0000 C CNN
 F 2 "Crystals:Crystal_HC49-U_Vertical" H 4050 1100 50  0001 C CNN
 F 3 "" H 4050 1100 50  0000 C CNN
 	1    4050 1100
@@ -126,7 +126,7 @@ L C C4
 U 1 1 58B76BBA
 P 3900 850
 F 0 "C4" H 3700 850 50  0000 L CNN
-F 1 "22 pF" H 3650 1000 50  0000 L CNN
+F 1 "22 pF" H 3650 950 50  0000 L CNN
 F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 3938 700 50  0001 C CNN
 F 3 "" H 3900 850 50  0000 C CNN
 	1    3900 850 
@@ -137,7 +137,7 @@ L C C3
 U 1 1 58B76C1D
 P 4200 850
 F 0 "C3" H 4000 850 50  0000 L CNN
-F 1 "22 pF" H 3900 700 50  0000 L CNN
+F 1 "22 pF" H 3900 750 50  0000 L CNN
 F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 4238 700 50  0001 C CNN
 F 3 "" H 4200 850 50  0000 C CNN
 	1    4200 850 
@@ -420,7 +420,6 @@ F 3 "" H 9650 1400 50  0000 L CNN
 $EndComp
 Text GLabel 9050 900  3    60   Input ~ 0
 VBAT
-NoConn ~ 3400 1300
 Connection ~ 8050 2000
 Wire Wire Line
 	9850 2000 9850 1300
@@ -441,17 +440,13 @@ Wire Wire Line
 Wire Wire Line
 	10500 4400 3750 4400
 Wire Wire Line
-	3650 1200 3400 1200
+	3700 1200 3400 1200
 Wire Wire Line
-	3650 4500 3650 1200
+	3700 4500 3700 1200
 Wire Wire Line
-	10500 4500 3650 4500
+	10500 4500 3700 4500
 Wire Wire Line
 	10250 4300 10500 4300
-Wire Wire Line
-	3400 4600 3400 3400
-Wire Wire Line
-	10500 4600 3400 4600
 Wire Wire Line
 	10250 4700 10500 4700
 Wire Wire Line
@@ -549,10 +544,6 @@ Wire Wire Line
 Wire Wire Line
 	3500 4500 1350 4500
 Wire Wire Line
-	3500 3300 3500 4500
-Wire Wire Line
-	3400 3300 3500 3300
-Wire Wire Line
 	1150 1900 1150 6950
 Wire Wire Line
 	2250 5000 2250 6950
@@ -619,15 +610,11 @@ VCC
 Wire Wire Line
 	6000 1700 5600 1700
 Wire Wire Line
-	5600 1700 5600 3100
-Wire Wire Line
-	5600 3100 3400 3100
+	5600 1700 5600 3200
 Wire Wire Line
 	7900 1800 6650 1800
 Wire Wire Line
-	6650 1800 6650 3200
-Wire Wire Line
-	6650 3200 3400 3200
+	6650 1800 6650 3300
 Connection ~ 4200 700 
 Wire Wire Line
 	4200 1000 4200 1800
@@ -666,21 +653,13 @@ Wire Wire Line
 Wire Wire Line
 	5200 2150 3400 2150
 Wire Wire Line
-	3400 2800 4700 2800
-Wire Wire Line
-	4700 2800 4700 5400
+	4700 2900 4700 5400
 Wire Wire Line
 	4700 5400 3550 5400
 Wire Wire Line
-	3400 2900 4600 2900
-Wire Wire Line
-	4600 2900 4600 5300
+	4600 3000 4600 5300
 Wire Wire Line
 	4600 5300 3350 5300
-Wire Wire Line
-	3400 3000 4500 3000
-Wire Wire Line
-	4500 3000 4500 5200
 Wire Wire Line
 	4500 5200 3150 5200
 Wire Wire Line
@@ -693,4 +672,27 @@ Text GLabel 10250 3400 0    60   Input ~ 0
 GND
 Wire Wire Line
 	10250 3400 10500 3400
+Wire Wire Line
+	10500 4600 3650 4600
+Wire Wire Line
+	3650 4600 3650 1300
+Wire Wire Line
+	3650 1300 3400 1300
+Wire Wire Line
+	3500 4500 3500 3400
+Wire Wire Line
+	3500 3400 3400 3400
+Wire Wire Line
+	6650 3300 3400 3300
+Wire Wire Line
+	5600 3200 3400 3200
+Wire Wire Line
+	4500 3100 3400 3100
+Wire Wire Line
+	4500 5200 4500 3100
+Wire Wire Line
+	4600 3000 3400 3000
+Wire Wire Line
+	4700 2900 3400 2900
+NoConn ~ 3400 2800
 $EndSCHEMATC
