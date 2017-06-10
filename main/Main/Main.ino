@@ -10,7 +10,7 @@
 // definitions
 
 // set when testing
-#define DEBUG
+//#define DEBUG
 
 // must be set before flight from Nation Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 30
@@ -34,8 +34,15 @@
 #define TERM_DROGUE PD5
 #define TERM_IGNITE PC3
 
+// header bytes for EEPROM
+#define EEPROM_HEADER "MainRev3"
+
 // I²C address of payload
 #define PAYLOAD_ADDR 1
+
+// initialization of sensor data
+#define SENSOR_INIT 20
+#define SENSOR_DELAY 10
 
 // gain values for sensor filter
 #define ACCEL_GAIN 0.2
@@ -63,12 +70,13 @@
 #include <avr/sleep.h>
 
 #include <SPI.h>
+#include <EEPROM.h>
 #include <SoftSPI.h>
 #include <Wire.h>
 
 // global data
 
-static enum {
+static enum state_e {
 	INIT,
 	IDLE,
 	HALT,
@@ -82,35 +90,51 @@ static enum {
 	EJECT,
 	FALL,
 	RECOVER
-} state;
+} state, state_prev;
 
-static struct {
+static struct acc_s {
 	// 0 -> -200 g, 1023 -> 200 g
 	unsigned int x, y, z;
-} acc;
+} acc, acc_prev;
 
-static struct {
+static struct bar_s {
 	// 0 -> 50 kPa, 1023 -> 115 kPa
 	unsigned int p, dp;
 	// ft
 	unsigned int alt;
 	unsigned int gnd;
-} bar;
+} bar, bar_prev;
 
 //                      1  2  3  4  A
 //                     GBRGBRGBRGBRBXXX
 unsigned int debug = 0b0000000000000000;
 
+String eeprom_header = EEPROM_HEADER;
+int eeprom_state = eeprom_header.length();
+
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 
 // sensor functions
 
-void readAccelerometer() {
-#ifndef DEBUG
-	acc.x = ACCEL_GAIN*analogRead(ACCEL_X) + (1.0 - ACCEL_GAIN)*acc.x;
-	acc.y = ACCEL_GAIN*analogRead(ACCEL_Y) + (1.0 - ACCEL_GAIN)*acc.y;
-	acc.z = ACCEL_GAIN*analogRead(ACCEL_Z) + (1.0 - ACCEL_GAIN)*acc.z;
-#endif
+void readAccelerometer(bool filter, bool debug = false, unsigned int x = 0, unsigned int y = 0, unsigned int z = 0) {
+	acc_prev = acc;
+
+	if (!debug) {
+		acc.x = analogRead(ACCEL_X);
+		acc.y = analogRead(ACCEL_Y);
+		acc.z = analogRead(ACCEL_Z);
+	}
+	else {
+		acc.x = x;
+		acc.y = y;
+		acc.z = z;
+	}
+
+	if (filter) {
+		acc.x = ACCEL_GAIN*acc.x + (1.0 - ACCEL_GAIN)*acc_prev.x;
+		acc.y = ACCEL_GAIN*acc.y + (1.0 - ACCEL_GAIN)*acc_prev.y;
+		acc.z = ACCEL_GAIN*acc.z + (1.0 - ACCEL_GAIN)*acc_prev.z;
+	}
 }
 
 void barometerWrite(byte address, byte data) {
@@ -122,41 +146,53 @@ void barometerWrite(byte address, byte data) {
 }
 
 unsigned short barometerRead(byte address) {
+	static unsigned short value;
+
 	// read mode
 	address |= 0x80;
 
-	unsigned short value = barometer.transfer(address);
+	value = barometer.transfer(address);
 	value <<= 8;
 	value |= barometer.transfer(address + 0x02);
 
 	return value;
 }
 
-void readBarometer() {
-#ifndef DEBUG
+void readBarometer(bool filter, bool debug = false, unsigned int p = 0) {
+	static unsigned short pressure, temperature, a0, b1, b2, c12, c11, c22;
+
 	// start read
 	barometerWrite(0x24, 0x00);
 	delay(10);
 
 	// get pressure and temperature
-	unsigned short pressure = barometerRead(0x00) >> 6;
-	unsigned short temperature = barometerRead(0x04) >> 6;
+	pressure = barometerRead(0x00) >> 6;
+	temperature = barometerRead(0x04) >> 6;
 
 	// get coefficients
-	unsigned short a0 = barometerRead(0x08);
-	unsigned short b1 = barometerRead(0x0c);
-	unsigned short b2 = barometerRead(0x10);
-	unsigned short c12 = barometerRead(0x14);
-	unsigned short c11 = barometerRead(0x18);
-	unsigned short c22 = barometerRead(0x1c);
+	a0 = barometerRead(0x08);
+	b1 = barometerRead(0x0c);
+	b2 = barometerRead(0x10);
+	c12 = barometerRead(0x14);
+	c11 = barometerRead(0x18);
+	c22 = barometerRead(0x1c);
 
 	// calculate compensated pressure
-	unsigned int p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
+	bar_prev = bar;
 
-	bar.dp = p - bar.p;
-	bar.p = BARO_GAIN*p + (1.0 - BARO_GAIN)*bar.p;
+	if (!debug) {
+		bar.p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
+	}
+	else {
+		bar.p = p;
+	}
 
-#endif
+	bar.dp = bar.p - bar_prev.p;
+
+	if (filter) {
+		bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;
+	}
+
 	// calculate altitude
 	//                                                                 inHg/Pa
 	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50000, 115000) / NWS_ALTI / 0.000295299830714, (1 / 5.25587611))) / 0.0000068756;
@@ -183,8 +219,8 @@ char recvPayload() {
 
 void sendDebug() {
 	// send bits
-	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, debug | 0xff);
-	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, debug >> 8);
+	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
+	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, highByte(debug));
 
 	// update output
 	digitalWrite(PANEL_LATCH, LOW);
@@ -195,19 +231,35 @@ void sendDebug() {
 void updateTelemetry() {
 	static char data[10];
 
-	readAccelerometer();
-	readBarometer();
+#ifdef DEBUG
+	if (Serial.available()) {
+		static struct data_s {
+			unsigned int acc_x;
+			unsigned int acc_y;
+			unsigned int acc_z;
+			unsigned int bar_p;
+		} data;
 
-	data[0] = acc.x >> 8;
-	data[1] = acc.x | 0xff;
-	data[2] = acc.y >> 8;
-	data[3] = acc.y | 0xff;
-	data[4] = acc.z >> 8;
-	data[5] = acc.z | 0xff;
-	data[6] = bar.p >> 8;
-	data[7] = bar.p | 0xff;
-	data[8] = bar.alt >> 8;
-	data[9] = bar.alt | 0xff;
+		Serial.readBytes((char *)&data, 8);
+
+		readAccelerometer(true, true, data.acc_x, data.acc_y, data.acc_z);
+		readBarometer(true, true, data.bar_p);
+	}
+#else
+	readAccelerometer(true);
+	readBarometer(true);
+#endif
+
+	data[0] = highByte(acc.x);
+	data[1] = lowByte(acc.x);
+	data[2] = highByte(acc.y);
+	data[3] = lowByte(acc.y);
+	data[4] = highByte(acc.z);
+	data[5] = lowByte(acc.z);
+	data[6] = highByte(bar.p);
+	data[7] = lowByte(bar.p);
+	data[8] = highByte(bar.alt);
+	data[9] = lowByte(bar.alt);
 
 	sendPayload('u', data, 10);
 }
@@ -245,8 +297,8 @@ void idle() {
 			// do nothing if no command
 			case 'h':
 				// Debug 1 Green - idling
-				debug &= ~(1 << 13);
-				debug |= (1 << 14);
+				bitClear(debug, 13);
+				bitSet(debug, 14);
 				break;
 
 			// run test
@@ -262,8 +314,8 @@ void idle() {
 			// no communication with payload
 			case ' ':
 				// Debug 1 Red - no communication with payload
-				debug |= (1 << 13);
-				debug &= ~(1 << 14);
+				bitSet(debug, 13);
+				bitClear(debug, 14);
 				break;
 
 			// halt program in invalid state
@@ -294,7 +346,7 @@ void halt() {
 
 void test() {
 	// Debug 1 Blue - run test
-	debug |= (1 << 15);
+	bitSet(debug, 15);
 	sendDebug();
 
 	// update payload state
@@ -309,13 +361,13 @@ void test() {
 		sendPayload('t', "p", 1);
 
 		// Debug 2 Green - pass test
-		debug |= (1 << 11);
+		bitSet(debug, 11);
 	}
 	else {
 		sendPayload('t', "f", 1);
 
 		// Debug 2 Red - fail test
-		debug |= (1 << 10);
+		bitSet(debug, 10);
 	}
 
 	sendDebug();
@@ -324,9 +376,9 @@ void test() {
 	delay(2000);
 
 	// turn off lights
-	debug &= ~(1 << 10);
-	debug &= ~(1 << 11);
-	debug &= ~(1 << 15);
+	bitClear(debug, 10);
+	bitClear(debug, 11);
+	bitClear(debug, 15);
 	sendDebug();
 
 	state = IDLE;
@@ -334,7 +386,7 @@ void test() {
 
 void arm() {
 	// Arm Blue - armed
-	debug |= (1 << 3);
+	bitSet(debug, 3);
 	sendDebug();
 
 	// update payload state
@@ -375,7 +427,7 @@ void arm() {
 
 			// disarm rocket
 			case 'd':
-				debug &= ~(1 << 3);
+				bitClear(debug, 3);
 				state = IDLE;
 				break;
 
@@ -399,7 +451,7 @@ void arm() {
 
 void ignite() {
 	// Debug 3 Red - igniting
-	debug |= (1 << 7);
+	bitSet(debug, 7);
 	sendDebug();
 
 	// update payload state
@@ -438,7 +490,7 @@ void ignite() {
 
 void burn() {
 	// Debug 3 Yellow - burning
-	debug |= (1 << 8);
+	bitSet(debug, 8);
 	sendDebug();
 
 	// update payload state
@@ -454,9 +506,9 @@ void burn() {
 
 void coast() {
 	// Debug 3 Blue - coasting
-	debug &= ~(1 << 7);
-	debug &= ~(1 << 8);
-	debug |= (1 << 9);
+	bitClear(debug, 7);
+	bitClear(debug, 8);
+	bitSet(debug, 9);
 	sendDebug();
 
 	// update payload state
@@ -472,8 +524,8 @@ void coast() {
 
 void apogee() {
 	// Debug 3 Green - apogee
-	debug &= ~(1 << 9);
-	debug |= (1 << 8);
+	bitClear(debug, 9);
+	bitSet(debug, 8);
 	sendDebug();
 
 	// update payload state
@@ -490,7 +542,7 @@ void apogee() {
 
 void wait() {
 	// Debug 4 Blue - waiting
-	debug |= (1 << 6);
+	bitSet(debug, 6);
 	sendDebug();
 
 	// update payload state
@@ -506,9 +558,9 @@ void wait() {
 
 void eject() {
 	// Debug 4 Yellow - ejecting
-	debug &= ~(1 << 6);
-	debug |= (1 << 4);
-	debug |= (1 << 5);
+	bitClear(debug, 6);
+	bitSet(debug, 4);
+	bitSet(debug, 5);
 	sendDebug();
 
 	// update payload state
@@ -525,7 +577,7 @@ void eject() {
 
 void fall() {
 	// Debug 4 Green - falling
-	debug &= ~(1 << 4);
+	bitClear(debug, 4);
 	sendDebug();
 
 	// update telemetry during descent
@@ -538,7 +590,7 @@ void fall() {
 
 void recover() {
 	// Arm Green - recovery
-	debug &= (1 << 3);
+	bitClear(debug, 3);
 	sendDebug();
 
 	// clear interrupts and put processor to sleep
@@ -578,27 +630,65 @@ void setup() {
 	// initialize communication with the payload
 	Wire.begin();
 
-	// intialize sensor data
+	// initialize sensor data
 	acc.x = acc.y = acc.z = 512;
 	bar.p = 808;
 	bar.dp = 0;
 	bar.alt = 0;
 	bar.gnd = 0;
 
+	// sample filter seed data
+	unsigned long acc_x = 0, acc_y = 0, acc_z = 0;
+	unsigned long bar_p = 0, bar_dp = 0;
+	unsigned long bar_alt = 0;
+
+	for (byte cnt = 0; cnt < SENSOR_INIT; cnt++) {
+		readAccelerometer(false);
+		acc_x += acc.x;
+		acc_y += acc.y;
+		acc_z += acc.z;
+
+		readBarometer(false);
+		bar_p += bar.p;
+		bar_dp += bar.dp;
+		bar_alt += bar.alt;
+
+		delay(SENSOR_DELAY);
+	}
+
+	acc.x = acc_x/SENSOR_INIT;
+	acc.y = acc_y/SENSOR_INIT;
+	acc.z = acc_z/SENSOR_INIT;
+
+	bar.p = bar_p/SENSOR_INIT;
+	bar.dp = bar_dp/SENSOR_INIT;
+	bar.alt = bar_alt/SENSOR_INIT;
+
 	// set initial state
-	state = INIT;
+	bool stored = true;
+	for (byte idx = 0; idx < eeprom_header.length(); idx++) {
+		if (EEPROM[idx] != eeprom_header[idx]) {
+			stored = false;
+			EEPROM[idx] = eeprom_header[idx];
+		}
+	}
+
+	if (stored && digitalRead(CTRL))
+		EEPROM.get(eeprom_state, state);
 #ifdef DEBUG
 
 	Serial.begin(9600);
 	Serial.write('D');
 
 	// Debug 2 Blue - debug
-	debug |= (1 << 12);
+	bitSet(debug, 12);
 	sendDebug();
 #endif
 }
 
 void loop() {
+	state_prev = state;
+
 	// run appropriate state function
 	switch (state) {
 		// go to idle from init state
@@ -658,24 +748,7 @@ void loop() {
 		default:
 			state = HALT;
 	}
-#ifdef DEBUG
 
-	if (Serial.available()) {
-		struct {
-			unsigned int acc_x;
-			unsigned int acc_y;
-			unsigned int acc_z;
-			unsigned int bar_p;
-		} data;
-
-		Serial.readBytes((char *)&data, 8);
-
-		acc.x = ACCEL_GAIN*data.acc_x + (1.0 - ACCEL_GAIN)*acc.x;
-		acc.y = ACCEL_GAIN*data.acc_y + (1.0 - ACCEL_GAIN)*acc.y;
-		acc.z = ACCEL_GAIN*data.acc_z + (1.0 - ACCEL_GAIN)*acc.z;
-
-		bar.dp = data.bar_p - bar.p;
-		bar.p = BARO_GAIN*data.bar_p + (1.0 - BARO_GAIN)*bar.p;
-	}
-#endif
+	if (state != state_prev)
+		EEPROM.put(eeprom_state, state);
 }

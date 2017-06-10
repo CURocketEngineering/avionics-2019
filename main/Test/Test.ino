@@ -111,8 +111,9 @@ void receive(int bytes) {
 
 void setup() {
 	Serial.begin(9600);
-	Serial1.begin(9600);
 
+	Serial1.begin(9600);
+	delay(100);
 	while (!Serial1.available());
 	Serial1.read();
 
