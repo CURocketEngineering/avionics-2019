@@ -166,8 +166,7 @@
 CWD := $(shell basename $(shell pwd))
 
 ifeq "$(CWD)" "Main"
-BOARD ?= pro
-PROCESSOR ?= 8MHzatmega328
+BOARD ?= uno
 PROGRAMMER ?= usbtiny
 else
 BOARD ?= mega
