@@ -91,7 +91,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Main"
-Date "2017-06-10"
+Date "2017-06-11"
 Rev "3"
 Comp "CU Rocket Engineering"
 Comment1 ""
@@ -580,8 +580,6 @@ Wire Wire Line
 Wire Wire Line
 	4150 6350 4150 6950
 Wire Wire Line
-	7450 2900 7450 6450
-Wire Wire Line
 	7300 6350 4150 6350
 Connection ~ 7300 5550
 Wire Wire Line
@@ -695,4 +693,19 @@ Wire Wire Line
 Wire Wire Line
 	4700 2900 3400 2900
 NoConn ~ 3400 2800
+$Comp
+L 1N5819 D1
+U 1 1 593D73EE
+P 7450 4050
+F 0 "D1" H 7450 4150 50  0000 C CNN
+F 1 "1N5819" H 7450 3950 50  0000 C CNN
+F 2 "Diodes_ThroughHole:D_DO-41_SOD81_P10.16mm_Horizontal" H 7450 3875 50  0001 C CNN
+F 3 "" H 7450 4050 50  0001 C CNN
+	1    7450 4050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7450 6450 7450 4200
+Wire Wire Line
+	7450 3900 7450 2900
 $EndSCHEMATC
