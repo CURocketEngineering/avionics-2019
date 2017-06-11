@@ -26,9 +26,9 @@
 
 #define CTRL 6
 
-#define PANEL_CLOCK 3
+#define PANEL_CLOCK 2
 #define PANEL_DATA 10
-#define PANEL_LATCH 2
+#define PANEL_LATCH 3
 
 #define TERM_MAIN 4
 #define TERM_DROGUE 5
@@ -111,7 +111,8 @@ unsigned int debug = 0b0000000000000000;
 
 String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
-int eeprom_debug = eeprom_header.length() + sizeof(eeprom_state);
+int eeprom_debug = eeprom_header.length() + sizeof(state);
+int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 
@@ -220,13 +221,11 @@ char recvPayload() {
 
 void sendDebug() {
 	// send bits
+	digitalWrite(PANEL_LATCH, LOW);
 	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
 	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, highByte(debug));
-
-	// update output
-	digitalWrite(PANEL_LATCH, LOW);
-	delay(10);
 	digitalWrite(PANEL_LATCH, HIGH);
+	delay(50);
 }
 
 void updateTelemetry() {
@@ -458,6 +457,9 @@ void ignite() {
 	// update payload state
 	sendPayload('s', "i", 1);
 
+	// store ground in EEPROM
+	EEPROM.put(eeprom_ground, bar.gnd);
+
 	// send ignition signal
 	digitalWrite(TERM_IGNITE, HIGH);
 
@@ -617,6 +619,8 @@ void setup() {
 	pinMode(PANEL_CLOCK, OUTPUT);
 	pinMode(PANEL_DATA, OUTPUT);
 	pinMode(PANEL_LATCH, OUTPUT);
+	digitalWrite(PANEL_LATCH, HIGH);
+	delay(50);
 
 	pinMode(TERM_MAIN, OUTPUT);
 	digitalWrite(TERM_MAIN, LOW);
@@ -633,6 +637,7 @@ void setup() {
 
 	// define initial state
 	state = INIT;
+	debug = 0b0000000000000000;
 
 	// initialize sensor data
 	acc.x = acc.y = acc.z = 512;
@@ -678,19 +683,38 @@ void setup() {
 	}
 
 	// set state from EEPROM if CTRL is not pressed
-	if (stored && digitalRead(CTRL)) {
+	if (stored && digitalRead(CTRL) == HIGH) {
 		EEPROM.get(eeprom_state, state);
 		EEPROM.get(eeprom_debug, debug);
-	}
-#ifdef DEBUG
+		EEPROM.get(eeprom_ground, bar.gnd);
 
+		bitClear(debug, 12);
+	}
+	else {
+		EEPROM.put(eeprom_state, state);
+		EEPROM.put(eeprom_debug, debug);
+		EEPROM.put(eeprom_ground, bar.gnd);
+	}
+
+	// wait on CTRL press
+	if (digitalRead(CTRL) == HIGH) {
+		// wait for unpress
+		while(digitalRead(CTRL) != HIGH)
+			delay(100);
+
+		// wait for debounce
+		delay(500);
+	}
+
+#ifdef DEBUG
 	Serial.begin(9600);
 	Serial.write('D');
 
 	// Debug 2 Blue - debug
 	bitSet(debug, 12);
-	sendDebug();
+
 #endif
+	sendDebug();
 }
 
 void loop() {
@@ -757,6 +781,8 @@ void loop() {
 			state = HALT;
 	}
 
-	if (state != state_prev)
+	if (state != state_prev) {
 		EEPROM.put(eeprom_state, state);
+		EEPROM.put(eeprom_debug, debug);
+	}
 }
