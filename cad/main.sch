@@ -187,18 +187,18 @@ F 1 "DrogueCtrl" V 8100 1000 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-220_Horizontal" H 8050 1325 50  0001 L CIN
 F 3 "" H 7850 1400 50  0000 L CNN
 	1    7850 1400
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L IRLB8721PBF Q2
 U 1 1 58BC95BC
 P 5950 2700
-F 0 "Q2" V 6200 2750 50  0000 L CNN
-F 1 "ArmCtrl" V 6200 2400 50  0000 L CNN
+F 0 "Q2" V 6200 2900 50  0000 L CNN
+F 1 "ArmCtrl" V 6200 2550 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-220_Horizontal" H 6150 2625 50  0001 L CIN
 F 3 "" H 5950 2700 50  0000 L CNN
 	1    5950 2700
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L IRLB8721PBF Q1
@@ -209,7 +209,7 @@ F 1 "MainCtrl" V 6200 1100 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-220_Horizontal" H 6150 1325 50  0001 L CIN
 F 3 "" H 5950 1400 50  0000 L CNN
 	1    5950 1400
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L Screw_Terminal_1x02 J4
@@ -416,7 +416,7 @@ F 1 "IgniterCtrl" V 9900 1000 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-220_Horizontal" H 9850 1325 50  0001 L CIN
 F 3 "" H 9650 1400 50  0000 L CNN
 	1    9650 1400
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 Text GLabel 9050 900  3    60   Input ~ 0
 VBAT
@@ -428,9 +428,9 @@ Wire Wire Line
 Wire Wire Line
 	9450 1300 8850 1300
 Wire Wire Line
-	9700 2250 9700 1600
+	9600 2250 9600 1600
 Wire Wire Line
-	3400 2250 9700 2250
+	3400 2250 9600 2250
 Wire Wire Line
 	6000 4750 6000 4350
 Wire Wire Line
@@ -494,7 +494,7 @@ Wire Wire Line
 Wire Wire Line
 	3750 5650 6000 5650
 Wire Wire Line
-	7450 2900 6000 2900
+	7450 2900 5900 2900
 Connection ~ 7450 4850
 Wire Wire Line
 	7450 4850 7200 4850
@@ -518,9 +518,9 @@ Wire Wire Line
 Wire Wire Line
 	850  2750 850  3000
 Wire Wire Line
-	7900 1800 7900 1600
+	7800 1800 7800 1600
 Wire Wire Line
-	6000 1700 6000 1600
+	5900 1700 5900 1600
 Wire Wire Line
 	6200 2600 6150 2600
 Connection ~ 850  2800
@@ -585,7 +585,7 @@ Connection ~ 7300 5550
 Wire Wire Line
 	4350 6950 4350 6450
 Wire Wire Line
-	4350 6450 7450 6450
+	7450 6450 4350 6450
 Wire Wire Line
 	6000 5250 7300 5250
 Wire Wire Line
@@ -606,11 +606,11 @@ Connection ~ 7950 3050
 Text GLabel 7950 2750 1    60   Input ~ 0
 VCC
 Wire Wire Line
-	6000 1700 5600 1700
+	5900 1700 5600 1700
 Wire Wire Line
 	5600 1700 5600 3200
 Wire Wire Line
-	7900 1800 6650 1800
+	7800 1800 6650 1800
 Wire Wire Line
 	6650 1800 6650 3300
 Connection ~ 4200 700 
@@ -705,7 +705,7 @@ F 3 "" H 7450 4050 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7450 6450 7450 4200
+	7450 4200 7450 6450
 Wire Wire Line
 	7450 3900 7450 2900
 $EndSCHEMATC
