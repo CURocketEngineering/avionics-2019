@@ -38,7 +38,7 @@
 #define EEPROM_HEADER "MainRev3"
 
 // I²C address of payload
-#define PAYLOAD_ADDR 1
+#define PAYLOAD_ADDR 8
 
 // initialization of sensor data
 #define SENSOR_INIT 20

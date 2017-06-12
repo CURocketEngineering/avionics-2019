@@ -4,6 +4,8 @@
  * Test program to simulate sensor data for the main computer.
  */
 
+#define PAYLOAD_ADDR 8
+
 #include <Wire.h>
 
 #include "flight.h"
@@ -110,6 +112,9 @@ void receive(int bytes) {
 }
 
 void setup() {
+	pinMode(13, OUTPUT);
+	digitalWrite(13, LOW);
+
 	Serial.begin(9600);
 
 	Serial1.begin(9600);
@@ -117,7 +122,9 @@ void setup() {
 	while (!Serial1.available());
 	Serial1.read();
 
-	Wire.begin(1);
+	digitalWrite(13, HIGH);
+
+	Wire.begin(PAYLOAD_ADDR);
 	Wire.onRequest(request);
 	Wire.onReceive(receive);
 
