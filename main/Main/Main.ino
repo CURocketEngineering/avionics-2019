@@ -26,9 +26,9 @@
 
 #define CTRL 6
 
-#define PANEL_CLOCK A1
-#define PANEL_DATA A0
-#define PANEL_LATCH A2
+#define PANEL_CLOCK 15
+#define PANEL_DATA 14
+#define PANEL_LATCH 16
 
 #define TERM_MAIN 4
 #define TERM_DROGUE 5
