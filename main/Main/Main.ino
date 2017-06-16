@@ -16,9 +16,9 @@
 #define NWS_ALTI 30
 
 // pins
-#define ACCEL_X 14
-#define ACCEL_Y 15
-#define ACCEL_Z 16
+#define ACCEL_X 3
+#define ACCEL_Y 2
+#define ACCEL_Z 10
 
 #define BARO_MOSI 9
 #define BARO_MISO 7
@@ -26,13 +26,13 @@
 
 #define CTRL 6
 
-#define PANEL_CLOCK 2
-#define PANEL_DATA 10
-#define PANEL_LATCH 3
+#define PANEL_CLOCK A1
+#define PANEL_DATA A0
+#define PANEL_LATCH A2
 
 #define TERM_MAIN 4
 #define TERM_DROGUE 5
-#define TERM_IGNITE 17
+#define TERM_IGNITE -1
 
 // header bytes for EEPROM
 #define EEPROM_HEADER "MainRev3"
