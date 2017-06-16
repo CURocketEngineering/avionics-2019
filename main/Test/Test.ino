@@ -6,16 +6,27 @@
 
 #define PAYLOAD_ADDR 8
 
+#include <avr/pgmspace.h>
+
 #include <Wire.h>
 
 #include "flight.h"
 
 char cmd;
 char phs;
+
 unsigned long cur;
 unsigned long start;
 
+unsigned long time_cur;
+unsigned long acc_x_cur;
+unsigned long acc_y_cur;
+unsigned long acc_z_cur;
+unsigned long bar_p_cur;
+
 void request() {
+	Serial.print("Sending: ");
+	Serial.println(cmd);
 	Wire.write(cmd);
 	cmd = 'h';
 }
@@ -118,7 +129,7 @@ void setup() {
 	Serial.begin(9600);
 
 	Serial1.begin(9600);
-	delay(100);
+	Serial.println("Waiting on computer...");
 	while (!Serial1.available());
 	Serial1.read();
 
@@ -130,24 +141,39 @@ void setup() {
 
 	cur = 0;
 	start = 0;
+
+	time_cur = pgm_read_word_near(time);
+	acc_x_cur = pgm_read_word_near(acc_x);
+	acc_y_cur = pgm_read_word_near(acc_y);
+	acc_z_cur = pgm_read_word_near(acc_z);
+	bar_p_cur = pgm_read_word_near(bar_p);
 }
 
 void loop() {
 	if (Serial.available())
 		cmd = Serial.read();
 
+	if (time_cur == 65535)
+		return;
+
 	if (phs == 'h' || phs == 't' || phs == 'f' || phs == 'p' || phs == 'a') {
-		Serial1.write(acc_x[cur]);
-		Serial1.write(acc_y[cur]);
-		Serial1.write(acc_z[cur]);
-		Serial1.write(bar_p[cur]);
+		Serial1.write(acc_x_cur);
+		Serial1.write(acc_y_cur);
+		Serial1.write(acc_z_cur);
+		Serial1.write(bar_p_cur);
 	}
 	else if (millis() - start > time[cur]) {
-		Serial1.write(acc_x[cur]);
-		Serial1.write(acc_y[cur]);
-		Serial1.write(acc_z[cur]);
-		Serial1.write(bar_p[cur]);
+		Serial1.write(acc_x_cur);
+		Serial1.write(acc_y_cur);
+		Serial1.write(acc_z_cur);
+		Serial1.write(bar_p_cur);
 
 		cur++;
+
+		time_cur = pgm_read_word_near(time + cur);
+		acc_x_cur = pgm_read_word_near(acc_x + cur);
+		acc_y_cur = pgm_read_word_near(acc_y + cur);
+		acc_z_cur = pgm_read_word_near(acc_z + cur);
+		bar_p_cur = pgm_read_word_near(bar_p + cur);
 	}
 }
