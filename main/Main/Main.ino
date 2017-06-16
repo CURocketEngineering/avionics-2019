@@ -107,7 +107,7 @@ static struct bar_s {
 
 //                      1  2  3  4  A
 //                     GBRGBRGBRGBRBXXX
-unsigned int debug = 0b0000000000000000;
+unsigned int debug = 0b1111111111111111;
 
 String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
@@ -629,6 +629,8 @@ void setup() {
 	pinMode(TERM_IGNITE, OUTPUT);
 	digitalWrite(TERM_IGNITE, LOW);
 
+	sendDebug();
+
 	// initialize communication with the barometer
 	barometer.begin();
 
@@ -694,17 +696,23 @@ void setup() {
 		EEPROM.put(eeprom_state, state);
 		EEPROM.put(eeprom_debug, debug);
 		EEPROM.put(eeprom_ground, bar.gnd);
+
+		bitSet(debug, 15);
 	}
 
+	sendDebug();
+
 	// wait on CTRL press
-	if (digitalRead(CTRL) == HIGH) {
+	if (digitalRead(CTRL) == LOW) {
 		// wait for unpress
-		while(digitalRead(CTRL) != HIGH)
+		while (digitalRead(CTRL) != HIGH)
 			delay(100);
 
 		// wait for debounce
 		delay(500);
 	}
+
+	bitClear(debug, 15);
 
 #ifdef DEBUG
 	Serial.begin(9600);
