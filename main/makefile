@@ -170,8 +170,14 @@ BOARD ?= pro
 PROCESSOR ?= 16MHzatmega328
 PROGRAMMER ?= usbtiny
 else
+ifeq "$(CWD)" "LEDs"
+BOARD ?= pro
+PROCESSOR ?= 16MHzatmega328
+PROGRAMMER ?= usbtiny
+else
 BOARD ?= mega
 PROCESSOR ?= atmega2560
+endif
 endif
 
 # default arduino software directory, check software exists
