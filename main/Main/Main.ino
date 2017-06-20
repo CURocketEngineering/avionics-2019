@@ -631,6 +631,10 @@ void setup() {
 
 	sendDebug();
 
+#ifdef DEBUG
+	delay(2000);
+
+#endif
 	// initialize communication with the barometer
 	barometer.begin();
 
