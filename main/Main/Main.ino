@@ -13,7 +13,7 @@
 #define DEBUG
 
 // must be set before flight from Nation Weather Service altimeter reading (http://www.weather.gov/)
-#define NWS_ALTI 30
+#define NWS_ALTI 30.20
 
 // pins
 #define ACCEL_X 3
