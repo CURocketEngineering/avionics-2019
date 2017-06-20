@@ -1,0 +1,19 @@
+Source,/home/foster/src/avionics/cad/panel.sch
+Kicad Rev,Eeschema 4.0.6
+Generated Date,Tue 20 Jun 2017 08:55:21 AM MDT
+
+Title,Panel
+Company,CU Rocket Engineering
+Revision,3
+Date Issue,2017-06-10
+
+Reference,Value,Library,Library Ref
+J1,PanelTerm,conn,Screw_Terminal_1x09
+D1,Debug1,device,LED_RABG
+D2,Debug2,device,LED_RABG
+D3,Debug3,device,LED_RABG
+D4,Debug4,device,LED_RABG
+D5,Arm,device,LED_RABG
+U1,74HC595,74xx,74HC595
+U2,74HC595,74xx,74HC595
+SW1,Safety,switches,SW_DPDT_x2

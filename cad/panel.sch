@@ -91,8 +91,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Panel"
-Date "2017-06-10"
-Rev "3"
+Date "2017-06-20"
+Rev "4"
 Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
@@ -109,28 +109,6 @@ F 2 "Connect:DB9FC" H 1700 175 50  0001 C CNN
 F 3 "" H 1675 1400 50  0001 C CNN
 	1    1700 900 
 	0    1    1    0   
-$EndComp
-$Comp
-L SW_Push SW2
-U 1 1 58BF4463
-P 8950 1600
-F 0 "SW2" H 9000 1700 50  0000 L CNN
-F 1 "ResetButton" H 8950 1540 50  0000 C CNN
-F 2 "Buttons_Switches_ThroughHole:SW_PUSH-12mm" H 8950 1800 50  0001 C CNN
-F 3 "" H 8950 1800 50  0000 C CNN
-	1    8950 1600
-	1    0    0    -1  
-$EndComp
-$Comp
-L SW_Push SW1
-U 1 1 58BF46A2
-P 8050 1600
-F 0 "SW1" H 8100 1700 50  0000 L CNN
-F 1 "ReadyButton" H 8050 1540 50  0000 C CNN
-F 2 "Buttons_Switches_ThroughHole:SW_PUSH-12mm" H 8050 1800 50  0001 C CNN
-F 3 "" H 8050 1800 50  0000 C CNN
-	1    8050 1600
-	1    0    0    -1  
 $EndComp
 $Comp
 L LED_RABG D1
@@ -198,18 +176,6 @@ F 3 "" H 3750 3300 50  0000 C CNN
 	1    3750 3300
 	0    -1   -1   0   
 $EndComp
-Connection ~ 3500 1400
-Connection ~ 4400 1400
-Connection ~ 5300 1400
-Connection ~ 6200 1400
-Wire Wire Line
-	2300 1300 8750 1300
-Wire Wire Line
-	7850 1300 7850 1600
-Connection ~ 7100 1400
-Wire Wire Line
-	8750 1300 8750 1600
-Connection ~ 7850 1300
 $Comp
 L 74HC595 U2
 U 1 1 58BF4B51
@@ -221,6 +187,49 @@ F 3 "" H 5450 3300 50  0000 C CNN
 	1    5450 3300
 	0    -1   -1   0   
 $EndComp
+Text GLabel 2500 1500 3    60   Input ~ 0
+VCC
+Text GLabel 2300 1500 3    60   Input ~ 0
+GND
+Text GLabel 3600 4550 3    60   Input ~ 0
+VCC
+Text GLabel 5300 4550 3    60   Input ~ 0
+VCC
+Text GLabel 3900 4550 3    60   Input ~ 0
+GND
+Text GLabel 5600 4550 3    60   Input ~ 0
+GND
+NoConn ~ 5700 2600
+NoConn ~ 5900 2600
+NoConn ~ 5600 2600
+NoConn ~ 5500 2600
+$Comp
+L SW_DPDT_x2 SW1
+U 1 1 594938CF
+P 8050 1650
+F 0 "SW1" H 8050 1820 50  0000 C CNN
+F 1 "Safety" H 8050 1450 50  0000 C CNN
+F 2 "Buttons_Switches_ThroughHole:SW_CuK_JS202011CQN_DPDT_Straight" H 8050 1650 50  0001 C CNN
+F 3 "" H 8050 1650 50  0001 C CNN
+	1    8050 1650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L SW_DPDT_x2 SW1
+U 2 1 59493CE7
+P 8550 1650
+F 0 "SW1" H 8550 1500 50  0000 C CNN
+F 1 "Safety" H 8550 1850 50  0000 C CNN
+F 2 "Buttons_Switches_ThroughHole:SW_CuK_JS202011CQN_DPDT_Straight" H 8550 1650 50  0001 C CNN
+F 3 "" H 8550 1650 50  0001 C CNN
+	2    8550 1650
+	0    1    1    0   
+$EndComp
+Connection ~ 3500 1400
+Connection ~ 4400 1400
+Connection ~ 5300 1400
+Connection ~ 6200 1400
+Connection ~ 7100 1400
 Wire Wire Line
 	3300 2600 3300 1800
 Wire Wire Line
@@ -298,14 +307,6 @@ Wire Wire Line
 Wire Wire Line
 	4700 4000 5000 4000
 Wire Wire Line
-	8250 4300 8250 1600
-Wire Wire Line
-	9150 1600 9150 4400
-Text GLabel 2500 1500 3    60   Input ~ 0
-VCC
-Text GLabel 2300 1500 3    60   Input ~ 0
-GND
-Wire Wire Line
 	3500 4100 3500 4000
 Wire Wire Line
 	5200 4100 5200 4000
@@ -319,20 +320,10 @@ Wire Wire Line
 	3600 4000 3600 4550
 Wire Wire Line
 	5300 4550 5300 4000
-Text GLabel 3600 4550 3    60   Input ~ 0
-VCC
-Text GLabel 5300 4550 3    60   Input ~ 0
-VCC
-Text GLabel 3900 4550 3    60   Input ~ 0
-GND
-Text GLabel 5600 4550 3    60   Input ~ 0
-GND
 Wire Wire Line
 	3900 4550 3900 4000
 Wire Wire Line
 	5600 4550 5600 4000
-NoConn ~ 5700 2600
-NoConn ~ 5900 2600
 Wire Wire Line
 	1900 4100 5200 4100
 Wire Wire Line
@@ -346,66 +337,43 @@ Wire Wire Line
 Wire Wire Line
 	1700 4150 1700 1100
 Wire Wire Line
-	8250 4300 1500 4300
-Wire Wire Line
-	1500 4300 1500 1100
-Wire Wire Line
-	9150 4400 1300 4400
-Wire Wire Line
-	1300 4400 1300 1100
-Wire Wire Line
-	1100 1100 1100 4900
-Wire Wire Line
-	1100 4900 6900 4900
-Wire Wire Line
-	900  1100 900  5050
-Wire Wire Line
-	900  5050 7100 5050
-NoConn ~ 5600 2600
-NoConn ~ 5500 2600
-$Comp
-L C C1
-U 1 1 59136225
-P 8650 1900
-F 0 "C1" H 8675 2000 50  0000 L CNN
-F 1 "0.1 µF" H 8600 1650 50  0000 L CNN
-F 2 "Capacitors_ThroughHole:C_Disc_D3.8mm_W2.6mm_P2.50mm" H 8688 1750 50  0001 C CNN
-F 3 "" H 8650 1900 50  0000 C CNN
-	1    8650 1900
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R1
-U 1 1 59136B3F
-P 8400 1900
-F 0 "R1" V 8480 1900 50  0000 C CNN
-F 1 "100 kΩ" H 8400 1650 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 8330 1900 50  0001 C CNN
-F 3 "" H 8400 1900 50  0000 C CNN
-	1    8400 1900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8400 2050 9150 2050
-Wire Wire Line
-	8650 1750 8400 1750
-Connection ~ 8650 2050
-Wire Wire Line
-	8650 1300 8650 1750
-Connection ~ 9150 2050
-Wire Wire Line
 	2300 1100 2300 1500
 Wire Wire Line
 	2500 1100 2500 1500
-Wire Wire Line
-	2500 1400 7100 1400
 Connection ~ 2500 1400
-Connection ~ 2300 1300
-Connection ~ 8650 1300
 Wire Wire Line
 	7300 2350 7300 1800
 Wire Wire Line
-	6900 4900 6900 1800
+	1500 4300 1500 1100
 Wire Wire Line
-	7100 5050 7100 1800
+	1500 4300 8050 4300
+Wire Wire Line
+	7100 1800 7100 1900
+Wire Wire Line
+	6900 1800 6900 1950
+Wire Wire Line
+	2500 1400 8150 1400
+Wire Wire Line
+	2300 1300 8550 1300
+Connection ~ 2300 1300
+Wire Wire Line
+	8550 1300 8550 1450
+Wire Wire Line
+	8150 1400 8150 1450
+Wire Wire Line
+	7950 1450 7950 1300
+Connection ~ 7950 1300
+Wire Wire Line
+	8050 4300 8050 1850
+Wire Wire Line
+	7100 1900 8450 1900
+Wire Wire Line
+	8450 1900 8450 1850
+Wire Wire Line
+	6900 1950 8650 1950
+Wire Wire Line
+	8650 1950 8650 1850
+NoConn ~ 1300 1100
+NoConn ~ 1100 1100
+NoConn ~ 900  1100
 $EndSCHEMATC

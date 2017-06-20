@@ -91,8 +91,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Main"
-Date "2017-06-11"
-Rev "3"
+Date "2017-06-20"
+Rev "4"
 Comp "CU Rocket Engineering"
 Comment1 ""
 Comment2 ""
@@ -126,7 +126,7 @@ L C C4
 U 1 1 58B76BBA
 P 3900 850
 F 0 "C4" H 3700 850 50  0000 L CNN
-F 1 "22 pF" H 3650 950 50  0000 L CNN
+F 1 "27 pF" H 3650 950 50  0000 L CNN
 F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 3938 700 50  0001 C CNN
 F 3 "" H 3900 850 50  0000 C CNN
 	1    3900 850 
@@ -137,7 +137,7 @@ L C C3
 U 1 1 58B76C1D
 P 4200 850
 F 0 "C3" H 4000 850 50  0000 L CNN
-F 1 "22 pF" H 3900 750 50  0000 L CNN
+F 1 "27 pF" H 3900 750 50  0000 L CNN
 F 2 "Capacitors_ThroughHole:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 4238 700 50  0001 C CNN
 F 3 "" H 4200 850 50  0000 C CNN
 	1    4200 850 
@@ -259,7 +259,7 @@ $Comp
 L Screw_Terminal_1x09 J3
 U 1 1 58BC9C47
 P 3550 7150
-F 0 "J3" H 3550 8000 50  0000 C TNN
+F 0 "J3" H 3550 8100 50  0000 C TNN
 F 1 "PanelTerm" V 3400 7150 50  0000 C TNN
 F 2 "Connect:DB9FC" H 3550 6725 50  0001 C CNN
 F 3 "" H 3525 7350 50  0001 C CNN
@@ -297,28 +297,6 @@ Text GLabel 4500 700  2    60   Input ~ 0
 GND
 Text GLabel 6200 2600 2    60   Input ~ 0
 GND
-$Comp
-L 74LS00 U2
-U 1 1 58BF5C73
-P 6600 4850
-F 0 "U2" H 6600 4900 50  0000 C CNN
-F 1 "74LS00" H 6600 4750 50  0000 C CNN
-F 2 "Housings_DIP:DIP-14_W7.62mm" H 6600 4850 50  0001 C CNN
-F 3 "" H 6600 4850 50  0000 C CNN
-	1    6600 4850
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS00 U2
-U 2 1 58BF5EB8
-P 6600 5550
-F 0 "U2" H 6600 5600 50  0000 C CNN
-F 1 "74LS00" H 6600 5450 50  0000 C CNN
-F 2 "Housings_DIP:DIP-14_W7.62mm" H 6600 5550 50  0001 C CNN
-F 3 "" H 6600 5550 50  0000 C CNN
-	2    6600 5550
-	1    0    0    -1  
-$EndComp
 NoConn ~ 1500 1700
 $Comp
 L DIL6 P1
@@ -335,33 +313,6 @@ Text GLabel 10050 2750 0    60   Input ~ 0
 VCC
 Text GLabel 10750 2650 2    60   Input ~ 0
 GND
-NoConn ~ 3400 2700
-$Comp
-L R R2
-U 1 1 58BFECD1
-P 6000 5800
-F 0 "R2" V 6080 5800 50  0000 C CNN
-F 1 "10 kΩ" V 5850 5800 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5930 5800 50  0001 C CNN
-F 3 "" H 6000 5800 50  0000 C CNN
-	1    6000 5800
-	1    0    0    -1  
-$EndComp
-Text GLabel 6000 5950 3    60   Input ~ 0
-VCC
-$Comp
-L R R1
-U 1 1 58BFEF65
-P 6000 4200
-F 0 "R1" V 6080 4200 50  0000 C CNN
-F 1 "10 kΩ" V 5850 4200 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5930 4200 50  0001 C CNN
-F 3 "" H 6000 4200 50  0000 C CNN
-	1    6000 4200
-	1    0    0    -1  
-$EndComp
-Text GLabel 6000 4050 1    60   Input ~ 0
-VCC
 $Comp
 L CONN_01X06 P2
 U 1 1 58C02A3F
@@ -432,8 +383,6 @@ Wire Wire Line
 Wire Wire Line
 	3400 2250 9600 2250
 Wire Wire Line
-	6000 4750 6000 4350
-Wire Wire Line
 	3750 1100 3400 1100
 Wire Wire Line
 	3750 4400 3750 1100
@@ -456,11 +405,7 @@ Wire Wire Line
 Wire Wire Line
 	5200 3700 10500 3700
 Wire Wire Line
-	5500 2550 3400 2550
-Wire Wire Line
-	5500 3050 5500 2550
-Wire Wire Line
-	5500 3050 11100 3050
+	4800 3050 11100 3050
 Wire Wire Line
 	11100 3050 11100 2750
 Wire Wire Line
@@ -487,27 +432,6 @@ Wire Wire Line
 	10050 2850 8300 2850
 Wire Wire Line
 	11100 2750 10750 2750
-Wire Wire Line
-	5650 4750 6000 4750
-Wire Wire Line
-	5650 4750 5650 5550
-Wire Wire Line
-	3750 5650 6000 5650
-Wire Wire Line
-	7450 2900 5900 2900
-Connection ~ 7450 4850
-Wire Wire Line
-	7450 4850 7200 4850
-Wire Wire Line
-	6000 4950 6000 5250
-Wire Wire Line
-	7300 5550 7200 5550
-Wire Wire Line
-	7450 5100 5850 5100
-Wire Wire Line
-	5850 5100 5850 5450
-Wire Wire Line
-	5850 5450 6000 5450
 Connection ~ 1150 3400
 Wire Wire Line
 	1300 1400 1300 1100
@@ -577,20 +501,6 @@ Wire Wire Line
 	3350 5300 3350 6950
 Wire Wire Line
 	3550 5400 3550 6950
-Wire Wire Line
-	4150 6350 4150 6950
-Wire Wire Line
-	7300 6350 4150 6350
-Connection ~ 7300 5550
-Wire Wire Line
-	4350 6950 4350 6450
-Wire Wire Line
-	7450 6450 4350 6450
-Wire Wire Line
-	6000 5250 7300 5250
-Wire Wire Line
-	7300 5250 7300 6350
-Connection ~ 7450 5100
 $Comp
 L R R3
 U 1 1 59124B82
@@ -662,10 +572,6 @@ Wire Wire Line
 	4500 5200 3150 5200
 Wire Wire Line
 	3750 6950 3750 5650
-Wire Wire Line
-	3950 6950 3950 5550
-Wire Wire Line
-	3950 5550 5650 5550
 Text GLabel 10250 3400 0    60   Input ~ 0
 GND
 Wire Wire Line
@@ -692,20 +598,52 @@ Wire Wire Line
 	4600 3000 3400 3000
 Wire Wire Line
 	4700 2900 3400 2900
-NoConn ~ 3400 2800
 $Comp
-L 1N5819 D1
-U 1 1 593D73EE
-P 7450 4050
-F 0 "D1" H 7450 4150 50  0000 C CNN
-F 1 "1N5819" H 7450 3950 50  0000 C CNN
-F 2 "Diodes_ThroughHole:D_DO-41_SOD81_P10.16mm_Horizontal" H 7450 3875 50  0001 C CNN
-F 3 "" H 7450 4050 50  0001 C CNN
-	1    7450 4050
-	0    1    1    0   
+L CONN_01X02 J8
+U 1 1 593F4A48
+P 9700 4000
+F 0 "J8" H 9700 4150 50  0000 C CNN
+F 1 "DebugHeader" V 9800 4000 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm" H 9700 4000 50  0001 C CNN
+F 3 "" H 9700 4000 50  0001 C CNN
+	1    9700 4000
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7450 4200 7450 6450
+	3400 2700 4350 2700
 Wire Wire Line
-	7450 3900 7450 2900
+	4350 2700 4350 3950
+Wire Wire Line
+	4350 3950 9500 3950
+Wire Wire Line
+	3400 2800 4250 2800
+Wire Wire Line
+	4250 2800 4250 4050
+Wire Wire Line
+	4250 4050 9500 4050
+Wire Wire Line
+	5900 2900 5900 5650
+Wire Wire Line
+	5900 5650 3750 5650
+Wire Wire Line
+	3400 2550 4800 2550
+Wire Wire Line
+	4800 2550 4800 3050
+NoConn ~ 4350 6950
+NoConn ~ 4150 6950
+NoConn ~ 3950 6950
+$Comp
+L SW_Push SW1
+U 1 1 59495DD8
+P 7400 2850
+F 0 "SW1" H 7350 3050 50  0000 L CNN
+F 1 "Reset" H 7400 2750 50  0000 C CNN
+F 2 "Buttons_Switches_ThroughHole:SW_Tactile_SPST_Angled_PTS645Vx39-2LFS" H 7400 3050 50  0001 C CNN
+F 3 "" H 7400 3050 50  0001 C CNN
+	1    7400 2850
+	0    1    1    0   
+$EndComp
+Text GLabel 7400 2650 1    60   Input ~ 0
+GND
+Connection ~ 7400 3050
 $EndSCHEMATC
