@@ -3,7 +3,7 @@
   (general
     (links 64)
     (no_connects 64)
-    (area 73.584999 43.104999 170.655001 114.844001)
+    (area 73.584999 43.104999 151.205001 113.740001)
     (thickness 1.6)
     (drawings 17)
     (tracks 0)
@@ -1302,7 +1302,7 @@
     )
   )
 
-  (module Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm (layer F.Cu) (tedit 59493405) (tstamp 593F2DDB)
+  (module Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm (layer F.Cu) (tedit 5949674D) (tstamp 593F2DDB)
     (at 143.51 47.625 270)
     (descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
     (tags "Through hole pin header THT 1x02 2.54mm single row")
@@ -1310,7 +1310,7 @@
     (fp_text reference J8 (at 0 5.08 270) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value DebugHeader (at 2.54 -0.635 360) (layer F.SilkS)
+    (fp_text value Radio (at 0.127 -4.318 360) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -1.27 -1.27) (end -1.27 3.81) (layer F.Fab) (width 0.1))

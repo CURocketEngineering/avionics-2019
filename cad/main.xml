@@ -2,14 +2,14 @@
 <export version="D">
   <design>
     <source>/home/foster/src/avionics/cad/main.sch</source>
-    <date>Tue 20 Jun 2017 09:58:05 AM MDT</date>
+    <date>Tue 20 Jun 2017 12:19:37 PM MDT</date>
     <tool>Eeschema 4.0.6</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>Main</title>
         <company>CU Rocket Engineering</company>
-        <rev>3</rev>
-        <date>2017-06-11</date>
+        <rev>4</rev>
+        <date>2017-06-20</date>
         <source>main.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -174,7 +174,7 @@
       <tstamp>59124B82</tstamp>
     </comp>
     <comp ref="J8">
-      <value>DebugHeader</value>
+      <value>Radio</value>
       <footprint>Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm</footprint>
       <libsource lib="conn" part="CONN_01X02"/>
       <sheetpath names="/" tstamps="/"/>

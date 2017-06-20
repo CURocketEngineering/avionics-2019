@@ -1,11 +1,11 @@
 Source,/home/foster/src/avionics/cad/main.sch
 Kicad Rev,Eeschema 4.0.6
-Generated Date,Tue 20 Jun 2017 09:58:05 AM MDT
+Generated Date,Tue 20 Jun 2017 12:19:37 PM MDT
 
 Title,Main
 Company,CU Rocket Engineering
-Revision,3
-Date Issue,2017-06-11
+Revision,4
+Date Issue,2017-06-20
 
 Reference,Value,Library,Library Ref
 IC1,AVR,main-cache,ATMEGA328P-P
@@ -30,5 +30,5 @@ P3,Barometer,conn,CONN_01X07
 J6,IgniterTerm,conn,Screw_Terminal_1x02
 Q4,IgniterCtrl,transistors,IRLB8721PBF
 R3,10 kΩ,device,R
-J8,DebugHeader,conn,CONN_01X02
+J8,Radio,conn,CONN_01X02
 SW1,Reset,switches,SW_Push
