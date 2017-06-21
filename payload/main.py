@@ -2,7 +2,7 @@
 import json
 
 import box
-import time
+import timing
 
 import radio
 
@@ -25,7 +25,7 @@ try:
     barometer.init(NWS_ALT)
 
     box.init()
-    time.init()
+    timing.init()
 
     delay = 1/FREQ
 
@@ -40,11 +40,11 @@ try:
         datum = gps.read()
         mag = magnetometer.read()
 
-        data = json.dumps({'time': time.get_millis(), 'payload': {'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon, 'alt': datum.alt}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}, 'main': {'state': main.state, 'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}}}})
+        data = json.dumps({'time': timing.get_millis(), 'payload': {'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon, 'alt': datum.alt}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}, 'main': {'state': main.state, 'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}}}})
 
         box.write(data)
         radio.send(data)
 
-        time.delay(delay)
+        timing.delay(delay)
 except KeyboardInterrupt:
     pass
