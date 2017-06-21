@@ -29,4 +29,3 @@ void loop() {
   if (xbee.available())
     Serial.write(xbee.read());
 }
-
