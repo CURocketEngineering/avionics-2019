@@ -134,11 +134,11 @@ void setup() {
 	Serial1.read();
 	Serial.println("Computer connected.");
 
-	Serial.println("Waiting on I2C...");
+	Serial.println("Waiting on I²C...");
 	Wire.begin(PAYLOAD_ADDR);
 	Wire.onRequest(request);
 	Wire.onReceive(receive);
-	Serial.println("I2C connected.");
+	Serial.println("I²C connected.");
 
 	digitalWrite(13, HIGH);
 

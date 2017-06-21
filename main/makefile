@@ -437,10 +437,10 @@ boards:
 			-e 's/(.{12}) *(.*)/\1 \2/'
 
 monitor:
-	stty raw $(SERIALBAUD) igncr hupcl -echo -F $(SERIALDEV)
+	stty raw $(SERIALBAUD) igncr iutf8 hupcl -echo $(STTYFARG) $(SERIALDEV)
 	@echo Connected. Press Ctrl+D to close the monitor.
 	@sh -c 'trap "kill %1" INT; cat -v $(SERIALDEV) & cat >$(SERIALDEV); kill %1'
-	stty sane -F $(SERIALDEV)
+	stty sane $(STTYFARG) $(SERIALDEV)
 
 size: $(TARGET).elf
 	echo && $(AVRSIZE) --format=avr --mcu=$(BOARD_BUILD_MCU) $(TARGET).elf
