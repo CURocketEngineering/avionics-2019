@@ -19,13 +19,14 @@ def poll():
         sentence = ''
 
         char = uart.readStr(1)
-        while char != '\n':
+        while char != '\r':
             sentence += char
+        uart.readStr(1)
 
         data = sentence.split(',')
 
         if data[0] != '$GPRMC':
-            continue
+            raise Exception('ERROR: Configure GPS')
 
         lat = data[3]
         if data[4] == 'S':
