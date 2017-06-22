@@ -8,7 +8,7 @@ class Datum(object):
 uart = mraa.Uart('/dev/ttyMFD1')
 uart.setBaudRate(9600)
 
-datum = None
+datum = Datum(0, 0)
 
 def poll():
     global datum

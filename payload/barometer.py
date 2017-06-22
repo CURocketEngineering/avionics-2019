@@ -2,7 +2,7 @@ import timing
 
 import mraa
 
-i2c = mraa.I2c(0)
+#i2c = mraa.I2c(0)
 
 class BarometerReading(object):
     def __init__(self, p, alt):
