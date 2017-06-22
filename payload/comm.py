@@ -1,3 +1,5 @@
+import struct
+
 import mraa
 
 uart = mraa.Uart(2)
@@ -23,9 +25,9 @@ def poll():
         if data_type == 's':
             state = uart.readStr(1)
         elif data_type == 'u':
-            data = [0,0,0,0,0,0,0,0,0,0]
+            data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
             uart.read(data)
-            telemetry = Telemetry((data[0] << 8) | data[1], (data[2] << 8) | data[3], (data[4] << 8) | data[5], (data[6] << 8) | data[7], (data[8] << 8) | data[9])
+            telemetry = Telemetry(*struct.unpack('fffff', bytes(data)))
 
 def get_state():
     return state
