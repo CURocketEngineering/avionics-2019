@@ -13,7 +13,7 @@
 #define DEBUG
 
 // National Weather Service altimeter reading (http://www.weather.gov/)
-#define NWS_ALTI 29.92
+#define NWS_ALTI 1013.25
 
 // pins
 #define ACCEL_X 3
