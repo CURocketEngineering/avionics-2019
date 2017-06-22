@@ -21,25 +21,21 @@ def poll():
         char = uart.readStr(1)
         while char != '\r':
             sentence += char
-
-            if len(sentence) > 80:
-                break
+            char = uart.readStr(1)
         uart.readStr(1)
 
         data = sentence.split(',')
 
-        if data[0] != '$GPRMC':
-            raise Exception('ERROR: Configure GPS')
+        if data[0] == '$GPRMC':
+            lat = float(data[3])
+            if data[4] == 'S':
+                lat = -lat
 
-        lat = data[3]
-        if data[4] == 'S':
-            lat = -lat
+            lon = float(data[5])
+            if data[6] == 'W':
+                lon = -lon
 
-        lon = data[5]
-        if data[6] == 'W':
-            lon = -lon
-
-        datum = Datum(lat, lon)
+            datum = Datum(lat, lon)
 
 def get_datum():
     return datum
