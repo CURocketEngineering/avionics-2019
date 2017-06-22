@@ -4,7 +4,7 @@ def init(filename):
 
     box.write(b'[')
 
-def deinit(filename):
+def deinit():
     box.write(b']')
     output.close()
 
