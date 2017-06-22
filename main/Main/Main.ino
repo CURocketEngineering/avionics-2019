@@ -12,8 +12,8 @@
 // set when testing
 #define DEBUG
 
-// must be set before flight from Nation Weather Service altimeter reading (http://www.weather.gov/)
-#define NWS_ALTI 30.20
+// National Weather Service altimeter reading (http://www.weather.gov/)
+#define NWS_ALTI 29.92
 
 // pins
 #define ACCEL_X 3
@@ -26,6 +26,9 @@
 
 #define CTRL 6
 
+#define PAYLOAD_RX 18
+#define PAYLOAD_TX 19
+
 #define PANEL_CLOCK 15
 #define PANEL_DATA 14
 #define PANEL_LATCH 16
@@ -36,9 +39,6 @@
 
 // header bytes for EEPROM
 #define EEPROM_HEADER "MainRev3"
-
-// I²C address of payload
-#define PAYLOAD_ADDR 8
 
 // initialization of sensor data
 #define SENSOR_INIT 20
@@ -72,6 +72,7 @@
 #include <SPI.h>
 #include <EEPROM.h>
 #include <SoftSPI.h>
+#include <SoftwareSerial.h>
 #include <Wire.h>
 
 // global data
@@ -115,6 +116,8 @@ int eeprom_debug = eeprom_header.length() + sizeof(state);
 int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
+
+SofwareSerial payload(PAYLOAD_RX, PAYLOAD_TX);
 
 // sensor functions
 
@@ -204,17 +207,14 @@ void readBarometer(bool filter, bool debug = false, unsigned int p = 0) {
 
 void sendPayload(char type, const char * data, unsigned int len) {
 	// transmit message type and data
-	Wire.beginTransmission(PAYLOAD_ADDR);
-	Wire.write(type);
-	Wire.write(data, len);
-	Wire.endTransmission();
+	payload.write(type)
+	payload.write(data)
 }
 
 char recvPayload() {
 	// request and read a single char from payload
-	Wire.requestFrom(PAYLOAD_ADDR, 1);
-	if (Wire.available())
-		return Wire.read();
+	if (payload.available())
+		return payload.read();
 	else
 		return ' ';
 }
