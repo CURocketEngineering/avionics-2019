@@ -15,5 +15,5 @@ def read():
     else:
         return None
 
-def write(data):
+def send(data):
     uart.writeStr(data + '\n')
