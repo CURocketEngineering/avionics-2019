@@ -16,27 +16,27 @@
 #define NWS_ALTI 1013.25
 
 // pins
-#define ACCEL_X 3
-#define ACCEL_Y 2
-#define ACCEL_Z 10
+#define ACCEL_X 14
+#define ACCEL_Y 15
+#define ACCEL_Z 16
 
 #define BARO_ADDR 0x77
 
-#define CTRL 6
+#define CTRL 7
 
-#define DEBUG_RX 7
-#define DEBUG_TX 8
+#define DEBUG_RX 8
+#define DEBUG_TX 9
 
-#define PANEL_CLOCK 15
-#define PANEL_DATA 14
-#define PANEL_LATCH 16
+#define PANEL_CLOCK 3
+#define PANEL_DATA 4
+#define PANEL_LATCH 2
 
-#define TERM_MAIN 4
-#define TERM_DROGUE 5
+#define TERM_MAIN 5
+#define TERM_DROGUE 6
 #define TERM_IGNITE -1
 
 // header bytes for EEPROM
-#define EEPROM_HEADER "MainRev3"
+#define EEPROM_HEADER "MainRev4"
 
 // initialization of sensor data
 #define SENSOR_INIT 20

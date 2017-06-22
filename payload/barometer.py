@@ -75,6 +75,6 @@ def read():
     z = (pu - x) / y
     P = (p2*pow(z, 2)) + (p1*z) + p0
 
-    alt = 44330.0*(1 - pow(P/1013.25, 1/5.255))
+    alt = 145440.0*(1 - pow(P/1013.25, 1/5.255))
 
     return BarometerReading(P, alt)

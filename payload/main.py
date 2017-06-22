@@ -51,7 +51,7 @@ try:
 
         sound.sample()
 
-        data = json.dumps({'time': timing.get_millis(), 'payload': {'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon, 'alt': datum.alt}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}, 'main': {'state': main.state, 'sensor': {'acc': {'x': telemetry.acc_x, 'y': telemetry.acc_y, 'z': telemetry.acc_z}, 'bar': {'p': telemetry.bar_p, 'alt': telemetry.bar_alt}}}})
+        data = json.dumps({'time': timing.get_millis(), 'payload': {'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}, 'main': {'state': main.state, 'sensor': {'acc': {'x': telemetry.acc_x, 'y': telemetry.acc_y, 'z': telemetry.acc_z}, 'bar': {'p': telemetry.bar_p, 'alt': telemetry.bar_alt}}}})
 
         box.write(data)
         radio.send(data)

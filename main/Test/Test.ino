@@ -36,10 +36,9 @@ void setup() {
 	Serial.begin(9600);
 
 	Serial1.begin(9600);
-	Serial.println("Waiting on computer...");
 	while (!Serial1.available());
 	Serial1.read();
-	Serial.println("Computer connected.");
+	Serial.println("INIT");
 
 	Serial2.begin(9600);
 
@@ -85,84 +84,43 @@ void loop() {
 	if (Serial2.available()) {
 		unsigned long time = millis();
 
-		Serial.print("[");
-		Serial.print(time / 1000);
-		Serial.print(".");
-		Serial.print(time % 1000);
-		Serial.print("] ");
-
 		char type = Serial2.read();
 
 		if (type == 's') {
-			Serial.print("Phase: ");
-
-			String phase = "Err";
-
 			phs = Serial2.read();
-
-			switch (phs) {
-				case 'h':
-					phase = "Idle";
-					break;
-				case 't':
-					phase = "Test";
-					break;
-				case 'p':
-					phase = "Test Pass";
-					break;
-				case 'f':
-					phase = "Test Fail";
-					break;
-				case 'a':
-					phase = "Arm";
-					break;
-				case 'i':
-					phase = "Ignite";
-					start = millis();
-					break;
-
-				case 'b':
-					phase = "Burn";
-					break;
-
-				case 'c':
-					phase = "Coast";
-					break;
-
-				case 'd':
-					phase = "Apogee";
-					break;
-
-				case 'w':
-					phase = "Wait";
-					break;
-
-				case 'e':
-					phase = "Eject";
-					break;
-			}
-
-			Serial.println(phase);
 		}
 		else if (type == 'u') {
-			Serial.print("Data: ");
-
 			for (byte idx = 0; idx < 20; idx++)
-				data.bytes[idx] = Serial.read();
-
-			Serial.print(data.values[0]);
-			Serial.print(",");
-			Serial.print(data.values[1]);
-			Serial.print(",");
-			Serial.print(data.values[2]);
-			Serial.print(",");
-			Serial.print(data.values[3]);
-			Serial.print(",");
-			Serial.println(data.values[4]);
+				data.bytes[idx] = Serial2.read();
 		}
 		else {
-			Serial.print("Unknown Type: ");
-			Serial.println(type);
+			phs = '%';
 		}
+
+		Serial.print("{'time': ");
+		Serial.print(time)
+		Serial.print(", 'payload': {'sensor': {'acc': {'x': ");
+		Serial.print(stream_data.values[0]);
+		Serial.print(", 'y': ");
+		Serial.print(stream_data.values[1]);
+		Serial.print(", 'z': ");
+		Serial.print(stream_data.values[2]);
+		Serial.print("}, 'bar': {'p': ");
+		Serial.print(stream_data.values[3]);
+		Serial.print(", 'alt': ");
+		Serial.print(data.values[4]);
+		Serial.print("}, 'gps': {'lat': 0.00, 'lon': 0.00}, 'mag': {'x': 0.00, 'y': 0.00, 'z': 0.00}}}, 'main': {'state': ");
+		Serial.print(phs);
+		Serial.print(", 'sensor': {'acc': {'x': ");
+		Serial.print(data.values[0]);
+		Serial.print(", 'y': ");
+		Serial.print(data.values[1]);
+		Serial.print(", 'z': ");
+		Serial.print(data.values[2]);
+		Serial.print("}, 'bar': {'p': ");
+		Serial.print(data.values[3]);
+		Serial.print(", 'alt': ");
+		Serial.print(data.values[4]);
+		Serial.print("}}}}");
 	}
 }

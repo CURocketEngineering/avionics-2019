@@ -11,7 +11,7 @@ def deinit():
 
 def read():
     if uart.dataAvailable():
-        return uart.readStr(1)
+        return uart.readStr(2)[0]
     else:
         return None
 
