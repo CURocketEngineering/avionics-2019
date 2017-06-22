@@ -22,7 +22,7 @@ try:
 
     barometer.init()
     magnetometer.init()
-    sound.init()
+    sound.init('sound.pcm')
 
     box.init('blackbox.json')
     timing.init()
