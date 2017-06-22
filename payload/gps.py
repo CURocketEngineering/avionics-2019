@@ -21,6 +21,9 @@ def poll():
         char = uart.readStr(1)
         while char != '\r':
             sentence += char
+
+            if len(sentence) > 80:
+                break
         uart.readStr(1)
 
         data = sentence.split(',')
