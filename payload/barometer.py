@@ -4,7 +4,7 @@ import mraa
 
 i2c = mraa.I2c(0)
 
-class BarometerReading:
+class BarometerReading(object):
     def __init__(self, p, alt):
         self.p = p
         self.alt = alt

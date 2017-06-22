@@ -4,7 +4,7 @@ aio_x = mraa.Aio(0)
 aio_y = mraa.Aio(1)
 aio_z = mraa.Aio(2)
 
-class AccelerometerReading:
+class AccelerometerReading(object):
     def __init__(self, x, y, z):
         self.x = x
         self.y = y

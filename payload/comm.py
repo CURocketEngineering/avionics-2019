@@ -5,7 +5,7 @@ import mraa
 uart = mraa.Uart(2)
 uart.setBaudRate(9600)
 
-class Telemetry:
+class Telemetry(object):
     def __init__(self, acc_x, acc_y, acc_z, bar_p, bar_alt):
         self.acc_x = acc_x
         self.acc_y = acc_y

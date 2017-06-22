@@ -2,7 +2,7 @@ import mraa
 
 i2c = mraa.I2c(0)
 
-class MagnetometerReading:
+class MagnetometerReading(object):
     def __init__(self, x, y, z):
         self.x = x
         self.y = y

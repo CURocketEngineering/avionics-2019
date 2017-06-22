@@ -9,3 +9,4 @@
 *.o
 .dep/
 .lib/
+__pycache__
