@@ -5,8 +5,11 @@
 *.dsn
 *.bin
 *.ses
+
 *.hex
 *.o
 .dep/
 .lib/
+
+*.pyc
 __pycache__
