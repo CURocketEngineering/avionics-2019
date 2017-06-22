@@ -3,7 +3,7 @@ def init(filename):
 
     output = open(filename, 'ab', 0)
 
-    box.write(b'[')
+    output.write(b'[')
 
 def deinit():
     output.write(b']')
