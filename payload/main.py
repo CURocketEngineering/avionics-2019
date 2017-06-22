@@ -1,4 +1,6 @@
 #!/usr/bin/env python2
+from __future__ import print_function
+
 import json
 
 import box
@@ -53,6 +55,8 @@ try:
 
         box.write(data)
         radio.send(data)
+
+        print(data)
 
         timing.delay(delay)
 except KeyboardInterrupt:

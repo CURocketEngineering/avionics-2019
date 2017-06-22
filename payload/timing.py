@@ -3,6 +3,8 @@ import time
 start = 0
 
 def init():
+    global start
+
     start = time.time()
 
 def get_millis():
