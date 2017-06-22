@@ -18,8 +18,6 @@ import sound
 FREQ = 10 # Hz
 
 try:
-    comm.init()
-    gps.init()
     radio.init()
 
     barometer.init()
