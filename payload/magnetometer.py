@@ -1,3 +1,5 @@
+from __future__ import division, print_function
+
 import mraa
 
 #i2c = mraa.I2c(0)
