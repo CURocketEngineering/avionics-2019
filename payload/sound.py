@@ -2,9 +2,9 @@ import struct
 
 import mraa
 
-signal = mraa.Aio(3)
+#signal = mraa.Aio(3)
 
-signal.setBit(12)
+#signal.setBit(12)
 
 output = None
 
@@ -15,4 +15,6 @@ def deinit():
     output.close()
 
 def sample():
+    return
+
     output.write(struct.pack('H', signal.read()))
