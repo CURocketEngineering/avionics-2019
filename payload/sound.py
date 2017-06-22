@@ -6,9 +6,9 @@ import mraa
 
 #signal.setBit(12)
 
-output = None
-
 def init(filename):
+    global output
+
     output = open(filename, 'wb')
 
 def deinit():
