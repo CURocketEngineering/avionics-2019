@@ -73,7 +73,6 @@
 #include <EEPROM.h>
 #include <SoftSPI.h>
 #include <SoftwareSerial.h>
-#include <Wire.h>
 
 // global data
 
@@ -117,7 +116,7 @@ int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 
 SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
 
-SofwareSerial payload(PAYLOAD_RX, PAYLOAD_TX);
+SoftwareSerial payload(PAYLOAD_RX, PAYLOAD_TX);
 
 // sensor functions
 
@@ -207,8 +206,8 @@ void readBarometer(bool filter, bool debug = false, unsigned int p = 0) {
 
 void sendPayload(char type, const char * data, unsigned int len) {
 	// transmit message type and data
-	payload.write(type)
-	payload.write(data)
+	payload.write(type);
+	payload.write(data);
 }
 
 char recvPayload() {
@@ -639,7 +638,7 @@ void setup() {
 	barometer.begin();
 
 	// initialize communication with the payload
-	Wire.begin();
+	payload.begin(9600);
 
 	// define initial state
 	state = INIT;
