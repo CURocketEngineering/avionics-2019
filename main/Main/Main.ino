@@ -99,7 +99,8 @@ static struct acc_s {
 
 static struct bar_s {
 	// 0 -> 50 kPa, 1023 -> 115 kPa
-	unsigned int p, dp;
+	unsigned int p;
+	int dp;
 	// ft
 	unsigned int alt;
 	unsigned int gnd;

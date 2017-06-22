@@ -4,8 +4,6 @@ import json
 import comm
 
 try:
-    comm.init()
-
     while True:
         pass
 except KeyboardInterrupt:

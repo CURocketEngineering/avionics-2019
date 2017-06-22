@@ -437,7 +437,7 @@ boards:
 			-e 's/(.{12}) *(.*)/\1 \2/'
 
 monitor:
-	stty raw $(SERIALBAUD) igncr iutf8 hupcl -echo $(STTYFARG) $(SERIALDEV)
+	stty raw $(SERIALBAUD) igncr hupcl -echo $(STTYFARG) $(SERIALDEV)
 	@echo Connected. Press Ctrl+D to close the monitor.
 	@sh -c 'trap "kill %1" INT; cat -v $(SERIALDEV) & cat >$(SERIALDEV); kill %1'
 	stty sane $(STTYFARG) $(SERIALDEV)
