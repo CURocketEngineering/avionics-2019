@@ -5,7 +5,7 @@ class Datum(object):
         self.lat = lat
         self.lon = lon
 
-uart = mraa.Uart(1)
+uart = mraa.Uart('/dev/ttyMFD1')
 uart.setBaudRate(9600)
 
 def poll():
