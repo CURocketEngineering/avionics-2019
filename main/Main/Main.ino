@@ -20,14 +20,12 @@
 #define ACCEL_Y 2
 #define ACCEL_Z 10
 
-#define BARO_MOSI 9
-#define BARO_MISO 7
-#define BARO_SCK 8
+#define BARO_ADDR 0x77
 
 #define CTRL 6
 
-#define PAYLOAD_RX 18
-#define PAYLOAD_TX 19
+#define DEBUG_RX 7
+#define DEBUG_TX 8
 
 #define PANEL_CLOCK 15
 #define PANEL_DATA 14
@@ -55,8 +53,8 @@
 #define MAX_IGNITE 30000
 
 // accelerometer values to determine changes in state
-#define MIN_ACCEL 514
-#define THRUST_ACCEL 512
+#define MIN_ACCEL 2
+#define THRUST_ACCEL 0
 
 // barometer values to determine changes in state
 #define APOGEE_DPRES 1
@@ -69,42 +67,48 @@
 
 #include <avr/sleep.h>
 
-#include <SPI.h>
 #include <EEPROM.h>
-#include <SoftSPI.h>
+#include <Wire.h>
+#ifdef DEBUG
 #include <SoftwareSerial.h>
+#endif
 
 // global data
 
 static enum state_e {
-	INIT,
-	IDLE,
-	HALT,
-	TEST,
-	ARM,
-	IGNITE,
-	BURN,
-	COAST,
-	APOGEE,
-	WAIT,
-	EJECT,
-	FALL,
-	RECOVER
+    INIT,
+    IDLE,
+    HALT,
+    TEST,
+    ARM,
+    IGNITE,
+    BURN,
+    COAST,
+    APOGEE,
+    WAIT,
+    EJECT,
+    FALL,
+    RECOVER
 } state, state_prev;
 
 static struct acc_s {
-	// 0 -> -200 g, 1023 -> 200 g
-	unsigned int x, y, z;
+    // g
+    float x, y, z;
 } acc, acc_prev;
 
 static struct bar_s {
-	// 0 -> 50 kPa, 1023 -> 115 kPa
-	unsigned int p;
-	int dp;
-	// ft
-	unsigned int alt;
-	unsigned int gnd;
+    // mb
+    float p, dp;
+    // ft
+    float alt, gnd;
 } bar, bar_prev;
+
+static struct bar_init_s {
+    // coefficients
+    short AC1, AC2, AC3, VB1, VB2, MB, MC, MD;
+    unsigned short AC4, AC5, AC6;
+    float c3, c4, b1, c5, c6, mc, md, x0, x1, x2, y0, y1, y2, p0, p1, p2;
+} bar_init;
 
 //                      1  2  3  4  A
 //                     GBRGBRGBRGBRBXXX
@@ -115,686 +119,744 @@ int eeprom_state = eeprom_header.length();
 int eeprom_debug = eeprom_header.length() + sizeof(state);
 int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 
-SoftSPI barometer(BARO_MOSI, BARO_MISO, BARO_SCK);
+#ifdef DEBUG
+SoftwareSerial stream(DEBUG_RX, DEBUG_TX);
 
-SoftwareSerial payload(PAYLOAD_RX, PAYLOAD_TX);
-
+#endif
 // sensor functions
 
-void readAccelerometer(bool filter, bool debug = false, unsigned int x = 0, unsigned int y = 0, unsigned int z = 0) {
-	acc_prev = acc;
+void readAccelerometer(bool filter, bool debug = false, float x = 0, float y = 0, float z = 0) {
+    acc_prev = acc;
 
-	if (!debug) {
-		acc.x = analogRead(ACCEL_X);
-		acc.y = analogRead(ACCEL_Y);
-		acc.z = analogRead(ACCEL_Z);
-	}
-	else {
-		acc.x = x;
-		acc.y = y;
-		acc.z = z;
-	}
+    if (!debug) {
+	acc.x = analogRead(ACCEL_X)*400.0/1023.0 - 200.0;
+	acc.y = analogRead(ACCEL_Y)*400.0/1023.0 - 200.0;
+	acc.z = analogRead(ACCEL_Z)*400.0/1023.0 - 200.0;
+    }
+    else {
+	acc.x = x;
+	acc.y = y;
+	acc.z = z;
+    }
 
-	if (filter) {
-		acc.x = ACCEL_GAIN*acc.x + (1.0 - ACCEL_GAIN)*acc_prev.x;
-		acc.y = ACCEL_GAIN*acc.y + (1.0 - ACCEL_GAIN)*acc_prev.y;
-		acc.z = ACCEL_GAIN*acc.z + (1.0 - ACCEL_GAIN)*acc_prev.z;
-	}
+    if (filter) {
+	acc.x = ACCEL_GAIN*acc.x + (1.0 - ACCEL_GAIN)*acc_prev.x;
+	acc.y = ACCEL_GAIN*acc.y + (1.0 - ACCEL_GAIN)*acc_prev.y;
+	acc.z = ACCEL_GAIN*acc.z + (1.0 - ACCEL_GAIN)*acc_prev.z;
+    }
+
+    acc_prev = acc;
 }
 
 void barometerWrite(byte address, byte data) {
-	// write mode
-	address &= 0x7F;
-
-	barometer.transfer(address);
-	barometer.transfer(data);
+    Wire.beginTransmission(BARO_ADDR);
+    Wire.write(address);
+    Wire.write(data);
+    Wire.endTransmission();
 }
 
-unsigned short barometerRead(byte address) {
-	static unsigned short value;
+void barometerRead(byte address, byte * buf, unsigned short len) {
+    Wire.beginTransmission(BARO_ADDR);
+    Wire.write(address);
+    Wire.endTransmission();
 
-	// read mode
-	address |= 0x80;
+    Wire.requestFrom(BARO_ADDR, len);
 
-	value = barometer.transfer(address);
-	value <<= 8;
-	value |= barometer.transfer(address + 0x02);
-
-	return value;
+    for(byte idx = 0; idx < len; idx++) {
+	buf[idx] = Wire.read();
+    }
 }
 
-void readBarometer(bool filter, bool debug = false, unsigned int p = 0) {
-	static unsigned short pressure, temperature, a0, b1, b2, c12, c11, c22;
+short barometerReadInt(byte address) {
+    static byte buf[2];
 
-	// start read
-	barometerWrite(0x24, 0x00);
-	delay(10);
+    barometerRead(address, buf, 2);
 
-	// get pressure and temperature
-	pressure = barometerRead(0x00) >> 6;
-	temperature = barometerRead(0x04) >> 6;
+    return ((short)buf[0] << 8) | buf[1];
+}
 
-	// get coefficients
-	a0 = barometerRead(0x08);
-	b1 = barometerRead(0x0c);
-	b2 = barometerRead(0x10);
-	c12 = barometerRead(0x14);
-	c11 = barometerRead(0x18);
-	c22 = barometerRead(0x1c);
+unsigned short barometerReadUInt(byte address) {
+    static byte buf[2];
 
-	// calculate compensated pressure
-	bar_prev = bar;
+    barometerRead(address, buf, 2);
 
-	if (!debug) {
-		bar.p = a0 + (b1 + c11*pressure + c12*temperature)*pressure + (b2 + c22*temperature)*temperature;
-	}
-	else {
-		bar.p = p;
-	}
+    return ((unsigned short)buf[0] << 8) | buf[1];
+}
 
-	bar.dp = bar.p - bar_prev.p;
+void initBarometer() {
+    // datasheet magic
+    bar_init.AC1 = barometerReadInt(0xAA);
+    bar_init.AC2 = barometerReadInt(0xAC);
+    bar_init.AC3 = barometerReadInt(0xAE);
+    bar_init.AC4 = barometerReadUInt(0xB0);
+    bar_init.AC5 = barometerReadUInt(0xB2);
+    bar_init.AC6 = barometerReadUInt(0xB4);
+    bar_init.VB1 = barometerReadInt(0xB6);
+    bar_init.VB2 = barometerReadInt(0xB8);
+    bar_init.MB = barometerReadInt(0xBA);
+    bar_init.MC = barometerReadInt(0xBC);
+    bar_init.MD = barometerReadInt(0xBE);
 
-	if (filter) {
-		bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;
-	}
+    bar_init.c3 = 160.0*pow(2, -15)*bar_init.AC3;
+    bar_init.c4 = pow(10, -3) * pow(2, -15)*bar_init.AC4;
+    bar_init.b1 = pow(160, 2)*pow(2, -30)*bar_init.VB1;
+    bar_init.c5 = (pow(2, -15)/160)*bar_init.AC5;
+    bar_init.c6 = bar_init.AC6;
+    bar_init.mc = (pow(2, 11)/pow(160, 2))*bar_init.MC;
+    bar_init.md = bar_init.MD/160.0;
+    bar_init.x0 = bar_init.AC1;
+    bar_init.x1 = 160.0*pow(2, -13)*bar_init.AC2;
+    bar_init.x2 = pow(160, 2)*pow(2, -25)*bar_init.VB2;
+    bar_init.y0 = bar_init.c4*pow(2, 15);
+    bar_init.y1 = bar_init.c4*bar_init.c3;
+    bar_init.y2 = bar_init.c4*bar_init.b1;
+    bar_init.p0 = (3791.0 - 8.0)/1600.0;
+    bar_init.p1 = 1.0 - 7357.0*pow(2, -20);
+    bar_init.p2 = 3038.0*100.0*pow(2, -36);
+}
 
-	// calculate altitude
-	//                                                                 inHg/Pa
-	bar.alt = (1 - pow(map(bar.p, 0, 1023, 50000, 115000) / NWS_ALTI / 0.000295299830714, (1 / 5.25587611))) / 0.0000068756;
+void readBarometer(bool filter, bool debug = false, float p = 0) {
+    static byte buf[3];
+    static float tu, a, pu, s, x, y, z;
+
+    static float pressure, temperature;
+
+    // start temperature reading
+    barometerWrite(0xF4, 0x2E);
+
+    // wait on reading
+    delay(10);
+
+    // retrieve reading
+    barometerRead(0xF6, buf, 2);
+
+    // calculate temperature
+    tu = (buf[0]*256.0) + buf[1];
+    a = bar_init.c5*(tu - bar_init.c6);
+    temperature = a + (bar_init.mc/(a + bar_init.md));
+
+    // start pressure reading
+    barometerWrite(0xF4, 0xF4);
+
+    // wait on reading
+    delay(30);
+
+    // retrieve reading
+    barometerRead(0xF6, buf, 3);
+
+    // calculate pressure
+    pu = (buf[0]*256.0) + buf[1] + (buf[2]/256.0);
+    s = temperature - 25.0;
+    x = (bar_init.x2*pow(s, 2)) + (bar_init.x1*s) + bar_init.x0;
+    y = (bar_init.y2*pow(s, 2)) + (bar_init.y1*s) + bar_init.y0;
+    z = (pu - x) / y;
+    pressure = (bar_init.p2*pow(z, 2)) + (bar_init.p1*z) + bar_init.p0;
+
+    // calculate compensated pressure
+    bar_prev = bar;
+
+    if (!debug) {
+	bar.p = pressure;
+    }
+    else {
+	bar.p = p;
+    }
+
+    if (filter) {
+	bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;
+    }
+
+    bar.dp = bar.p - bar_prev.p;
+
+    // calculate altitude
+    bar.alt = 145440.0*(1 - pow(pressure/NWS_ALTI, 1/5.255));
 }
 
 // communication functions
 
 void sendPayload(char type, const char * data, unsigned int len) {
-	// transmit message type and data
-	payload.write(type);
-	payload.write(data);
+    // transmit message type and data
+    Serial.write(type);
+    Serial.write(data);
 }
 
 char recvPayload() {
-	// request and read a single char from payload
-	if (payload.available())
-		return payload.read();
-	else
-		return ' ';
+    // request and read a single char from payload
+    if (Serial.available())
+	return Serial.read();
+    else
+	return ' ';
 }
 
 void sendDebug() {
-	// send bits
-	digitalWrite(PANEL_LATCH, LOW);
-	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
-	shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, highByte(debug));
-	digitalWrite(PANEL_LATCH, HIGH);
-	delay(50);
+    // send bits
+    digitalWrite(PANEL_LATCH, LOW);
+    shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
+    shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, highByte(debug));
+    digitalWrite(PANEL_LATCH, HIGH);
+    delay(50);
 }
 
 void updateTelemetry() {
-	static char data[10];
+    static union data_u {
+	char bytes[20];
+	float values[5];
+    } data;
 
 #ifdef DEBUG
-	if (Serial.available()) {
-		static struct data_s {
-			unsigned int acc_x;
-			unsigned int acc_y;
-			unsigned int acc_z;
-			unsigned int bar_p;
-		} data;
+    if (stream.available()) {
+	static union stream_data_u {
+	    char bytes[16];
+	    float values[4];
+	} stream_data;
 
-		Serial.readBytes((char *)&data, 8);
+	stream.readBytes(stream_data.bytes, 16);
 
-		readAccelerometer(true, true, data.acc_x, data.acc_y, data.acc_z);
-		readBarometer(true, true, data.bar_p);
-	}
+	readAccelerometer(true, true, stream_data.values[0], stream_data.values[1], stream_data.values[2]);
+	readBarometer(true, true, stream_data.values[3]);
+    }
 #else
-	readAccelerometer(true);
-	readBarometer(true);
+    readAccelerometer(true);
+    readBarometer(true);
 #endif
 
-	data[0] = highByte(acc.x);
-	data[1] = lowByte(acc.x);
-	data[2] = highByte(acc.y);
-	data[3] = lowByte(acc.y);
-	data[4] = highByte(acc.z);
-	data[5] = lowByte(acc.z);
-	data[6] = highByte(bar.p);
-	data[7] = lowByte(bar.p);
-	data[8] = highByte(bar.alt);
-	data[9] = lowByte(bar.alt);
+    data.values[0] = acc.x;
+    data.values[1] = acc.y;
+    data.values[2] = acc.z;
+    data.values[3] = bar.p;
+    data.values[4] = bar.alt;
 
-	sendPayload('u', data, 10);
+    sendPayload('u', data.bytes, 16);
 }
 
 // state functions
 
 void idle() {
-	// update payload state
-	sendPayload('s', "h", 1);
+    // update payload state
+    sendPayload('s', "h", 1);
 
-	while (state == IDLE) {
-		// check on ctrl term
-		if (digitalRead(CTRL) == LOW) {
-			// wait for debounce and intent
-			delay(500);
+    while (state == IDLE) {
+	// check on ctrl term
+	if (digitalRead(CTRL) == LOW) {
+	    // wait for debounce and intent
+	    delay(500);
 
-			// if button still held
-			if (digitalRead(CTRL) == LOW) {
-				state = ARM;
+	    // if button still held
+	    if (digitalRead(CTRL) == LOW) {
+		state = ARM;
 
-				// wait for unpress
-				while (digitalRead(CTRL) != HIGH)
-					delay(100);
+		// wait for unpress
+		while (digitalRead(CTRL) != HIGH)
+		    delay(100);
 
-				// wait for debounce
-				delay(500);
+		// wait for debounce
+		delay(500);
 
-				// skip remainder of processing
-				break;
-			}
-		}
-
-		// receive payload command
-		switch (recvPayload()) {
-			// do nothing if no command
-			case 'h':
-				// Debug 1 Green - idling
-				bitClear(debug, 13);
-				bitSet(debug, 14);
-				break;
-
-			// run test
-			case 't':
-				state = TEST;
-				break;
-
-			// arm rocket
-			case 'a':
-				state = ARM;
-				break;
-
-			// no communication with payload
-			case ' ':
-				// Debug 1 Red - no communication with payload
-				bitSet(debug, 13);
-				bitClear(debug, 14);
-				break;
-
-			// halt program in invalid state
-			default:
-				state = HALT;
-		}
-
-		// update debug lights
-		sendDebug();
+		// skip remainder of processing
+		break;
+	    }
 	}
+
+	// receive payload command
+	switch (recvPayload()) {
+	    // do nothing if no command
+	    case 'h':
+		// Debug 1 Green - idling
+		bitClear(debug, 13);
+		bitSet(debug, 14);
+		break;
+
+		// run test
+	    case 't':
+		state = TEST;
+		break;
+
+		// arm rocket
+	    case 'a':
+		state = ARM;
+		break;
+
+		// no communication with payload
+	    case ' ':
+		// Debug 1 Red - no communication with payload
+		bitSet(debug, 13);
+		bitClear(debug, 14);
+		break;
+
+		// halt program in invalid state
+	    default:
+		state = HALT;
+	}
+
+	// update debug lights
+	sendDebug();
+    }
 }
 
 void halt() {
-	// Debug 1-4 Red - halt
-	debug = 0b0010010010010000;
-	sendDebug();
+    // Debug 1-4 Red - halt
+    debug = 0b0010010010010000;
+    sendDebug();
 
-	// turn off all important lines
-	digitalWrite(TERM_MAIN, LOW);
-	digitalWrite(TERM_DROGUE, LOW);
-	digitalWrite(TERM_IGNITE, LOW);
+    // turn off all important lines
+    digitalWrite(TERM_MAIN, LOW);
+    digitalWrite(TERM_DROGUE, LOW);
+    digitalWrite(TERM_IGNITE, LOW);
 
-	// clear interrupts and put processor to sleep
-	cli();
-	sleep_enable();
-	sleep_cpu();
+    // clear interrupts and put processor to sleep
+    cli();
+    sleep_enable();
+    sleep_cpu();
 }
 
 void test() {
-	// Debug 1 Blue - run test
-	bitSet(debug, 15);
-	sendDebug();
+    // Debug 1 Blue - run test
+    bitSet(debug, 15);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "t", 1);
+    // update payload state
+    sendPayload('s', "t", 1);
 
-	char cmd;
+    char cmd;
 
-	while ((cmd = recvPayload()) == 'h')
-		updateTelemetry();
+    while ((cmd = recvPayload()) == 'h')
+	updateTelemetry();
 
-	if (cmd == 'e') {
-		sendPayload('t', "p", 1);
+    if (cmd == 'e') {
+	sendPayload('t', "p", 1);
 
-		// Debug 2 Green - pass test
-		bitSet(debug, 11);
-	}
-	else {
-		sendPayload('t', "f", 1);
+	// Debug 2 Green - pass test
+	bitSet(debug, 11);
+    }
+    else {
+	sendPayload('t', "f", 1);
 
-		// Debug 2 Red - fail test
-		bitSet(debug, 10);
-	}
+	// Debug 2 Red - fail test
+	bitSet(debug, 10);
+    }
 
-	sendDebug();
+    sendDebug();
 
-	// wait for lights to be read
-	delay(2000);
+    // wait for lights to be read
+    delay(2000);
 
-	// turn off lights
-	bitClear(debug, 10);
-	bitClear(debug, 11);
-	bitClear(debug, 15);
-	sendDebug();
+    // turn off lights
+    bitClear(debug, 10);
+    bitClear(debug, 11);
+    bitClear(debug, 15);
+    sendDebug();
 
-	state = IDLE;
+    state = IDLE;
 }
 
 void arm() {
-	// Arm Blue - armed
-	bitSet(debug, 3);
-	sendDebug();
+    // Arm Blue - armed
+    bitSet(debug, 3);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "a", 1);
+    // update payload state
+    sendPayload('s', "a", 1);
 
-	while (state == ARM) {
-		updateTelemetry();
+    while (state == ARM) {
+	updateTelemetry();
 
-		// sample ground altitude
-		bar.gnd = bar.alt;
+	// sample ground altitude
+	bar.gnd = bar.alt;
 
-		// check on ctrl term
-		if (digitalRead(CTRL) == LOW) {
-			// wait for debounce and intent
-			delay(500);
+	// check on ctrl term
+	if (digitalRead(CTRL) == LOW) {
+	    // wait for debounce and intent
+	    delay(500);
 
-			// if button still held
-			if (digitalRead(CTRL) == LOW) {
-				state = IGNITE;
+	    // if button still held
+	    if (digitalRead(CTRL) == LOW) {
+		state = IGNITE;
 
-				// wait for unpress
-				while (digitalRead(CTRL) != HIGH)
-					delay(100);
+		// wait for unpress
+		while (digitalRead(CTRL) != HIGH)
+		    delay(100);
 
-				// wait for debounce
-				delay(500);
+		// wait for debounce
+		delay(500);
 
-				// skip remainder of processing
-				break;
-			}
-		}
-
-		// receive payload command
-		switch (recvPayload()) {
-			// do nothing if no command
-			case 'h':
-				break;
-
-			// disarm rocket
-			case 'd':
-				bitClear(debug, 3);
-				state = IDLE;
-				break;
-
-			// ignite rocket
-			case 'i':
-				state = IGNITE;
-				break;
-
-			// no communication with payload
-			case ' ':
-				// revert to idle state
-				state = IDLE;
-				break;
-
-			// halt program in invalid state
-			default:
-				state = HALT;
-		}
+		// skip remainder of processing
+		break;
+	    }
 	}
+
+	// receive payload command
+	switch (recvPayload()) {
+	    // do nothing if no command
+	    case 'h':
+		break;
+
+		// disarm rocket
+	    case 'd':
+		bitClear(debug, 3);
+		state = IDLE;
+		break;
+
+		// ignite rocket
+	    case 'i':
+		state = IGNITE;
+		break;
+
+		// no communication with payload
+	    case ' ':
+		// revert to idle state
+		state = IDLE;
+		break;
+
+		// halt program in invalid state
+	    default:
+		state = HALT;
+	}
+    }
 }
 
 void ignite() {
-	// Debug 3 Red - igniting
-	bitSet(debug, 7);
-	sendDebug();
+    // Debug 3 Red - igniting
+    bitSet(debug, 7);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "i", 1);
+    // update payload state
+    sendPayload('s', "i", 1);
 
-	// store ground in EEPROM
-	EEPROM.put(eeprom_ground, bar.gnd);
+    // store ground in EEPROM
+    EEPROM.put(eeprom_ground, bar.gnd);
 
-	// send ignition signal
-	digitalWrite(TERM_IGNITE, HIGH);
+    // send ignition signal
+    digitalWrite(TERM_IGNITE, HIGH);
 
-	// ignition time for measuring
-	unsigned long start = millis();
+    // ignition time for measuring
+    unsigned long start = millis();
 
-	// wait for rocket to move up
-	updateTelemetry();
-	while (acc.z < MIN_ACCEL) {
-		// halt if button pressed after still time
-		if (millis() - start > MAX_IGNITE && digitalRead(CTRL) == LOW) {
-			// wait for debounce and intent
-			delay(500);
+    // wait for rocket to move up
+    updateTelemetry();
+    while (acc.z < MIN_ACCEL) {
+	// halt if button pressed after still time
+	if (millis() - start > MAX_IGNITE && digitalRead(CTRL) == LOW) {
+	    // wait for debounce and intent
+	    delay(500);
 
-			// cancel launch if button still pressed
-			if (digitalRead(CTRL) == LOW) {
-				state = HALT;
-				return;
-			}
-		}
-
-		updateTelemetry();
+	    // cancel launch if button still pressed
+	    if (digitalRead(CTRL) == LOW) {
+		state = HALT;
+		return;
+	    }
 	}
 
-	// end ignition signal
-	digitalWrite(TERM_IGNITE, LOW);
+	updateTelemetry();
+    }
 
-	// change to burn
-	state = BURN;
+    // end ignition signal
+    digitalWrite(TERM_IGNITE, LOW);
+
+    // change to burn
+    state = BURN;
 }
 
 void burn() {
-	// Debug 3 Yellow - burning
-	bitSet(debug, 8);
-	sendDebug();
+    // Debug 3 Yellow - burning
+    bitSet(debug, 8);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "b", 1);
+    // update payload state
+    sendPayload('s', "b", 1);
 
-	// update telemetry during burn
-	while (acc.z > THRUST_ACCEL)
-		updateTelemetry();
+    // update telemetry during burn
+    while (acc.z > THRUST_ACCEL)
+	updateTelemetry();
 
-	// change to coast
-	state = COAST;
+    // change to coast
+    state = COAST;
 }
 
 void coast() {
-	// Debug 3 Blue - coasting
-	bitClear(debug, 7);
-	bitClear(debug, 8);
-	bitSet(debug, 9);
-	sendDebug();
+    // Debug 3 Blue - coasting
+    bitClear(debug, 7);
+    bitClear(debug, 8);
+    bitSet(debug, 9);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "c", 1);
+    // update payload state
+    sendPayload('s', "c", 1);
 
-	// update telemetry during coast
-	while (bar.dp < APOGEE_DPRES)
-		updateTelemetry();
+    // update telemetry during coast
+    while (bar.dp < APOGEE_DPRES)
+	updateTelemetry();
 
-	// change to apogee
-	state = APOGEE;
+    // change to apogee
+    state = APOGEE;
 }
 
 void apogee() {
-	// Debug 3 Green - apogee
-	bitClear(debug, 9);
-	bitSet(debug, 8);
-	sendDebug();
+    // Debug 3 Green - apogee
+    bitClear(debug, 9);
+    bitSet(debug, 8);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "d", 1);
+    // update payload state
+    sendPayload('s', "d", 1);
 
-	// send parachute signal
-	digitalWrite(TERM_DROGUE, HIGH);
-	delay(DELAY_PARACHUTE);
-	digitalWrite(TERM_DROGUE, LOW);
+    // send parachute signal
+    digitalWrite(TERM_DROGUE, HIGH);
+    delay(DELAY_PARACHUTE);
+    digitalWrite(TERM_DROGUE, LOW);
 
-	// change to wait
-	state = WAIT;
+    // change to wait
+    state = WAIT;
 }
 
 void wait() {
-	// Debug 4 Blue - waiting
-	bitSet(debug, 6);
-	sendDebug();
+    // Debug 4 Blue - waiting
+    bitSet(debug, 6);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "w", 1);
+    // update payload state
+    sendPayload('s', "w", 1);
 
-	// update telemetry during descent
-	while (bar.alt > MAIN_ALT + bar.gnd)
-		updateTelemetry();
+    // update telemetry during descent
+    while (bar.alt > MAIN_ALT + bar.gnd)
+	updateTelemetry();
 
-	// change to eject
-	state = EJECT;
+    // change to eject
+    state = EJECT;
 }
 
 void eject() {
-	// Debug 4 Yellow - ejecting
-	bitClear(debug, 6);
-	bitSet(debug, 4);
-	bitSet(debug, 5);
-	sendDebug();
+    // Debug 4 Yellow - ejecting
+    bitClear(debug, 6);
+    bitSet(debug, 4);
+    bitSet(debug, 5);
+    sendDebug();
 
-	// update payload state
-	sendPayload('s', "e", 1);
+    // update payload state
+    sendPayload('s', "e", 1);
 
-	// send parachute signal
-	digitalWrite(TERM_MAIN, HIGH);
-	delay(DELAY_PARACHUTE);
-	digitalWrite(TERM_MAIN, LOW);
+    // send parachute signal
+    digitalWrite(TERM_MAIN, HIGH);
+    delay(DELAY_PARACHUTE);
+    digitalWrite(TERM_MAIN, LOW);
 
-	// change to fall
-	state = FALL;
+    // change to fall
+    state = FALL;
 }
 
 void fall() {
-	// Debug 4 Green - falling
-	bitClear(debug, 4);
-	sendDebug();
+    // Debug 4 Green - falling
+    bitClear(debug, 4);
+    sendDebug();
 
-	// update telemetry during descent
-	while (bar.dp > MIN_DPRES)
-		updateTelemetry();
+    // update telemetry during descent
+    while (bar.dp > MIN_DPRES)
+	updateTelemetry();
 
-	// change to recover
-	state = RECOVER;
+    // change to recover
+    state = RECOVER;
 }
 
 void recover() {
-	// Arm Green - recovery
-	bitClear(debug, 3);
-	sendDebug();
+    // Arm Green - recovery
+    bitClear(debug, 3);
+    sendDebug();
 
-	// clear interrupts and put processor to sleep
-	cli();
-	sleep_enable();
-	sleep_cpu();
+    // clear interrupts and put processor to sleep
+    cli();
+    sleep_enable();
+    sleep_cpu();
 }
 
 // program functions
 
 void setup() {
-	// set inputs and outputs
-	pinMode(ACCEL_X, INPUT);
-	pinMode(ACCEL_Y, INPUT);
-	pinMode(ACCEL_Z, INPUT);
+    // set inputs and outputs
+    pinMode(ACCEL_X, INPUT);
+    pinMode(ACCEL_Y, INPUT);
+    pinMode(ACCEL_Z, INPUT);
 
-	pinMode(BARO_MOSI, OUTPUT);
-	pinMode(BARO_MISO, INPUT);
-	pinMode(BARO_SCK, OUTPUT);
+    pinMode(CTRL, INPUT_PULLUP);
 
-	pinMode(CTRL, INPUT_PULLUP);
+    pinMode(PANEL_CLOCK, OUTPUT);
+    pinMode(PANEL_DATA, OUTPUT);
+    pinMode(PANEL_LATCH, OUTPUT);
+    digitalWrite(PANEL_LATCH, HIGH);
+    delay(50);
 
-	pinMode(PANEL_CLOCK, OUTPUT);
-	pinMode(PANEL_DATA, OUTPUT);
-	pinMode(PANEL_LATCH, OUTPUT);
-	digitalWrite(PANEL_LATCH, HIGH);
-	delay(50);
+    pinMode(TERM_MAIN, OUTPUT);
+    digitalWrite(TERM_MAIN, LOW);
+    pinMode(TERM_DROGUE, OUTPUT);
+    digitalWrite(TERM_DROGUE, LOW);
+    pinMode(TERM_IGNITE, OUTPUT);
+    digitalWrite(TERM_IGNITE, LOW);
 
-	pinMode(TERM_MAIN, OUTPUT);
-	digitalWrite(TERM_MAIN, LOW);
-	pinMode(TERM_DROGUE, OUTPUT);
-	digitalWrite(TERM_DROGUE, LOW);
-	pinMode(TERM_IGNITE, OUTPUT);
-	digitalWrite(TERM_IGNITE, LOW);
-
-	sendDebug();
+    sendDebug();
 
 #ifdef DEBUG
-	delay(2000);
+    delay(2000);
 
 #endif
-	// initialize communication with the barometer
-	barometer.begin();
+    // initialize communication with the barometer
+    Wire.begin();
+    initBarometer();
 
-	// initialize communication with the payload
-	payload.begin(9600);
+    // initialize communication with the payload
+    Serial.begin(9600);
 
-	// define initial state
-	state = INIT;
-	debug = 0b0000000000000000;
+    // define initial state
+    state = INIT;
+    debug = 0b0000000000000000;
 
-	// initialize sensor data
-	acc.x = acc.y = acc.z = 512;
-	bar.p = 808;
-	bar.dp = 0;
-	bar.alt = 0;
-	bar.gnd = 0;
+    // initialize sensor data
+    acc.x = acc.y = acc.z = 512;
+    bar.p = 808;
+    bar.dp = 0;
+    bar.alt = 0;
+    bar.gnd = 0;
 
-	// sample filter seed data
-	unsigned long acc_x = 0, acc_y = 0, acc_z = 0;
-	unsigned long bar_p = 0, bar_dp = 0;
-	unsigned long bar_alt = 0;
+    // sample filter seed data
+    unsigned long acc_x = 0, acc_y = 0, acc_z = 0;
+    unsigned long bar_p = 0, bar_dp = 0;
+    unsigned long bar_alt = 0;
 
-	for (byte cnt = 0; cnt < SENSOR_INIT; cnt++) {
-		readAccelerometer(false);
-		acc_x += acc.x;
-		acc_y += acc.y;
-		acc_z += acc.z;
+    for (byte cnt = 0; cnt < SENSOR_INIT; cnt++) {
+	readAccelerometer(false);
+	acc_x += acc.x;
+	acc_y += acc.y;
+	acc_z += acc.z;
 
-		readBarometer(false);
-		bar_p += bar.p;
-		bar_dp += bar.dp;
-		bar_alt += bar.alt;
+	readBarometer(false);
+	bar_p += bar.p;
+	bar_dp += bar.dp;
+	bar_alt += bar.alt;
 
-		delay(SENSOR_DELAY);
+	delay(SENSOR_DELAY);
+    }
+
+    acc.x = acc_x/SENSOR_INIT;
+    acc.y = acc_y/SENSOR_INIT;
+    acc.z = acc_z/SENSOR_INIT;
+
+    bar.p = bar_p/SENSOR_INIT;
+    bar.dp = bar_dp/SENSOR_INIT;
+    bar.alt = bar_alt/SENSOR_INIT;
+
+    // check for saved data in EEPROM
+    bool stored = true;
+    for (byte idx = 0; idx < eeprom_header.length(); idx++) {
+	if (EEPROM[idx] != eeprom_header[idx]) {
+	    stored = false;
+	    EEPROM[idx] = eeprom_header[idx];
 	}
+    }
 
-	acc.x = acc_x/SENSOR_INIT;
-	acc.y = acc_y/SENSOR_INIT;
-	acc.z = acc_z/SENSOR_INIT;
+    // set state from EEPROM if CTRL is not pressed
+    if (stored && digitalRead(CTRL) == HIGH) {
+	EEPROM.get(eeprom_state, state);
+	EEPROM.get(eeprom_debug, debug);
+	EEPROM.get(eeprom_ground, bar.gnd);
 
-	bar.p = bar_p/SENSOR_INIT;
-	bar.dp = bar_dp/SENSOR_INIT;
-	bar.alt = bar_alt/SENSOR_INIT;
+	bitClear(debug, 12);
+    }
+    else {
+	EEPROM.put(eeprom_state, state);
+	EEPROM.put(eeprom_debug, debug);
+	EEPROM.put(eeprom_ground, bar.gnd);
 
-	// check for saved data in EEPROM
-	bool stored = true;
-	for (byte idx = 0; idx < eeprom_header.length(); idx++) {
-		if (EEPROM[idx] != eeprom_header[idx]) {
-			stored = false;
-			EEPROM[idx] = eeprom_header[idx];
-		}
-	}
+	bitSet(debug, 15);
+    }
 
-	// set state from EEPROM if CTRL is not pressed
-	if (stored && digitalRead(CTRL) == HIGH) {
-		EEPROM.get(eeprom_state, state);
-		EEPROM.get(eeprom_debug, debug);
-		EEPROM.get(eeprom_ground, bar.gnd);
+    sendDebug();
 
-		bitClear(debug, 12);
-	}
-	else {
-		EEPROM.put(eeprom_state, state);
-		EEPROM.put(eeprom_debug, debug);
-		EEPROM.put(eeprom_ground, bar.gnd);
+    // wait on CTRL press
+    if (digitalRead(CTRL) == LOW) {
+	// wait for unpress
+	while (digitalRead(CTRL) != HIGH)
+	    delay(100);
 
-		bitSet(debug, 15);
-	}
+	// wait for debounce
+	delay(500);
+    }
 
-	sendDebug();
-
-	// wait on CTRL press
-	if (digitalRead(CTRL) == LOW) {
-		// wait for unpress
-		while (digitalRead(CTRL) != HIGH)
-			delay(100);
-
-		// wait for debounce
-		delay(500);
-	}
-
-	bitClear(debug, 15);
+    bitClear(debug, 15);
 
 #ifdef DEBUG
-	Serial.begin(9600);
-	Serial.write('D');
+    stream.begin(9600);
+    stream.write('D');
 
-	// Debug 2 Blue - debug
-	bitSet(debug, 12);
+    // Debug 2 Blue - debug
+    bitSet(debug, 12);
 
 #endif
-	sendDebug();
+    sendDebug();
 }
 
 void loop() {
-	state_prev = state;
+    state_prev = state;
 
-	// run appropriate state function
-	switch (state) {
-		// go to idle from init state
-		case INIT:
-			state = IDLE;
-			debug = 0b0000000000000000;
-			break;
+    // run appropriate state function
+    switch (state) {
+	// go to idle from init state
+	case INIT:
+	    state = IDLE;
+	    debug = 0b0000000000000000;
+	    break;
 
-		case IDLE:
-			idle();
-			break;
+	case IDLE:
+	    idle();
+	    break;
 
-		case HALT:
-			halt();
-			break;
+	case HALT:
+	    halt();
+	    break;
 
-		case TEST:
-			test();
-			break;
+	case TEST:
+	    test();
+	    break;
 
-		case ARM:
-			arm();
-			break;
+	case ARM:
+	    arm();
+	    break;
 
-		case IGNITE:
-			ignite();
-			break;
+	case IGNITE:
+	    ignite();
+	    break;
 
-		case BURN:
-			burn();
-			break;
+	case BURN:
+	    burn();
+	    break;
 
-		case COAST:
-			coast();
-			break;
+	case COAST:
+	    coast();
+	    break;
 
-		case APOGEE:
-			apogee();
-			break;
+	case APOGEE:
+	    apogee();
+	    break;
 
-		case WAIT:
-			wait();
-			break;
+	case WAIT:
+	    wait();
+	    break;
 
-		case EJECT:
-			eject();
-			break;
+	case EJECT:
+	    eject();
+	    break;
 
-		case FALL:
-			fall();
-			break;
+	case FALL:
+	    fall();
+	    break;
 
-		case RECOVER:
-			recover();
-			break;
+	case RECOVER:
+	    recover();
+	    break;
 
-		// halt program in invalid state
-		default:
-			state = HALT;
-	}
+	    // halt program in invalid state
+	default:
+	    state = HALT;
+    }
 
-	if (state != state_prev) {
-		EEPROM.put(eeprom_state, state);
-		EEPROM.put(eeprom_debug, debug);
-	}
+    if (state != state_prev) {
+	EEPROM.put(eeprom_state, state);
+	EEPROM.put(eeprom_debug, debug);
+    }
 }
