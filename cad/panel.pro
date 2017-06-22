@@ -1,4 +1,4 @@
-update=Tue 07 Mar 2017 06:37:31 PM EST
+update=Wed 21 Jun 2017 04:45:35 PM MDT
 version=1
 last_client=eeschema
 [general]
@@ -116,3 +116,13 @@ LibName82=Worldsemi
 LibName83=Xicor
 LibName84=zetex
 LibName85=Zilog
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
