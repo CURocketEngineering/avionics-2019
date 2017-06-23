@@ -535,12 +535,19 @@ void ignite() {
     updateTelemetry();
     while (acc.z < MIN_ACCEL) {
 	// halt if button pressed after still time
-	if (millis() - start > MAX_IGNITE && digitalRead(CTRL) == LOW) {
-	    // wait for debounce and intent
-	    delay(500);
-
-	    // cancel launch if button still pressed
+	if (millis() - start > MAX_IGNITE) {
 	    if (digitalRead(CTRL) == LOW) {
+		// wait for debounce and intent
+		delay(500);
+
+		// cancel launch if button still pressed
+		if (digitalRead(CTRL) == LOW) {
+		    state = HALT;
+		    return;
+		}
+	    }
+
+	    if (recvPayload() == 'c') {
 		state = HALT;
 		return;
 	    }
@@ -648,6 +655,9 @@ void fall() {
     bitClear(debug, 4);
     sendDebug();
 
+    // update payload state
+    sendPayload('s', "l", 1);
+
     // update telemetry during descent
     while (bar.dp > MIN_DPRES)
 	updateTelemetry();
@@ -660,6 +670,9 @@ void recover() {
     // Arm Green - recovery
     bitClear(debug, 3);
     sendDebug();
+
+    // update payload state
+    sendPayload('s', "r", 1);
 
     // clear interrupts and put processor to sleep
     cli();

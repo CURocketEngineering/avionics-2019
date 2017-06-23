@@ -8,6 +8,8 @@ import sys
 import comm
 import term
 
+states = {'h': 'Idle', 't': 'Test', 'p': 'Pass', 'f': 'Fail', 'a': 'Arm', 'i': 'Ignite', 'b': 'Burn', 'c': 'Coast', 'd': 'Apogee', 'w': 'Wait', 'e': 'Eject', 'l': 'Fall', 'r': 'Recover'}
+
 inited = False
 
 try:
@@ -33,7 +35,7 @@ try:
         print('\33[2J')
 
         if inited:
-            print('[{}] State: {} • Acceleration: {} g • Altitude: {} ft • GPS: {} {}'.format(connected, data['time'], data['main']['state'], data['main']['sensor']['acc']['z'] if data['main']['state'] != 'e' else data['payload']['sensor']['acc']['z'], data['main']['sensor']['bar']['alt'] if data['main']['state'] != 'e' else data['payload']['sensor']['bar']['alt'], data['payload']['sensor']['gps']['lat'], data['payload']['sensor']['gps']['lon']))
+            print('[{}] State: {} • Acceleration: {} g • Altitude: {} ft • GPS: {} {}'.format(connected, data['time'], states[data['main']['state']], data['main']['sensor']['acc']['z'] if data['main']['state'] != 'e' else data['payload']['sensor']['acc']['z'], data['main']['sensor']['bar']['alt'] if data['main']['state'] != 'e' else data['payload']['sensor']['bar']['alt'], data['payload']['sensor']['gps']['lat'], data['payload']['sensor']['gps']['lon']))
         else:
             print('Waiting on init...')
 except KeyboardInterrupt:
