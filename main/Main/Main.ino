@@ -33,7 +33,7 @@
 
 #define TERM_MAIN 5
 #define TERM_DROGUE 6
-#define TERM_IGNITE -1
+#define TERM_IGNITE 10
 
 // header bytes for EEPROM
 #define EEPROM_HEADER "MainRev4"
@@ -50,7 +50,7 @@
 #define DELAY_PARACHUTE 1000
 
 // time before allowing the rocket to be controlled from ignite to halt
-#define MAX_IGNITE 30000
+#define MAX_IGNITE 300
 
 // accelerometer values to determine changes in state
 #define MIN_ACCEL 2.0
@@ -535,7 +535,7 @@ void ignite() {
     updateTelemetry();
     while (acc.z < MIN_ACCEL) {
 	// halt if button pressed after still time
-	if (millis() - start > MAX_IGNITE) {
+	if (millis() - start > MAX_IGNITE*1000) {
 	    if (digitalRead(CTRL) == LOW) {
 		// wait for debounce and intent
 		delay(500);
