@@ -53,15 +53,15 @@
 #define MAX_IGNITE 30000
 
 // accelerometer values to determine changes in state
-#define MIN_ACCEL 2
-#define THRUST_ACCEL 0
+#define MIN_ACCEL 2.0
+#define THRUST_ACCEL 0.0
 
 // barometer values to determine changes in state
-#define APOGEE_DPRES 1
-#define MIN_DPRES 1
+#define APOGEE_DPRES 1.0
+#define MIN_DPRES 1.0
 
 // altitude to deploy main parachute
-#define MAIN_ALT 2000
+#define MAIN_ALT 2000.0
 
 // libraries
 
