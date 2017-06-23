@@ -98,7 +98,7 @@ void loop() {
 		}
 
 		Serial.print("{'time': ");
-		Serial.print(time)
+		Serial.print(time);
 		Serial.print(", 'payload': {'sensor': {'acc': {'x': ");
 		Serial.print(stream_data.values[0]);
 		Serial.print(", 'y': ");
