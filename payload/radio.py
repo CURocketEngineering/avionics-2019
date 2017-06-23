@@ -2,7 +2,7 @@ from __future__ import division, print_function
 
 import mraa
 
-uart = mraa.Uart('/dev/ttyGS0')
+uart = mraa.Uart('/dev/ttyMDF1')
 uart.setBaudRate(9600)
 
 def init():

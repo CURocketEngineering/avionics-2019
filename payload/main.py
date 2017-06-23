@@ -45,9 +45,7 @@ try:
         bar = barometer.read()
         mag = magnetometer.read()
 
-        gps.poll()
-
-        datum = gps.get_datum()
+        datum = gps.read()
 
         sound.sample()
 

@@ -53,9 +53,15 @@ void readLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
 }
 
 void request() {
-    Wire.print(lat);
-    Wire.print(' ');
-    Wire.println(lon);
+    static union data_u {
+        float lat, lon;
+        char bytes[8];
+    } data;
+
+    data.lat = lat;
+    data.lon = lon;
+
+    Wire.write(data.bytes, 8);
 }
 
 void setup() {
