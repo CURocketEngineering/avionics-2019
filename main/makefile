@@ -175,8 +175,12 @@ BOARD ?= pro
 PROCESSOR ?= 16MHzatmega328
 PROGRAMMER ?= usbtiny
 else
+ifeq "$(CWD)" "GPS"
+BOARD ?= uno
+else
 BOARD ?= mega
 PROCESSOR ?= atmega2560
+endif
 endif
 endif
 
