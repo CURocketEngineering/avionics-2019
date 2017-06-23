@@ -9,12 +9,15 @@ const char * getField(const char * sentence, char * buf, unsigned short len) {
     unsigned short idx = 0;
 
     while (idx < len - 1) {
-        if (*sentence == ',')
+        if (*sentence == ',') {
+            sentence++;
             break;
+        }
 
         buf[idx] = *sentence;
 
         sentence++;
+        idx++;
     }
 
     buf[idx] = '\0';
@@ -24,21 +27,21 @@ const char * getField(const char * sentence, char * buf, unsigned short len) {
 
 void readLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
     unsigned short idx = 0;
-    char c;
+    int c;
 
     while (idx < len - 1) {
+        while(!stream.available());
+
         c = stream.read();
 
         if (crlf) {
             if (c == '\r') {
-                stream.read();
-                break;
+                continue;
             }
         }
-        else {
-            if (c == '\n') {
-                break;
-            }
+
+        if (c == '\n') {
+            break;
         }
 
         buf[idx] = c;
@@ -50,15 +53,9 @@ void readLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
 }
 
 void request() {
-    static union data_u {
-        float lat, lon;
-        char bytes[8];
-    } data;
-
-    data.lat = lat;
-    data.lon = lon;
-
-    Wire.write(data.bytes, 8);
+    Wire.print(lat);
+    Wire.print(' ');
+    Wire.println(lon);
 }
 
 void setup() {
@@ -107,6 +104,7 @@ void loop() {
         if (field[0] == 'W')
             llon = -llon;
 
+        // store data
         lat = llat, lon = llon;
     }
 }
