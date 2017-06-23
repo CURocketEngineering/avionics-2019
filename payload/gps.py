@@ -14,7 +14,6 @@ class Datum(object):
 def read():
     i2c.address(0x13)
 
-    data = [0,0,0,0,0,0,0,0]
-    i2c.read(data)
+    data = i2c.read(8)
 
     return Datum(*struct.unpack('ff', bytes(data)))
