@@ -30,8 +30,7 @@ def poll():
         if data_type == 's':
             state = uart.readStr(1)
         elif data_type == 'u':
-            data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-            uart.read(data)
+            data = uart.read(20)
             telemetry = Telemetry(*struct.unpack('fffff', bytes(data)))
 
 def get_state():
