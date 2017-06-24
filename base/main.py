@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-from __future__ import print_function
+from __future__ import division, print_function
 
 import json
 import sys
@@ -16,6 +16,8 @@ try:
     comm.init()
     term.init()
 
+    box.init('blackbox.json')
+
     while True:
         try:
             cmd = sys.stdin.read(1)
@@ -30,6 +32,8 @@ try:
         elif line == 'DEINIT':
             inited = False
 
+        box.write(line)
+
         data = json.loads(line)
 
         print('\33[2J')
@@ -41,4 +45,6 @@ try:
 except KeyboardInterrupt:
     pass
 finally:
+    box.deinit()
+
     term.deinit()
