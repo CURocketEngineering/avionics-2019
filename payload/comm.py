@@ -4,7 +4,7 @@ import struct
 
 import mraa
 
-uart = mraa.Uart('/dev/ttyMFD2')
+uart = mraa.Uart(2)
 uart.setBaudRate(9600)
 
 class Telemetry(object):

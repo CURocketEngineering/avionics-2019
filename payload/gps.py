@@ -1,19 +1,41 @@
 from __future__ import division, print_function
 
-import struct
-
 import mraa
-
-i2c = mraa.I2c(0)
 
 class Datum(object):
     def __init__(self, lat, lon):
         self.lat = lat
         self.lon = lon
 
-def read():
-    i2c.address(0x13)
+uart = mraa.Uart(1)
+uart.setBaudRate(9600)
 
-    data = i2c.read(8)
+datum = Datum(0, 0)
 
-    return Datum(*struct.unpack('ff', bytes(data)))
+def poll():
+    global datum
+
+    while uart.dataAvailable():
+        sentence = ''
+
+        char = uart.readStr(1)
+        while char != '\r':
+            sentence += char
+            char = uart.readStr(1)
+        uart.readStr(1)
+
+        data = sentence.split(',')
+
+        if data[0] == '$GPRMC':
+            lat = float(data[3])
+            if data[4] == 'S':
+                lat = -lat
+
+            lon = float(data[5])
+            if data[6] == 'W':
+                lon = -lon
+
+            datum = Datum(lat, lon)
+
+def get_datum():
+    return datum

@@ -2,9 +2,9 @@ from __future__ import division, print_function
 
 import mraa
 
-#aio_x = mraa.Aio(0)
-#aio_y = mraa.Aio(1)
-#aio_z = mraa.Aio(2)
+aio_x = mraa.Aio(0)
+aio_y = mraa.Aio(1)
+aio_z = mraa.Aio(2)
 
 class AccelerometerReading(object):
     def __init__(self, x, y, z):
@@ -13,6 +13,4 @@ class AccelerometerReading(object):
         self.z = z
 
 def read():
-    return AccelerometerReading(0, 0, 0)
-
     return AccelerometerReading(aio_x.read(), aio_y.read(), aio_z.read())

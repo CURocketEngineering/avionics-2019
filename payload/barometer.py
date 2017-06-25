@@ -4,7 +4,7 @@ import timing
 
 import mraa
 
-#i2c = mraa.I2c(0)
+i2c = mraa.I2c(0)
 
 class BarometerReading(object):
     def __init__(self, p, alt):
@@ -19,8 +19,6 @@ def uint_to_int(uint):
 
 def init():
     global AC1, AC2, AC3, AC4, AC5, AC6, VB1, VB2, MB, MC, MD, c3, c4, b1, c5, c6, mc, md, x0, x1, x2, y0, y1, y2, p0, p1, p2
-
-    return
 
     i2c.address(0x77)
 
@@ -54,8 +52,6 @@ def init():
     p2 = 3038.0*100.0*pow(2, -36)
 
 def read():
-    return BarometerReading(0, 0)
-
     i2c.address(0x77)
 
     i2c.writeReg(0xF4, 0x2E)
