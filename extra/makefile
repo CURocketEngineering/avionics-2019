@@ -165,10 +165,6 @@
 
 CWD := $(shell basename $(shell pwd))
 
-BOARD ?= pro
-PROCESSOR ?= 8MHzatmega328
-PROGRAMMER ?= usbtiny
-
 # default arduino software directory, check software exists
 ifndef ARDUINODIR
 ARDUINODIR := $(firstword $(wildcard ~/opt/arduino /usr/share/arduino \
