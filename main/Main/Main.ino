@@ -1,10 +1,10 @@
 /*
- * Main v0.1
+ * Main v0.2
  *
  * Main computer logic handling: button inputs, debug outputs, sensor inputs,
  * ignition, parachute ejection, and telemetry. Telemetry and commands are
- * communicated with the payload computer for relay over the radios on a best
- * effort basis. Everything else is a critical function.
+ * communicated with the base station over the radios on a best effort basis.
+ * Everything else is a critical function.
  */
 
 // definitions
@@ -24,8 +24,11 @@
 
 #define CTRL 7
 
-#define DEBUG_RX 8
-#define DEBUG_TX 9
+#define GPS_RX 8
+#define GPS_TX 9
+
+#define DEBUG_RX 18
+#define DEBUG_TX 19
 
 #define PANEL_CLOCK 3
 #define PANEL_DATA 4
@@ -68,10 +71,8 @@
 #include <avr/sleep.h>
 
 #include <EEPROM.h>
-#include <Wire.h>
-#ifdef DEBUG
 #include <SoftwareSerial.h>
-#endif
+#include <Wire.h>
 
 // global data
 
@@ -103,6 +104,11 @@ static struct bar_s {
     float alt, gnd;
 } bar, bar_prev;
 
+static struct gps_s {
+    // degrees
+    float lat, lon;
+} gps;
+
 static struct bar_init_s {
     // coefficients
     short AC1, AC2, AC3, VB1, VB2, MB, MC, MD;
@@ -118,6 +124,8 @@ String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
 int eeprom_debug = eeprom_header.length() + sizeof(state);
 int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
+
+SoftwareSerial gpscomm(GPS_RX, GPS_TX);
 
 #ifdef DEBUG
 SoftwareSerial stream(DEBUG_RX, DEBUG_TX);
@@ -272,16 +280,51 @@ void readBarometer(bool filter, bool debug = false, float p = 0) {
     bar.alt = 145440.0*(1 - pow(pressure/NWS_ALTI, 1/5.255));
 }
 
-// communication functions
+void readGPS(bool debug = false, float lat = 0, float lon = 0) {
+    if (!debug) {
+	while (gpscomm.available()) {
+	    if (gpscomm.readStringUntil(',') == "$GPRMC") {
+		gps.lat = gpscomm.parseFloat();
+		gpscomm.read(); // ','
+		if (gpscomm.readStringUntil(',') == "S") {
+		    gps.lat = -gps.lat;
+		}
 
-void sendPayload(char type, const char * data, unsigned int len) {
-    // transmit message type and data
-    Serial.write(type);
-    Serial.write(data);
+		gps.lon = gpscomm.parseFloat();
+		gpscomm.read(); // ','
+		if (gpscomm.readStringUntil(',') == "W") {
+		    gps.lon = -gps.lon;
+		}
+	    }
+	    else {
+		gpscomm.readStringUntil('\n');
+	    }
+	}
+    }
+    else {
+	gps.lat = lat;
+	gps.lon = lon;
+    }
 }
 
-char recvPayload() {
-    // request and read a single char from payload
+// communication functions
+
+void sendBase(char type, const char * data, unsigned int len) {
+    static union time_data_u {
+	char bytes[4];
+	float value;
+    } time_data;
+
+    time_data.value = millis()/1000.0;
+
+    // transmit message time type and data
+    Serial.write(time_data.bytes, 4);
+    Serial.write(type);
+    Serial.write(data, len);
+}
+
+char recvBase() {
+    // request and read a single char from base station
     if (Serial.available())
 	return Serial.read();
     else
@@ -299,25 +342,27 @@ void sendDebug() {
 
 void updateTelemetry() {
     static union data_u {
-	char bytes[20];
-	float values[5];
+	char bytes[28];
+	float values[7];
     } data;
 
 #ifdef DEBUG
     if (stream.available()) {
 	static union stream_data_u {
-	    char bytes[16];
-	    float values[4];
+	    char bytes[24];
+	    float values[6];
 	} stream_data;
 
-	stream.readBytes(stream_data.bytes, 16);
+	stream.readBytes(stream_data.bytes, 24);
 
 	readAccelerometer(true, true, stream_data.values[0], stream_data.values[1], stream_data.values[2]);
 	readBarometer(true, true, stream_data.values[3]);
+	readGPS(true, stream_data.values[4], stream_data.values[5]);
     }
 #else
     readAccelerometer(true);
     readBarometer(true);
+    readGPS();
 #endif
 
     data.values[0] = acc.x;
@@ -325,15 +370,17 @@ void updateTelemetry() {
     data.values[2] = acc.z;
     data.values[3] = bar.p;
     data.values[4] = bar.alt;
+    data.values[5] = gps.lat;
+    data.values[6] = gps.lon;
 
-    sendPayload('u', data.bytes, 16);
+    sendBase('u', data.bytes, 28);
 }
 
 // state functions
 
 void idle() {
-    // update payload state
-    sendPayload('s', "h", 1);
+    // update base station state
+    sendBase('s', "h", 1);
 
     while (state == IDLE) {
 	// check on ctrl term
@@ -357,8 +404,8 @@ void idle() {
 	    }
 	}
 
-	// receive payload command
-	switch (recvPayload()) {
+	// receive base command
+	switch (recvBase()) {
 	    // do nothing if no command
 	    case 'h':
 		// Debug 1 Green - idling
@@ -376,9 +423,9 @@ void idle() {
 		state = ARM;
 		break;
 
-		// no communication with payload
+		// no communication with base station
 	    case ' ':
-		// Debug 1 Red - no communication with payload
+		// Debug 1 Red - no communication with base station
 		bitSet(debug, 13);
 		bitClear(debug, 14);
 		break;
@@ -414,22 +461,22 @@ void test() {
     bitSet(debug, 15);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "t", 1);
+    // update base station state
+    sendBase('s', "t", 1);
 
     char cmd;
 
-    while ((cmd = recvPayload()) == 'h')
+    while ((cmd = recvBase()) == 'h')
 	updateTelemetry();
 
     if (cmd == 'e') {
-	sendPayload('t', "p", 1);
+	sendBase('t', "p", 1);
 
 	// Debug 2 Green - pass test
 	bitSet(debug, 11);
     }
     else {
-	sendPayload('t', "f", 1);
+	sendBase('t', "f", 1);
 
 	// Debug 2 Red - fail test
 	bitSet(debug, 10);
@@ -454,8 +501,8 @@ void arm() {
     bitSet(debug, 3);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "a", 1);
+    // update base station state
+    sendBase('s', "a", 1);
 
     while (state == ARM) {
 	updateTelemetry();
@@ -484,8 +531,8 @@ void arm() {
 	    }
 	}
 
-	// receive payload command
-	switch (recvPayload()) {
+	// receive base station command
+	switch (recvBase()) {
 	    // do nothing if no command
 	    case 'h':
 		break;
@@ -501,7 +548,7 @@ void arm() {
 		state = IGNITE;
 		break;
 
-		// no communication with payload
+		// no communication with base station
 	    case ' ':
 		// revert to idle state
 		state = IDLE;
@@ -519,8 +566,8 @@ void ignite() {
     bitSet(debug, 7);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "i", 1);
+    // update base station state
+    sendBase('s', "i", 1);
 
     // store ground in EEPROM
     EEPROM.put(eeprom_ground, bar.gnd);
@@ -535,7 +582,7 @@ void ignite() {
     updateTelemetry();
     while (acc.z < MIN_ACCEL) {
 	// halt if button pressed after still time
-	if (millis() - start > MAX_IGNITE*1000) {
+	if (millis() - start > MAX_IGNITE*1000U) {
 	    if (digitalRead(CTRL) == LOW) {
 		// wait for debounce and intent
 		delay(500);
@@ -547,7 +594,7 @@ void ignite() {
 		}
 	    }
 
-	    if (recvPayload() == 'c') {
+	    if (recvBase() == 'c') {
 		state = HALT;
 		return;
 	    }
@@ -568,8 +615,8 @@ void burn() {
     bitSet(debug, 8);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "b", 1);
+    // update base station state
+    sendBase('s', "b", 1);
 
     // update telemetry during burn
     while (acc.z > THRUST_ACCEL)
@@ -586,8 +633,8 @@ void coast() {
     bitSet(debug, 9);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "c", 1);
+    // update base station state
+    sendBase('s', "c", 1);
 
     // update telemetry during coast
     while (bar.dp < APOGEE_DPRES)
@@ -603,8 +650,8 @@ void apogee() {
     bitSet(debug, 8);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "d", 1);
+    // update base station state
+    sendBase('s', "d", 1);
 
     // send parachute signal
     digitalWrite(TERM_DROGUE, HIGH);
@@ -620,8 +667,8 @@ void wait() {
     bitSet(debug, 6);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "w", 1);
+    // update base station state
+    sendBase('s', "w", 1);
 
     // update telemetry during descent
     while (bar.alt > MAIN_ALT + bar.gnd)
@@ -638,8 +685,8 @@ void eject() {
     bitSet(debug, 5);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "e", 1);
+    // update base station state
+    sendBase('s', "e", 1);
 
     // send parachute signal
     digitalWrite(TERM_MAIN, HIGH);
@@ -655,8 +702,8 @@ void fall() {
     bitClear(debug, 4);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "l", 1);
+    // update base station state
+    sendBase('s', "l", 1);
 
     // update telemetry during descent
     while (bar.dp > MIN_DPRES)
@@ -671,8 +718,8 @@ void recover() {
     bitClear(debug, 3);
     sendDebug();
 
-    // update payload state
-    sendPayload('s', "r", 1);
+    // update base station state
+    sendBase('s', "r", 1);
 
     // clear interrupts and put processor to sleep
     cli();
@@ -713,7 +760,7 @@ void setup() {
     Wire.begin();
     initBarometer();
 
-    // initialize communication with the payload
+    // initialize communication with the base station
     Serial.begin(9600);
 
     // define initial state
@@ -753,6 +800,8 @@ void setup() {
     bar.p = bar_p/SENSOR_INIT;
     bar.dp = bar_dp/SENSOR_INIT;
     bar.alt = bar_alt/SENSOR_INIT;
+
+    readGPS();
 
     // check for saved data in EEPROM
     bool stored = true;
