@@ -1,5 +1,7 @@
 from __future__ import division, print_function
 
+import json
+
 def init(filename):
     global output
 
@@ -12,5 +14,5 @@ def deinit():
     output.close()
 
 def write(data):
-    output.write(data.encode())
+    output.write(json.dumps(data).encode())
     output.write(b',\n')

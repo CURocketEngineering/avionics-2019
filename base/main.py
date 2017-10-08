@@ -18,6 +18,8 @@ try:
 
     box.init('blackbox.json')
 
+    data = {'time': -1, 'state': '-', 'sensor': {'acc': {'x': -1, 'y': -1, 'z': -1}, 'bar': {'p': -1, 'alt': -1}, 'gps': {'lat': -1, 'lon': -1}}}
+
     while True:
         try:
             cmd = sys.stdin.read(1)
@@ -25,23 +27,24 @@ try:
         except IOError:
             pass
 
-        line = comm.read()
+        message = comm.read()
 
-        if line == 'INIT':
-            inited = True
-        elif line == 'DEINIT':
-            inited = False
+        if message:
+            data['time'] = message['time']
 
-        box.write(line)
+            if message['type'] == 's':
+                data['state'] = message['state']
+            elif message['type'] == 'u':
+                data['sensor'] = message['sensor']
 
-        data = json.loads(line)
+            box.write(data)
 
         print('\33[2J')
 
-        if inited:
-            print('[{}] State: {} • Acceleration: {} g • Altitude: {} ft • GPS: {} {}'.format(connected, data['time'], states[data['main']['state']], data['main']['sensor']['acc']['z'] if data['main']['state'] != 'e' else data['payload']['sensor']['acc']['z'], data['main']['sensor']['bar']['alt'] if data['main']['state'] != 'e' else data['payload']['sensor']['bar']['alt'], data['payload']['sensor']['gps']['lat'], data['payload']['sensor']['gps']['lon']))
+        if data['state'] != '-':
+            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {} {}'.format(connected, data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
         else:
-            print('Waiting on init...')
+            print('Waiting on main computer...')
 except KeyboardInterrupt:
     pass
 finally:
