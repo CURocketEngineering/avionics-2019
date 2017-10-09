@@ -5,6 +5,7 @@ from __future__ import division, print_function
 import json
 import sys
 
+import box
 import comm
 import term
 
@@ -42,12 +43,18 @@ try:
         print('\33[2J')
 
         if data['state'] != '-':
-            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {} {}'.format(connected, data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
+            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(connected, data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
         else:
             print('Waiting on main computer...')
 except KeyboardInterrupt:
     pass
 finally:
-    box.deinit()
+    try:
+        box.deinit()
+    except:
+        pass
 
-    term.deinit()
+    try:
+        term.deinit()
+    except:
+        pass
