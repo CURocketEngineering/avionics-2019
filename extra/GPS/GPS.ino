@@ -1,7 +1,3 @@
-#define ADDR 0x13
-
-#include <Wire.h>
-
 float lat = 0.0;
 float lon = 0.0;
 
@@ -52,23 +48,11 @@ void readLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
     buf[idx] = '\0';
 }
 
-void request() {
-    static union data_u {
-        float lat, lon;
-        char bytes[8];
-    } data;
-
-    data.lat = lat;
-    data.lon = lon;
-
-    Wire.write(data.bytes, 8);
-}
-
 void setup() {
+    pinMode(13, OUTPUT);
+    digitalWrite(13, LOW);
+    
     Serial.begin(9600);
-
-    Wire.begin(ADDR);
-    Wire.onRequest(request);
 }
 
 void loop() {
@@ -113,4 +97,7 @@ void loop() {
         // store data
         lat = llat, lon = llon;
     }
+
+    if (fabs(lat) > 0.1 && fabs(lon) > 0.1)
+      digitalWrite(13, HIGH);
 }
