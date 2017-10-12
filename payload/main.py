@@ -6,8 +6,6 @@ import json
 import box
 import timing
 
-import radio
-
 import comm
 
 import gps
@@ -20,7 +18,7 @@ import sound
 FREQ = 10 # Hz
 
 try:
-    radio.init()
+    comm.init()
 
     barometer.init()
     magnetometer.init()
@@ -32,15 +30,6 @@ try:
     delay = 1000/FREQ
 
     while True:
-        cmd = radio.read()
-        if cmd:
-            comm.set_state(cmd)
-
-        comm.poll()
-
-        state = comm.get_state()
-        telemetry = comm.get_telemetry()
-
         acc = accelerometer.read()
         bar = barometer.read()
         mag = magnetometer.read()
@@ -49,19 +38,26 @@ try:
 
         sound.sample()
 
-        data = json.dumps({'time': timing.get_millis(), 'payload': {'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}, 'main': {'state': state, 'sensor': {'acc': {'x': telemetry.acc_x, 'y': telemetry.acc_y, 'z': telemetry.acc_z}, 'bar': {'p': telemetry.bar_p, 'alt': telemetry.bar_alt}}}})
+        data = {'time': timing.get_millis(), 'sensor': {'acc': {'x': acc.x, 'y': acc.y, 'z': acc.z}, 'bar': {'p': bar.p, 'alt': bar.alt}, 'gps': {'lat': datum.lat, 'lon': datum.lon}, 'mag': {'x': mag.x, 'y': mag.y, 'z': mag.z}}}
 
         box.write(data)
-        radio.send(data)
-
-        print(data)
+        comm.send(data)
 
         timing.delay(delay)
 except KeyboardInterrupt:
     pass
 finally:
-    sound.deinit()
+    try:
+        sound.deinit()
+    except:
+        pass
 
-    box.deinit()
+    try:
+        box.deinit()
+    except:
+        pass
 
-    radio.deinit()
+    try:
+        comm.deinit()
+    except:
+        pass

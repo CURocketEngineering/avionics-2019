@@ -1,40 +1,23 @@
 from __future__ import division, print_function
 
-import struct
+import json
 
 import mraa
 
-uart = mraa.Uart(2)
+uart = mraa.Uart(0)
 uart.setBaudRate(9600)
 
-class Telemetry(object):
-    def __init__(self, acc_x, acc_y, acc_z, bar_p, bar_alt):
-        self.acc_x = acc_x
-        self.acc_y = acc_y
-        self.acc_z = acc_z
-        self.bar_p = bar_p
-        self.bar_alt = bar_alt
+def init():
+    uart.writeStr('INIT\n')
 
-state = None
-telemetry = Telemetry(0, 0, 0, 0, 0)
+def deinit():
+    uart.writeStr('DEINIT\n')
 
-def set_state(state):
-    uart.writeStr(state)
+def read():
+    if uart.dataAvailable():
+        return uart.readStr(2)[0]
+    else:
+        return None
 
-def poll():
-    global state, telemetry
-
-    while uart.dataAvailable():
-        data_type = uart.readStr(1)
-
-        if data_type == 's':
-            state = uart.readStr(1)
-        elif data_type == 'u':
-            data = uart.read(20)
-            telemetry = Telemetry(*struct.unpack('fffff', bytes(data)))
-
-def get_state():
-    return state
-
-def get_telemetry():
-    return telemetry
+def send(data):
+    uart.writeStr(json.dumps(data) + '\n')
