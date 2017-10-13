@@ -280,24 +280,90 @@ void readBarometer(bool filter, bool debug = false, float p = 0) {
     bar.alt = 145440.0*(1 - pow(pressure/NWS_ALTI, 1/5.255));
 }
 
-void readGPS(bool debug = false, float lat = 0, float lon = 0) {
+const char * gpsGetField(const char * sentence, char * buf, unsigned short len) {
+    unsigned short idx = 0;
+
+    while (idx < len - 1) {
+        if (*sentence == ',') {
+            sentence++;
+            break;
+        }
+
+        buf[idx] = *sentence;
+
+        sentence++;
+        idx++;
+    }
+
+    buf[idx] = '\0';
+
+    return sentence;
+}
+
+void gpsReadLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
+    unsigned short idx = 0;
+    int c;
+
+    while (idx < len - 1) {
+        while(!stream.available());
+
+        c = stream.read();
+
+        if (crlf) {
+            if (c == '\r') {
+                continue;
+            }
+        }
+
+        if (c == '\n') {
+            break;
+        }
+
+        buf[idx] = c;
+
+        idx++;
+    }
+
+    buf[idx] = '\0';
+}
+
+void readGps(bool debug = false, float lat = 0, float lon = 0) {
+    static char sentence[80];
+    static char field[20];
+
     if (!debug) {
 	while (gpscomm.available()) {
-	    if (gpscomm.readStringUntil(',') == "$GPRMC") {
-		gps.lat = gpscomm.parseFloat();
-		gpscomm.read(); // ','
-		if (gpscomm.readStringUntil(',') == "S") {
-		    gps.lat = -gps.lat;
-		}
+	    const char * ptr = sentence;
 
-		gps.lon = gpscomm.parseFloat();
-		gpscomm.read(); // ','
-		if (gpscomm.readStringUntil(',') == "W") {
+	    gpsReadLine(gpscomm, sentence, sizeof(sentence));
+
+	    // id
+	    ptr = gpsGetField(ptr, field, sizeof(field));
+
+	    if (strcmp(field, "$GPRMC") == 0) {
+		// time
+		ptr = gpsGetField(ptr, field, sizeof(field));
+
+		// status
+		ptr = gpsGetField(ptr, field, sizeof(field));
+
+		// lat
+		ptr = gpsGetField(ptr, field, sizeof(field));
+		gps.lat = atof(field);
+
+		// n/s
+		ptr = gpsGetField(ptr, field, sizeof(field));
+		if (field[0] == 'S')
+		    gps.lat = -gps.lat;
+
+		// lon
+		ptr = gpsGetField(ptr, field, sizeof(field));
+		gps.lon = atof(field);
+
+		// e/w
+		ptr = gpsGetField(ptr, field, sizeof(field));
+		if (field[0] == 'W')
 		    gps.lon = -gps.lon;
-		}
-	    }
-	    else {
-		gpscomm.readStringUntil('\n');
 	    }
 	}
     }
@@ -357,12 +423,12 @@ void updateTelemetry() {
 
 	readAccelerometer(true, true, stream_data.values[0], stream_data.values[1], stream_data.values[2]);
 	readBarometer(true, true, stream_data.values[3]);
-	readGPS(true, stream_data.values[4], stream_data.values[5]);
+	readGps(true, stream_data.values[4], stream_data.values[5]);
     }
 #else
     readAccelerometer(true);
     readBarometer(true);
-    readGPS();
+    readGps();
 #endif
 
     data.values[0] = acc.x;
@@ -801,7 +867,7 @@ void setup() {
     bar.dp = bar_dp/SENSOR_INIT;
     bar.alt = bar_alt/SENSOR_INIT;
 
-    readGPS();
+    readGps();
 
     // check for saved data in EEPROM
     bool stored = true;
