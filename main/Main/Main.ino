@@ -448,62 +448,60 @@ void idle() {
     // update base station state
     sendBase('s', "h", 1);
 
-    while (state == IDLE) {
-	// check on ctrl term
+    // check on ctrl term
+    if (digitalRead(CTRL) == LOW) {
+	// wait for debounce and intent
+	delay(500);
+
+	// if button still held
 	if (digitalRead(CTRL) == LOW) {
-	    // wait for debounce and intent
+	    state = ARM;
+
+	    // wait for unpress
+	    while (digitalRead(CTRL) != HIGH)
+		delay(100);
+
+	    // wait for debounce
 	    delay(500);
 
-	    // if button still held
-	    if (digitalRead(CTRL) == LOW) {
-		state = ARM;
-
-		// wait for unpress
-		while (digitalRead(CTRL) != HIGH)
-		    delay(100);
-
-		// wait for debounce
-		delay(500);
-
-		// skip remainder of processing
-		break;
-	    }
+	    // skip remainder of processing
+	    return;
 	}
-
-	// receive base command
-	switch (recvBase()) {
-	    // do nothing if no command
-	    case 'h':
-		// Debug 1 Green - idling
-		bitClear(debug, 13);
-		bitSet(debug, 14);
-		break;
-
-		// run test
-	    case 't':
-		state = TEST;
-		break;
-
-		// arm rocket
-	    case 'a':
-		state = ARM;
-		break;
-
-		// no communication with base station
-	    case ' ':
-		// Debug 1 Red - no communication with base station
-		bitSet(debug, 13);
-		bitClear(debug, 14);
-		break;
-
-		// halt program in invalid state
-	    default:
-		state = HALT;
-	}
-
-	// update debug lights
-	sendDebug();
     }
+
+    // receive base command
+    switch (recvBase()) {
+	// do nothing if no command
+	case 'h':
+	    // Debug 1 Green - idling
+	    bitClear(debug, 13);
+	    bitSet(debug, 14);
+	    break;
+
+	    // run test
+	case 't':
+	    state = TEST;
+	    break;
+
+	    // arm rocket
+	case 'a':
+	    state = ARM;
+	    break;
+
+	    // no communication with base station
+	case ' ':
+	    // Debug 1 Red - no communication with base station
+	    bitSet(debug, 13);
+	    bitClear(debug, 14);
+	    break;
+
+	    // halt program in invalid state
+	default:
+	    state = HALT;
+    }
+
+    // update debug lights
+    sendDebug();
 }
 
 void halt() {
