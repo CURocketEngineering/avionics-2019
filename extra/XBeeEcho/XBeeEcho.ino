@@ -4,6 +4,7 @@
  * A program that repeats anything received over the radio.
  */
 
+#ifdef SS
 #include <SoftwareSerial.h>
 
 // note: these are the opposite of what is on the dev board
@@ -12,11 +13,15 @@
 
 SoftwareSerial xbee(XBEE_RX, XBEE_TX);
 
+#else
+#define xbee Serial
+#endif
 void setup() {
+#ifdef SS
   pinMode(XBEE_RX, INPUT);
   pinMode(XBEE_TX, OUTPUT);
 
-  Serial.begin(9600);
+#endif
   xbee.begin(9600);
   xbee.println();
 }
