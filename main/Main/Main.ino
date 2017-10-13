@@ -49,6 +49,9 @@
 #define ACCEL_GAIN 0.2
 #define BARO_GAIN 0.2
 
+// delay to rate limit idle function
+#define IDLE_DELAY 2000
+
 // time to hold pin high for parachute charge
 #define DELAY_PARACHUTE 1000
 
@@ -445,63 +448,67 @@ void updateTelemetry() {
 // state functions
 
 void idle() {
-    // update base station state
-    sendBase('s', "h", 1);
+    while (state == IDLE) {
+	// update base station state
+	sendBase('s', "h", 1);
 
-    // check on ctrl term
-    if (digitalRead(CTRL) == LOW) {
-	// wait for debounce and intent
-	delay(500);
-
-	// if button still held
+	// check on ctrl term
 	if (digitalRead(CTRL) == LOW) {
-	    state = ARM;
-
-	    // wait for unpress
-	    while (digitalRead(CTRL) != HIGH)
-		delay(100);
-
-	    // wait for debounce
+	    // wait for debounce and intent
 	    delay(500);
 
-	    // skip remainder of processing
-	    return;
+	    // if button still held
+	    if (digitalRead(CTRL) == LOW) {
+		state = ARM;
+
+		// wait for unpress
+		while (digitalRead(CTRL) != HIGH)
+		    delay(100);
+
+		// wait for debounce
+		delay(500);
+
+		// skip remainder of processing
+		break;
+	    }
 	}
+
+	// receive base command
+	switch (recvBase()) {
+	    // do nothing if no command
+	    case 'h':
+		// Debug 1 Green - idling
+		bitClear(debug, 13);
+		bitSet(debug, 14);
+		break;
+
+		// run test
+	    case 't':
+		state = TEST;
+		break;
+
+		// arm rocket
+	    case 'a':
+		state = ARM;
+		break;
+
+		// no communication with base station
+	    case ' ':
+		// Debug 1 Red - no communication with base station
+		bitSet(debug, 13);
+		bitClear(debug, 14);
+		break;
+
+		// halt program in invalid state
+	    default:
+		state = HALT;
+	}
+
+	// update debug lights
+	sendDebug();
+
+	delay(IDLE_DELAY);
     }
-
-    // receive base command
-    switch (recvBase()) {
-	// do nothing if no command
-	case 'h':
-	    // Debug 1 Green - idling
-	    bitClear(debug, 13);
-	    bitSet(debug, 14);
-	    break;
-
-	    // run test
-	case 't':
-	    state = TEST;
-	    break;
-
-	    // arm rocket
-	case 'a':
-	    state = ARM;
-	    break;
-
-	    // no communication with base station
-	case ' ':
-	    // Debug 1 Red - no communication with base station
-	    bitSet(debug, 13);
-	    bitClear(debug, 14);
-	    break;
-
-	    // halt program in invalid state
-	default:
-	    state = HALT;
-    }
-
-    // update debug lights
-    sendDebug();
 }
 
 void halt() {
