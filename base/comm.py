@@ -16,7 +16,7 @@ def read():
     data_time, data_type = struct.unpack('fc', bytes(header))
 
     if data_type == 's':
-        state = struct.unpack('c', bytes(comm.read(1)))
+        state = struct.unpack('c', bytes(comm.read(1)))[0]
         return {'time': data_time, 'type': 's', 'state': state}
     elif data_type == 'u':
         acc_x, acc_y, acc_z, bar_p, bar_alt, gps_lat, gps_lon = struct.unpack('fffffff', bytes(comm.read(28)))

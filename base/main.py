@@ -43,7 +43,7 @@ try:
         print('\33[2J')
 
         if data['state'] != '-':
-            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(connected, data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
+            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
         else:
             print('Waiting on main computer...')
 except KeyboardInterrupt:

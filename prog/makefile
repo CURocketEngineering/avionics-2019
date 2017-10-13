@@ -163,6 +163,9 @@
 #_______________________________________________________________________________
 #
 
+BOARD ?= mega
+PROCESSOR ?= atmega2560
+
 CWD := $(shell basename $(shell pwd))
 
 # default arduino software directory, check software exists
