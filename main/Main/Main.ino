@@ -50,7 +50,7 @@
 #define BARO_GAIN 0.2
 
 // delay to rate limit idle function
-#define IDLE_DELAY 2000
+#define IDLE_DELAY 1000
 
 // time to hold pin high for parachute charge
 #define DELAY_PARACHUTE 1000
@@ -287,15 +287,15 @@ const char * gpsGetField(const char * sentence, char * buf, unsigned short len) 
     unsigned short idx = 0;
 
     while (idx < len - 1) {
-        if (*sentence == ',') {
-            sentence++;
-            break;
-        }
+	if (*sentence == ',') {
+	    sentence++;
+	    break;
+	}
 
-        buf[idx] = *sentence;
+	buf[idx] = *sentence;
 
-        sentence++;
-        idx++;
+	sentence++;
+	idx++;
     }
 
     buf[idx] = '\0';
@@ -308,23 +308,23 @@ void gpsReadLine(Stream & stream, char * buf, unsigned short len, bool crlf=true
     int c;
 
     while (idx < len - 1) {
-        while(!stream.available());
+	while(!stream.available());
 
-        c = stream.read();
+	c = stream.read();
 
-        if (crlf) {
-            if (c == '\r') {
-                continue;
-            }
-        }
+	if (crlf) {
+	    if (c == '\r') {
+		continue;
+	    }
+	}
 
-        if (c == '\n') {
-            break;
-        }
+	if (c == '\n') {
+	    break;
+	}
 
-        buf[idx] = c;
+	buf[idx] = c;
 
-        idx++;
+	idx++;
     }
 
     buf[idx] = '\0';
@@ -572,10 +572,9 @@ void arm() {
     bitSet(debug, 3);
     sendDebug();
 
-    // update base station state
-    sendBase('s', "a", 1);
-
     while (state == ARM) {
+	// update base station state
+	sendBase('s', "a", 1);
 	updateTelemetry();
 
 	// sample ground altitude
@@ -830,6 +829,9 @@ void setup() {
     // initialize communication with the barometer
     Wire.begin();
     initBarometer();
+
+    // initialize communication with GPS receiver
+    gpscomm.begin(9600);
 
     // initialize communication with the base station
     Serial.begin(9600);
