@@ -9,7 +9,7 @@ import box
 import comm
 import term
 
-states = {'h': 'Idle', 't': 'Test', 'p': 'Pass', 'f': 'Fail', 'a': 'Arm', 'i': 'Ignite', 'b': 'Burn', 'c': 'Coast', 'd': 'Apogee', 'w': 'Wait', 'e': 'Eject', 'l': 'Fall', 'r': 'Recover'}
+states = {'-': 'Disconnected', 'h': 'Idle', 't': 'Test', 'p': 'Pass', 'f': 'Fail', 'a': 'Arm', 'i': 'Ignite', 'b': 'Burn', 'c': 'Coast', 'd': 'Apogee', 'w': 'Wait', 'e': 'Eject', 'l': 'Fall', 'r': 'Recover'}
 
 inited = False
 
@@ -40,12 +40,7 @@ try:
 
             box.write(data)
 
-        print('\33[2J')
-
-        if data['state'] != '-':
-            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']))
-        else:
-            print('Waiting on main computer...')
+        print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']), end='\r')
 except KeyboardInterrupt:
     pass
 finally:
