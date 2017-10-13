@@ -51,7 +51,7 @@ void readLine(Stream & stream, char * buf, unsigned short len, bool crlf=true) {
 void setup() {
     pinMode(13, OUTPUT);
     digitalWrite(13, LOW);
-    
+
     Serial.begin(9600);
 }
 
