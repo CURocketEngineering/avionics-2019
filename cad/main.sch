@@ -84,7 +84,6 @@ LIBS:Worldsemi
 LIBS:Xicor
 LIBS:zetex
 LIBS:Zilog
-LIBS:main-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -100,7 +99,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L ATMEGA328P-P IC1
+L ATMEGA328P-MMH IC1
 U 1 1 58B76AB6
 P 2400 2200
 F 0 "IC1" H 1650 3450 50  0000 L BNN
