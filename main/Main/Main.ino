@@ -9,9 +9,6 @@
 
 // definitions
 
-// set when testing
-#define DEBUG
-
 // National Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 1013.25
 
@@ -26,9 +23,6 @@
 
 #define GPS_RX 8
 #define GPS_TX 9
-
-#define DEBUG_RX 18
-#define DEBUG_TX 19
 
 #define PANEL_CLOCK 3
 #define PANEL_DATA 4
@@ -130,10 +124,6 @@ int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 
 SoftwareSerial gpscomm(GPS_RX, GPS_TX);
 
-#ifdef DEBUG
-SoftwareSerial stream(DEBUG_RX, DEBUG_TX);
-
-#endif
 // sensor functions
 
 void readAccelerometer(bool filter, bool debug = false, float x = 0, float y = 0, float z = 0) {
@@ -415,24 +405,9 @@ void updateTelemetry() {
 	float values[7];
     } data;
 
-#ifdef DEBUG
-    if (stream.available()) {
-	static union stream_data_u {
-	    char bytes[24];
-	    float values[6];
-	} stream_data;
-
-	stream.readBytes(stream_data.bytes, 24);
-
-	readAccelerometer(true, true, stream_data.values[0], stream_data.values[1], stream_data.values[2]);
-	readBarometer(true, true, stream_data.values[3]);
-	readGps(true, stream_data.values[4], stream_data.values[5]);
-    }
-#else
     readAccelerometer(true);
     readBarometer(true);
     readGps();
-#endif
 
     data.values[0] = acc.x;
     data.values[1] = acc.y;
@@ -822,10 +797,6 @@ void setup() {
 
     sendDebug();
 
-#ifdef DEBUG
-    delay(2000);
-
-#endif
     // initialize communication with the barometer
     Wire.begin();
     initBarometer();
@@ -915,14 +886,6 @@ void setup() {
 
     bitClear(debug, 15);
 
-#ifdef DEBUG
-    stream.begin(9600);
-    stream.write('D');
-
-    // Debug 2 Blue - debug
-    bitSet(debug, 12);
-
-#endif
     sendDebug();
 }
 
