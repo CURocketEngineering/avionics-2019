@@ -10,10 +10,10 @@
 #include "gps.h"
 #include "communication.h"
 
-void sendBase(char type, const char * data, unsigned int len) {
+void communication_send(char type, const char * data, unsigned int len) {
      static union time_data_u {
-     char bytes[4];
-     float value;
+          char bytes[4];
+          float value;
      } time_data;
 
      time_data.value = millis()/1000.0;
@@ -24,7 +24,7 @@ void sendBase(char type, const char * data, unsigned int len) {
      Serial.write(data, len);
 }
 
-char recvBase() {
+char communication_recv() {
      // Request and read a single char from base station
      if (Serial.available()) {
           return Serial.read();
@@ -34,7 +34,7 @@ char recvBase() {
      }
 }
 
-void sendDebug() {
+void communication_writeDebug() {
      // Send bits
      digitalWrite(PANEL_LATCH, LOW);
      shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
@@ -43,15 +43,15 @@ void sendDebug() {
      delay(50);
 }
 
-void updateTelemetry() {
+void communication_updateTelemetry() {
      static union data_u {
-     char bytes[28];
-     float values[7];
+          char bytes[28];
+          float values[7];
      } data;
 
-     readAccelerometer(true);
-     readBarometer(true);
-     readGps();
+     accelerometer_read(true);
+     barometer_read(true);
+     gps_read();
 
      data.values[0] = acc.x;
      data.values[1] = acc.y;
@@ -61,5 +61,15 @@ void updateTelemetry() {
      data.values[5] = gps.lat;
      data.values[6] = gps.lon;
 
-     sendBase('u', data.bytes, 28);
+     communication_send('u', data.bytes, 28);
+}
+
+void communication_init() {
+     pinMode(PANEL_CLOCK, OUTPUT);
+     pinMode(PANEL_DATA, OUTPUT);
+     pinMode(PANEL_LATCH, OUTPUT);
+     digitalWrite(PANEL_LATCH, HIGH);
+     delay(50);
+
+     Serial.begin(9600);
 }
