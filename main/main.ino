@@ -17,7 +17,7 @@
 #define DELAY_PARACHUTE 1000
 
 /* LIBRARIES */
-#include "global.h"
+#include "debug.h"
 #include "accelerometer.h"
 #include "state.h"
 #include "barometer.h"
@@ -27,6 +27,9 @@
 /* MAIN PROGRAM FUNCTIONS */
 
 void setup() {
+    // Initialize communication with the base station
+    debug_init();
+
     // Initialize communication with the barometer
     barometer_init();
 

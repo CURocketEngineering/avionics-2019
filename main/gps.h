@@ -9,7 +9,6 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include "global.h"
 
 // GPS pins
 #define GPS_RX 8

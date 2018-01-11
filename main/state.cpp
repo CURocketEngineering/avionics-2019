@@ -8,7 +8,8 @@
 #include <EEPROM.h>
 #include "state.h"
 #include "communication.h"
-#include "global.h"
+#include "debug.h"
+#include "pins.h"
 
 String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
@@ -69,7 +70,7 @@ void idle() {
         }
 
         // Update debug lights
-        communication_writeDebug();
+        debug_write();
 
         delay(IDLE_DELAY);
     }
@@ -78,7 +79,7 @@ void idle() {
 void halt() {
     // Debug 1-4 Red - halt
     debug = 0b0010010010010000;
-    communication_writeDebug();
+    debug_write();
 
     // Turn off all important lines
     digitalWrite(TERM_MAIN, LOW);
@@ -94,7 +95,7 @@ void halt() {
 void test() {
     // Debug 1 Blue - run test
     bitSet(debug, 15);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "t", 1);
@@ -116,7 +117,7 @@ void test() {
         bitSet(debug, 10);
     }
 
-    communication_writeDebug();
+    debug_write();
 
     // Wait for lights to be read
     delay(2000);
@@ -125,7 +126,7 @@ void test() {
     bitClear(debug, 10);
     bitClear(debug, 11);
     bitClear(debug, 15);
-    communication_writeDebug();
+    debug_write();
 
     state = IDLE;
 }
@@ -133,7 +134,7 @@ void test() {
 void arm() {
     // Arm Blue - armed
     bitSet(debug, 3);
-    communication_writeDebug();
+    debug_write();
 
     while (state == ARM) {
         // Update base station state
@@ -197,7 +198,7 @@ void arm() {
 void ignite() {
     // Debug 3 Red - igniting
     bitSet(debug, 7);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "i", 1);
@@ -246,7 +247,7 @@ void ignite() {
 void burn() {
     // Debug 3 Yellow - burning
     bitSet(debug, 8);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "b", 1);
@@ -265,7 +266,7 @@ void coast() {
     bitClear(debug, 7);
     bitClear(debug, 8);
     bitSet(debug, 9);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "c", 1);
@@ -283,7 +284,7 @@ void apogee() {
     // Debug 3 Green - apogee
     bitClear(debug, 9);
     bitSet(debug, 8);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "d", 1);
@@ -300,7 +301,7 @@ void apogee() {
 void wait() {
     // Debug 4 Blue - waiting
     bitSet(debug, 6);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "w", 1);
@@ -319,7 +320,7 @@ void eject() {
     bitClear(debug, 6);
     bitSet(debug, 4);
     bitSet(debug, 5);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "e", 1);
@@ -336,7 +337,7 @@ void eject() {
 void fall() {
     // Debug 4 Green - falling
     bitClear(debug, 4);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "l", 1);
@@ -353,7 +354,7 @@ void fall() {
 void recover() {
     // Arm Green - recovery
     bitClear(debug, 3);
-    communication_writeDebug();
+    debug_write();
 
     // Update base station state
     communication_send('s', "r", 1);

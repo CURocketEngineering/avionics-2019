@@ -5,7 +5,7 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include "accelerometer.h"
-#include "global.h"
+#include "pins.h"
 
 void accelerometer_init() {
     // Set inputs and outputs

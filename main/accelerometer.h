@@ -8,7 +8,6 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
-#include "global.h"
 
 // Gain value for sensor filter
 #define ACCEL_GAIN 0.2

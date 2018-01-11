@@ -9,7 +9,6 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
-#include "global.h"
 
 // National Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 1013.25

@@ -5,7 +5,7 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include "global.h"
+#include "pins.h"
 #include "gps.h"
 
 SoftwareSerial gpscomm(GPS_RX, GPS_TX);

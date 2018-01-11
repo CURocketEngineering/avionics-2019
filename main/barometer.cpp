@@ -5,7 +5,7 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
-#include "global.h"
+#include "pins.h"
 #include "barometer.h"
 
 void barometer_writeByte(byte address, byte data) {

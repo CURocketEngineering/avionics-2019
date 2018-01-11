@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <avr/sleep.h>
 #include <EEPROM.h>
-#include "global.h"
+#include "pins.h"
 #include "communication.h"
 #include "accelerometer.h"
 #include "barometer.h"

@@ -1,10 +1,5 @@
-/*
- * Declaration file for global variables
- */
-
-/* DEFINE */
-#ifndef GLOBAL_H_
-#define GLOBAL_H_
+#ifndef PINS_H_
+#define PINS_H_
 
 // Accelerometer pins
 #define ACCEL_X 14
@@ -15,7 +10,5 @@
 #define PANEL_CLOCK 3
 #define PANEL_DATA 4
 #define PANEL_LATCH 2
-
-extern unsigned int debug;
 
 #endif

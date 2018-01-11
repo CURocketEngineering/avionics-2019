@@ -8,12 +8,10 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
-#include "global.h"
 
 /* DEFINE FUNCTIONS */
 void communication_send(char type, const char * data, unsigned int len);
 char communication_recv();
-void communication_writeDebug();
 void communication_updateTelemetry();
 void communication_init();
 

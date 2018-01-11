@@ -4,7 +4,7 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
-#include "global.h"
+#include "pins.h"
 #include "accelerometer.h"
 #include "barometer.h"
 #include "gps.h"
@@ -34,15 +34,6 @@ char communication_recv() {
      }
 }
 
-void communication_writeDebug() {
-     // Send bits
-     digitalWrite(PANEL_LATCH, LOW);
-     shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, lowByte(debug));
-     shiftOut(PANEL_DATA, PANEL_CLOCK, LSBFIRST, highByte(debug));
-     digitalWrite(PANEL_LATCH, HIGH);
-     delay(50);
-}
-
 void communication_updateTelemetry() {
      static union data_u {
           char bytes[28];
@@ -65,11 +56,5 @@ void communication_updateTelemetry() {
 }
 
 void communication_init() {
-     pinMode(PANEL_CLOCK, OUTPUT);
-     pinMode(PANEL_DATA, OUTPUT);
-     pinMode(PANEL_LATCH, OUTPUT);
-     digitalWrite(PANEL_LATCH, HIGH);
-     delay(50);
-
      Serial.begin(9600);
 }
