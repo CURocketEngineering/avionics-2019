@@ -8,6 +8,7 @@
 #include <SPI.h>
 #include <SparkFunLSM9DS1.h>
 #include "ninedof.h"
+#include "datalog.h"
 
 void ninedof_setup() {
     // These take place after calling imu.begin()
@@ -46,7 +47,9 @@ void ninedof_readData() {
 }
 
 void ninedof_printData() {
-    // Print gyroscope
+    int valueWritten = 0; // Janky workaround
+
+    // Print gyroscope using serial
     Serial.print("Gyro: ");
     Serial.print(imu.calcGyro(imu.gx), 5);
     Serial.print(", ");
@@ -61,7 +64,23 @@ void ninedof_printData() {
     Serial.print(ninedof_calcDeviationZ(gyro_dev.z), 5);
     Serial.print(" deg/s");
 
-    // Print accelerometer
+    // Print gyroscope using Json
+    gyro_data.add("Gyro:");
+    valueWritten = (int)(imu.calcGyro(imu.gx) * 100000) / 100000.0;
+    gyro_data.add(valueWritten);
+    valueWritten = (int)(imu.calcGyro(imu.gy) * 100000) / 100000.0;
+    gyro_data.add(valueWritten);
+    valueWritten = (int)(imu.calcGyro(imu.gz) * 100000) / 100000.0;
+    gyro_data.add(valueWritten);
+    gyro_data.add("deg/s");
+    gyro_data.add("Deviation(x,z):");
+    valueWritten = (int)(ninedof_calcDeviationX(gyro_dev.x) * 100000) / 100000.0;
+    gyro_data.add(valueWritten);
+    valueWritten = (int)(ninedof_calcDeviationZ(gyro_dev.z) * 100000) / 100000.0;
+    gyro_data.add(valueWritten);
+    gyro_data.add("deg/s");
+
+    // Print accelerometer using serial
     Serial.print("Accel: ");
     Serial.print(imu.calcAccel(imu.ax), 5);
     Serial.print(", ");
@@ -70,7 +89,17 @@ void ninedof_printData() {
     Serial.print(imu.calcAccel(imu.az), 5);
     Serial.println(" g");
 
-    // Print magnetometer
+    // Print accelerometer using Json
+    accel_data.add("Accel:");
+    valueWritten = (int)(imu.calcAccel(imu.ax) * 100000) / 100000.0;
+    accel_data.add(valueWritten);
+    valueWritten = (int)(imu.calcAccel(imu.ay) * 100000) / 100000.0;
+    accel_data.add(valueWritten);
+    valueWritten = (int)(imu.calcAccel(imu.az) * 100000) / 100000.0;
+    accel_data.add(valueWritten);
+    accel_data.add("g");
+
+    // Print magnetometer using serial
     Serial.print("Mag: ");
     Serial.print(imu.calcMag(imu.mx), 5);
     Serial.print(", ");
@@ -78,6 +107,16 @@ void ninedof_printData() {
     Serial.print(", ");
     Serial.print(imu.calcMag(imu.mz), 5);
     Serial.println(" gauss");
+
+    // Print magnetometer using Json
+    mag_data.add("Mag:");
+    valueWritten = (int)(imu.calcMag(imu.mx) * 100000) / 100000.0;
+    mag_data.add(valueWritten);
+    valueWritten = (int)(imu.calcMag(imu.my) * 100000) / 100000.0;
+    mag_data.add(valueWritten);
+    valueWritten = (int)(imu.calcMag(imu.mz) * 100000) / 100000.0;
+    mag_data.add(valueWritten);
+    mag_data.add("gauss");
 }
 
 void ninedof_calcAttitude(float ax, float ay, float az,
@@ -101,6 +140,11 @@ void ninedof_calcAttitude(float ax, float ay, float az,
     heading *= 180.0 / PI;
     pitch *= 180.0 / PI;
     roll  *= 180.0 / PI;
+
+    // Print via json
+    attitude_data.add(heading);
+    attitude_data.add(pitch);
+    attitude_data.add(roll);
 }
 
 float ninedof_calcDeviationX(float gx) {
