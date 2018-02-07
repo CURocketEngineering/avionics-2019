@@ -6,9 +6,10 @@
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
-#include <ArduinoJson.h>
+#include "json.h"
 #include "datalog.h"
 #include "ninedof.h"
+#include "pins.h"
 
 void datalog_setup() {
     /* SETTING UP SD CARD */

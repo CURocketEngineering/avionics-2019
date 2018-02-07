@@ -26,7 +26,7 @@ static struct bar_s {
 } bar, bar_prev;
 static struct bar_init_s {
      // Coefficients
-n     short AC1, AC2, AC3, VB1, VB2, MB, MC, MD;
+     short AC1, AC2, AC3, VB1, VB2, MB, MC, MD;
      unsigned short AC4, AC5, AC6;
      float c3, c4, b1, c5, c6, mc, md, x0, x1, x2, y0, y1, y2, p0, p1, p2;
 } bar_init;
