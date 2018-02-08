@@ -7,12 +7,13 @@
 #include <Wire.h>
 #include "pins.h"
 #include "barometer.h"
-#include "SparkFunBME280.h" //can be found at https://github.com/sparkfun/SparkFun_BME280_Arduino_Library
+#include "BME280/SparkFunBME280.h"
 
 BME280 barSensor; //The barometer
 
 void barometer_init() {
      Wire.begin();
+
      //Default setup code for the BME280 library
      //This is I2C, BME280 also supports SPI
      barSensor.settings.commInterface = I2C_MODE;
@@ -31,11 +32,10 @@ void barometer_init() {
 
      barSensor.settings.humidOverSample = 1;
      delay(10);
-
 }
 
 void barometer_read(bool filter) {
-  static byte buf[3]; //? , also is bar_s gnd ever used?
+     static byte buf[3];
 
      static float pressure, temperature, altitude, humidity; //kpa, c, m, %
      static float temperaturef, altitudeft; //degree f, ft
@@ -53,10 +53,10 @@ void barometer_read(bool filter) {
      bar.p = pressure;
      bar.alt = altitude;
 
-     /* Commented out because I honestly do not understand what the filter does
+     /* Commented out because I honestly do not understand what the filter does */
      if (filter) {
           bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;
      }
-     */
+
      bar.dp = bar.p - bar_prev.p;
 }
