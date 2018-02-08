@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <SparkFunLSM9DS1.h>
+#include "SparkFunLSM9DS1.h"
 #include "ninedof.h"
 #include "datalog.h"
 

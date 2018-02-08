@@ -15,21 +15,21 @@ void barometer_init() {
      Wire.begin();
      //Default setup code for the BME280 library
      //This is I2C, BME280 also supports SPI
-     mySensor.settings.commInterface = I2C_MODE;
-     mySensor.settings.I2CAddress = BARO_ADDR;
+     barSensor.settings.commInterface = I2C_MODE;
+     barSensor.settings.I2CAddress = BARO_ADDR;
      //For SPI enable the following and dissable the I2C section
-     //mySensor.settings.commInterface = SPI_MODE;
-     //mySensor.settings.chipSelectPin = 10;
+     //barSensor.settings.commInterface = SPI_MODE;
+     //barSensor.settings.chipSelectPin = 10;
 
      //General Settings
-     mySensor.settings.runMode = 3; //Run mode
-     mySensor.settings.tStandby = 0; // 0.5ms
-     mySensor.settings.filter = 0; //filter off **
+     barSensor.settings.runMode = 3; //Run mode
+     barSensor.settings.tStandby = 0; // 0.5ms
+     barSensor.settings.filter = 0; //filter off **
 
-     mySensor.settings.tempOverSample = 1;
-     mySensor.settings.pressOverSample = 1;
+     barSensor.settings.tempOverSample = 1;
+     barSensor.settings.pressOverSample = 1;
 
-     mySensor.settings.humidOverSample = 1;
+     barSensor.settings.humidOverSample = 1;
      delay(10);
 
 }
@@ -45,14 +45,14 @@ void barometer_read(bool filter) {
      altitude = barSensor.readFloatAltitudeMeters();
      humidity = barSensor.readFloatHumidity();
      altitudeft = barSensor.readFloatAltitudeFeet();
-     temperaturef = barSensor.readTempf();
-     
-     
+     temperaturef = barSensor.readTempF();
+
+
      // Calculate compensated pressure **
      bar_prev = bar;
      bar.p = pressure;
      bar.alt = altitude;
-     
+
      /* Commented out because I honestly do not understand what the filter does
      if (filter) {
           bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;

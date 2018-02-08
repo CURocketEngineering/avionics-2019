@@ -10,7 +10,8 @@
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
-#include <ArduinoJson.h> // https://github.com/bblanchon/ArduinoJson
+#include "json.h" // https://github.com/bblanchon/ArduinoJson
+#include "pins.h"
 
 // Modified from https://github.com/PaulStoffregen/SD/blob/master/examples/Datalogger/Datalogger.ino
 
@@ -22,6 +23,7 @@ const int chipSelect = BUILTIN_SDCARD;
 DynamicJsonBuffer jsonBuffer;
 
 // Creating object trees
+// May have to place elsewhere (in a cpp for example)
 JsonObject& acc_json = jsonBuffer.createObject();
 JsonObject& baro_json = jsonBuffer.createObject();
 JsonObject& gps_json = jsonBuffer.createObject();
