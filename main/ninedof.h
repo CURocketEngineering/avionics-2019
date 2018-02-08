@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <SparkFunLSM9DS1.h>
+#include "SparkFunLSM9DS1.h"
 
 // Create LSM9DS1 class
 LSM9DS1 imu;
