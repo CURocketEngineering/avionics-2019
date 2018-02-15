@@ -168,8 +168,8 @@ CWD := $(shell basename $(shell pwd))
 # default arduino software directory, check software exists
 ifndef ARDUINODIR
 ARDUINODIR := $(firstword $(wildcard ~/opt/arduino /usr/share/arduino \
-	/Applications/Arduino.app/Contents/Resources/Java \
-	$(HOME)/Applications/Arduino.app/Contents/Resources/Java))
+	/Applications/Arduino.app/Contents/Java \
+	$(HOME)/Applications/Arduino.app/Contents/Java))
 endif
 ifeq "$(wildcard $(ARDUINODIR)/hardware/arduino/avr/boards.txt)" ""
 $(error ARDUINODIR is not set correctly; arduino software not found)
