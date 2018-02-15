@@ -7,9 +7,11 @@
 #define STATE_H_
 
 /* LIBRARIES */
-#include <Arduino.h>
 #include <avr/sleep.h>
+
+#include <Arduino.h>
 #include <EEPROM.h>
+
 #include "pins.h"
 #include "communication.h"
 #include "accelerometer.h"

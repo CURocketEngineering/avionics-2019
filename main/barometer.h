@@ -9,8 +9,10 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
+
+#include "libraries/BME280/SparkFunBME280.h"
+
 #include "pins.h"
-#include "BME280/SparkFunBME280.h"
 
 // National Weather Service altimeter reading (http://www.weather.gov/)
 #define NWS_ALTI 1013.25

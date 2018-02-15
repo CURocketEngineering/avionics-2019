@@ -5,9 +5,9 @@
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
+
 #include "pins.h"
 #include "barometer.h"
-#include "BME280/SparkFunBME280.h"
 
 BME280 barSensor; //The barometer
 

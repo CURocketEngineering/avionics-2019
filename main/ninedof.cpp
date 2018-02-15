@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include "SparkFunLSM9DS1.h"
+
 #include "ninedof.h"
 #include "datalog.h"
 
@@ -16,7 +16,8 @@ void ninedof_setup() {
     imu.settings.device.mAddress = LSM9DS1_M;
     imu.settings.device.agAddress = LSM9DS1_AG;
 
-    gyro_dev_prev.x, gyro_dev_prev.z = 0.0;
+    gyro_dev_prev.x = 0.0;
+    gyro_dev_prev.z = 0.0;
 
     if (!imu.begin()) {
         Serial.println("Failed to communicate with LSM9DS1.");

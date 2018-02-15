@@ -10,7 +10,9 @@
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
-#include "json.h" // https://github.com/bblanchon/ArduinoJson
+
+#include "libraries/ArduinoJson.h"
+
 #include "pins.h"
 
 // Modified from https://github.com/PaulStoffregen/SD/blob/master/examples/Datalogger/Datalogger.ino
