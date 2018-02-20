@@ -1,8 +1,3 @@
-/*
- * Definition file for datalogger
- */
-
-/* LIBRARIES */
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
@@ -11,37 +6,29 @@
 #include "ninedof.h"
 #include "pins.h"
 
-void datalog_setup() {
-    /* SETTING UP SD CARD */
-    Serial.print("Initializing SD card");
+DynamicJsonBuffer jsonBuffer;
 
-    // Check if initialized
-    if (!SD.begin(chipSelect)) {
-        Serial.println("Card failed or not present");
-        return;
-    }
-    else {
-        Serial.println("Card initialized");
-    }
+void datalog_setup() {
+    acc_json = jsonBuffer.createObject();
+    baro_json = jsonBuffer.createObject();
+    gps_json = jsonBuffer.createObject();
+    ninedof_json = jsonBuffer.createObject();
+
+    gyro_data = ninedof_json.createNestedArray("gyro");
+    accel_data = ninedof_json.createNestedArray("accel");
+    mag_data = ninedof_json.createNestedArray("mag");
+    attitude_data = ninedof_json.createNestedArray("attitude");
+
+    SD.begin(BUILTIN_SDCARD);
 }
 
 void datalog_print() {
-    // Open file
-    File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    File file = SD.open("box.json", FILE_WRITE);
 
-    // Temporary string
-    String jsonStr;
+    String str;
 
-    // If file available, write to it
-    if (dataFile) {
-        ninedof_json.printTo(jsonStr);
-        dataFile.println(jsonStr);
-        // dataFile.close(); << HAVE TO INCLUDE SOMEWHERE but I don't know where
+    ninedof_json.printTo(str);
+    file.println(str);
 
-        // Print to serial port (remove maybe)
-        ninedof_json.printTo(Serial);
-    }
-    else {
-        Serial.println("Error opening datalog.txt.");
-    }
+    file.close();
 }

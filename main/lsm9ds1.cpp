@@ -21,9 +21,9 @@ local, and you've found our code helpful, please buy us a round!
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "SparkFunLSM9DS1.h"
-#include "LSM9DS1_Registers.h"
-#include "LSM9DS1_Types.h"
+#include "lsm9ds1.h"
+#include "lsm9ds1reg.h"
+#include "lsm9ds1types.h"
 #include <Wire.h> // Wire library is used for I2C
 #include <SPI.h>  // SPI library is used for...SPI.
 

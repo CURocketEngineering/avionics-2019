@@ -53,7 +53,6 @@ void barometer_read(bool filter) {
      bar.p = pressure;
      bar.alt = altitude;
 
-     /* Commented out because I honestly do not understand what the filter does */
      if (filter) {
           bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;
      }

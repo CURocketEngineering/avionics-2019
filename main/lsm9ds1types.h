@@ -21,7 +21,7 @@ Distributed as-is; no warranty is given.
 #ifndef __LSM9DS1_Types_H__
 #define __LSM9DS1_Types_H__
 
-#include "LSM9DS1_Registers.h"
+#include "lsm9ds1reg.h"
 
 // The LSM9DS1 functions over both I2C or SPI. This library supports both.
 // But the interface mode used must be sent to the LSM9DS1 constructor. Use

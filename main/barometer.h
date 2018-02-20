@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "libraries/BME280/SparkFunBME280.h"
+#include "bme280.h"
 
 #include "pins.h"
 
