@@ -22,8 +22,6 @@ static struct gps_s {
 } gps;
 
 /* DEFINE FUNCTIONS */
-const char * gps_getField(const char * sentence, char * buf, unsigned short len);
-void gps_readLine(Stream & stream, char * buf, unsigned short len, bool crlf = true);
 void gps_init();
 void gps_read();
 

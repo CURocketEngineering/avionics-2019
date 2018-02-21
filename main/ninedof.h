@@ -38,7 +38,7 @@ static struct att_s {
     float r, p, y;
 } att;
 
-void ninedof_setup();
+void ninedof_init();
 void ninedof_read();
 
 #endif

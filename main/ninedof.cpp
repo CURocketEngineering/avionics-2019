@@ -6,7 +6,7 @@
 
 LSM9DS1 imu;
 
-void ninedof_setup() {
+void ninedof_init() {
     imu.settings.device.commInterface = IMU_MODE_I2C;
     imu.settings.device.mAddress = LSM9DS1_M;
     imu.settings.device.agAddress = LSM9DS1_AG;
