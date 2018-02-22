@@ -4,57 +4,77 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
+
 #include "pins.h"
 #include "accelerometer.h"
 #include "barometer.h"
 #include "gps.h"
 #include "communication.h"
 
-void communication_send(char type, const char * data, unsigned int len) {
-     static union time_data_u {
-          char bytes[4];
-          float value;
-     } time_data;
+DynamicJsonBuffer json;
 
-     time_data.value = millis()/1000.0;
-
-     // Transmit message time type and data
-     Serial.write(time_data.bytes, 4);
-     Serial.write(type);
-     Serial.write(data, len);
-}
-
-char communication_recv() {
-     // Request and read a single char from base station
-     if (Serial.available()) {
-          return Serial.read();
-     }
-     else {
-          return ' ';
-     }
-}
+JsonObject & telemetry = json.createObject();
 
 void communication_updateTelemetry() {
-     static union data_u {
-          char bytes[28];
-          float values[7];
-     } data;
-
-     accelerometer_read(true);
+     ninedof_read(true);
      barometer_read(true);
-     gps_read();
+     gps_read(true);
 
-     data.values[0] = acc.x;
-     data.values[1] = acc.y;
-     data.values[2] = acc.z;
-     data.values[3] = bar.p;
-     data.values[4] = bar.alt;
-     data.values[5] = gps.lat;
-     data.values[6] = gps.lon;
+     obj["sensors"]["gyro"]["x"] = gyro.x;
+     obj["sensors"]["gyro"]["y"] = gyro.x;
+     obj["sensors"]["gyro"]["z"] = gyro.x;
 
-     communication_send('u', data.bytes, 28);
+     obj["sensors"]["acc"]["x"] = acc.x;
+     obj["sensors"]["acc"]["y"] = acc.x;
+     obj["sensors"]["acc"]["z"] = acc.x;
+
+     obj["sensors"]["mag"]["x"] = mag.x;
+     obj["sensors"]["mag"]["y"] = mag.x;
+     obj["sensors"]["mag"]["z"] = mag.x;
+
+     obj["sensors"]["bar"]["p"] = bar.p;
+     obj["sensors"]["bar"]["dp"] = bar.dp;
+     obj["sensors"]["bar"]["alt"] = bar.alt;
+     obj["sensors"]["bar"]["gnd"] = bar.gnd;
+     obj["sensors"]["bar"]["temp"] = bar.temp;
+     obj["sensors"]["bar"]["hum"] = bar.hum;
+
+     obj["sensors"]["gps"]["lat"] = gps.lat;
+     obj["sensors"]["gps"]["lon"] = gps.lon;
 }
 
 void communication_init() {
+     obj.createNestedObject("sensors");
+     obj["sensors"].createNestedObject("gyro");
+     obj["sensors"].createNestedObject("acc");
+     obj["sensors"].createNestedObject("mag");
+     obj["sensors"].createNestedObject("bar");
+     obj["sensors"].createNestedObject("gps");
+
+     obj["time"] = millis();
+     obj["state"] = "init";
+
+     obj["sensors"]["gyro"]["x"] = 0;
+     obj["sensors"]["gyro"]["y"] = 0;
+     obj["sensors"]["gyro"]["z"] = 0;
+
+     obj["sensors"]["acc"]["x"] = 0;
+     obj["sensors"]["acc"]["y"] = 0;
+     obj["sensors"]["acc"]["z"] = 0;
+
+     obj["sensors"]["mag"]["x"] = 0;
+     obj["sensors"]["mag"]["y"] = 0;
+     obj["sensors"]["mag"]["z"] = 0;
+
+     obj["sensors"]["bar"]["p"] = 0;
+     obj["sensors"]["bar"]["dp"] = 0;
+     obj["sensors"]["bar"]["alt"] = 0;
+     obj["sensors"]["bar"]["gnd"] = 0;
+     obj["sensors"]["bar"]["temp"] = 0;
+     obj["sensors"]["bar"]["hum"] = 0;
+
+     obj["sensors"]["gps"]["lat"] = 0;
+     obj["sensors"]["gps"]["lon"] = 0;
+
      Serial.begin(9600);
 }

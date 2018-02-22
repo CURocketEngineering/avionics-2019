@@ -25,8 +25,8 @@
 static struct bar_s {
      float p, dp;        // Unit: mb
      float alt, gnd;     // Unit: ft
-     float t;            // Unit: deg C
-     float h;            // Unit: %
+     float temp;         // Unit: deg C
+     float hum;          // Unit: %
 } bar, bar_prev;
 
 /* DEFINE FUNCTIONS */
