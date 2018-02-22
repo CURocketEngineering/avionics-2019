@@ -11,10 +11,6 @@ void ninedof_init() {
     imu.settings.device.mAddress = LSM9DS1_M;
     imu.settings.device.agAddress = LSM9DS1_AG;
 
-    gyro_prev.x = 0.0;
-    gyro_prev.y = 0.0;
-    gyro_prev.z = 0.0;
-
     imu.begin();
 }
 

@@ -6,17 +6,13 @@
 #include "ninedof.h"
 #include "pins.h"
 
-void datalog_setup() {
+void datalog_init() {
     SD.begin(BUILTIN_SDCARD);
 }
 
-void datalog_print() {
-    File file = SD.open("box.json", FILE_WRITE);
-
-    String str;
-
-    ninedof_json.printTo(str);
+void datalog_write(const String & str) {
+    static File file;
+    file = SD.open("box.json", FILE_WRITE);
     file.println(str);
-
     file.close();
 }

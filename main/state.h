@@ -14,7 +14,7 @@
 
 #include "pins.h"
 #include "communication.h"
-#include "accelerometer.h"
+#include "ninedof.h"
 #include "barometer.h"
 #include "gps.h"
 

@@ -9,7 +9,7 @@
 
 #include "pins.h"
 
-void datalog_setup();
-void datalog_print();
+void datalog_init();
+void datalog_write(const String & str);
 
 #endif

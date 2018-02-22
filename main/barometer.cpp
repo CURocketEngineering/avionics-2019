@@ -37,8 +37,8 @@ void barometer_read(bool filter) {
 
      bar.p = barometer.readFloatPressure();
      bar.alt = barometer.readFloatAltitudeMeters();
-     bar.t = barometer.readTempC();
-     bar.h = barometer.readFloatHumidity();
+     bar.temp = barometer.readTempC();
+     bar.hum = barometer.readFloatHumidity();
 
      if (filter) {
           bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;

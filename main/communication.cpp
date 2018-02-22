@@ -6,13 +6,18 @@
 #include <Arduino.h>
 
 #include "pins.h"
-#include "accelerometer.h"
+
+#include "datalog.h"
+#include "ninedof.h"
 #include "barometer.h"
 #include "gps.h"
 #include "communication.h"
 
+#include "json.h"
+
 DynamicJsonBuffer json;
 
+JsonObject & error = json.createObject();
 JsonObject & telemetry = json.createObject();
 
 void communication_updateTelemetry() {
@@ -20,61 +25,72 @@ void communication_updateTelemetry() {
      barometer_read(true);
      gps_read(true);
 
-     obj["sensors"]["gyro"]["x"] = gyro.x;
-     obj["sensors"]["gyro"]["y"] = gyro.x;
-     obj["sensors"]["gyro"]["z"] = gyro.x;
+     telemetry["sensors"]["gyro"]["x"] = gyro.x;
+     telemetry["sensors"]["gyro"]["y"] = gyro.x;
+     telemetry["sensors"]["gyro"]["z"] = gyro.x;
 
-     obj["sensors"]["acc"]["x"] = acc.x;
-     obj["sensors"]["acc"]["y"] = acc.x;
-     obj["sensors"]["acc"]["z"] = acc.x;
+     telemetry["sensors"]["acc"]["x"] = acc.x;
+     telemetry["sensors"]["acc"]["y"] = acc.x;
+     telemetry["sensors"]["acc"]["z"] = acc.x;
 
-     obj["sensors"]["mag"]["x"] = mag.x;
-     obj["sensors"]["mag"]["y"] = mag.x;
-     obj["sensors"]["mag"]["z"] = mag.x;
+     telemetry["sensors"]["mag"]["x"] = mag.x;
+     telemetry["sensors"]["mag"]["y"] = mag.x;
+     telemetry["sensors"]["mag"]["z"] = mag.x;
 
-     obj["sensors"]["bar"]["p"] = bar.p;
-     obj["sensors"]["bar"]["dp"] = bar.dp;
-     obj["sensors"]["bar"]["alt"] = bar.alt;
-     obj["sensors"]["bar"]["gnd"] = bar.gnd;
-     obj["sensors"]["bar"]["temp"] = bar.temp;
-     obj["sensors"]["bar"]["hum"] = bar.hum;
+     telemetry["sensors"]["bar"]["p"] = bar.p;
+     telemetry["sensors"]["bar"]["dp"] = bar.dp;
 
-     obj["sensors"]["gps"]["lat"] = gps.lat;
-     obj["sensors"]["gps"]["lon"] = gps.lon;
+     telemetry["sensors"]["bar"]["alt"] = bar.alt;
+     telemetry["sensors"]["bar"]["gnd"] = bar.gnd;
+
+     telemetry["sensors"]["bar"]["temp"] = bar.temp;
+     telemetry["sensors"]["bar"]["hum"] = bar.hum;
+
+     telemetry["sensors"]["gps"]["lat"] = gps.lat;
+     telemetry["sensors"]["gps"]["lon"] = gps.lon;
+
+     String str;
+     telemetry.printTo(str);
+     datalog_write(str);
 }
 
 void communication_init() {
-     obj.createNestedObject("sensors");
-     obj["sensors"].createNestedObject("gyro");
-     obj["sensors"].createNestedObject("acc");
-     obj["sensors"].createNestedObject("mag");
-     obj["sensors"].createNestedObject("bar");
-     obj["sensors"].createNestedObject("gps");
+     error["type"] = "error";
+     error["time"] = millis();
+     error["message"] = "none";
 
-     obj["time"] = millis();
-     obj["state"] = "init";
+     telemetry.createNestedObject("sensors");
+     telemetry["sensors"].createNestedObject("gyro");
+     telemetry["sensors"].createNestedObject("acc");
+     telemetry["sensors"].createNestedObject("mag");
+     telemetry["sensors"].createNestedObject("bar");
+     telemetry["sensors"].createNestedObject("gps");
 
-     obj["sensors"]["gyro"]["x"] = 0;
-     obj["sensors"]["gyro"]["y"] = 0;
-     obj["sensors"]["gyro"]["z"] = 0;
+     telemetry["type"] = "telemetry";
+     telemetry["time"] = millis();
+     telemetry["state"] = "init";
 
-     obj["sensors"]["acc"]["x"] = 0;
-     obj["sensors"]["acc"]["y"] = 0;
-     obj["sensors"]["acc"]["z"] = 0;
+     telemetry["sensors"]["gyro"]["x"] = 0;
+     telemetry["sensors"]["gyro"]["y"] = 0;
+     telemetry["sensors"]["gyro"]["z"] = 0;
 
-     obj["sensors"]["mag"]["x"] = 0;
-     obj["sensors"]["mag"]["y"] = 0;
-     obj["sensors"]["mag"]["z"] = 0;
+     telemetry["sensors"]["acc"]["x"] = 0;
+     telemetry["sensors"]["acc"]["y"] = 0;
+     telemetry["sensors"]["acc"]["z"] = 0;
 
-     obj["sensors"]["bar"]["p"] = 0;
-     obj["sensors"]["bar"]["dp"] = 0;
-     obj["sensors"]["bar"]["alt"] = 0;
-     obj["sensors"]["bar"]["gnd"] = 0;
-     obj["sensors"]["bar"]["temp"] = 0;
-     obj["sensors"]["bar"]["hum"] = 0;
+     telemetry["sensors"]["mag"]["x"] = 0;
+     telemetry["sensors"]["mag"]["y"] = 0;
+     telemetry["sensors"]["mag"]["z"] = 0;
 
-     obj["sensors"]["gps"]["lat"] = 0;
-     obj["sensors"]["gps"]["lon"] = 0;
+     telemetry["sensors"]["bar"]["p"] = 0;
+     telemetry["sensors"]["bar"]["dp"] = 0;
+     telemetry["sensors"]["bar"]["alt"] = 0;
+     telemetry["sensors"]["bar"]["gnd"] = 0;
+     telemetry["sensors"]["bar"]["temp"] = 0;
+     telemetry["sensors"]["bar"]["hum"] = 0;
+
+     telemetry["sensors"]["gps"]["lat"] = 0;
+     telemetry["sensors"]["gps"]["lon"] = 0;
 
      Serial.begin(9600);
 }

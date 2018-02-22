@@ -30,15 +30,15 @@ static struct gyro_s {
     float x, y, z;
 } gyro, gyro_prev;
 
-static struct gyro_s {
+static struct mag_s {
     float x, y, z;
-} mag;
+} mag, mag_prev;
 
 static struct att_s {
     float r, p, y;
-} att;
+} att, att_prev;
 
 void ninedof_init();
-void ninedof_read();
+void ninedof_read(bool filter);
 
 #endif
