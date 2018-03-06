@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.6.2">
+<eagle version="8.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -1958,23 +1958,23 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="N$31" class="0">
 <segment>
 <wire x1="-48.26" y1="60.96" x2="-48.26" y2="-5.08" width="0.1524" layer="91"/>
-<wire x1="-48.26" y1="-5.08" x2="10.16" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="-48.26" y1="-5.08" x2="2.54" y2="-5.08" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="9/CS"/>
-<wire x1="20.32" y1="43.18" x2="10.16" y2="43.18" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="43.18" x2="10.16" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="43.18" x2="2.54" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="43.18" x2="2.54" y2="-5.08" width="0.1524" layer="91"/>
 <pinref part="U2" gate="G$1" pin="TXD0"/>
 <wire x1="-48.26" y1="60.96" x2="-45.72" y2="60.96" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$32" class="0">
 <segment>
-<wire x1="-53.34" y1="63.5" x2="-53.34" y2="0" width="0.1524" layer="91"/>
-<wire x1="-53.34" y1="0" x2="12.7" y2="0" width="0.1524" layer="91"/>
+<wire x1="-53.34" y1="63.5" x2="-53.34" y2="-7.62" width="0.1524" layer="91"/>
+<wire x1="-53.34" y1="-7.62" x2="5.08" y2="-7.62" width="0.1524" layer="91"/>
 <pinref part="U2" gate="G$1" pin="RXD0"/>
 <wire x1="-45.72" y1="63.5" x2="-53.34" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="10/CS"/>
-<wire x1="12.7" y1="0" x2="12.7" y2="40.64" width="0.1524" layer="91"/>
-<wire x1="12.7" y1="40.64" x2="20.32" y2="40.64" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-7.62" x2="5.08" y2="40.64" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="40.64" x2="20.32" y2="40.64" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$2" class="0">
@@ -1993,10 +1993,10 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="JP1" gate="G$1" pin="DIN"/>
 <wire x1="114.3" y1="10.16" x2="96.52" y2="10.16" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="10.16" x2="96.52" y2="-7.62" width="0.1524" layer="91"/>
-<wire x1="96.52" y1="-7.62" x2="10.16" y2="-7.62" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="-7.62" x2="10.16" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="-7.62" x2="12.7" y2="-7.62" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-7.62" x2="12.7" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="1/TX"/>
-<wire x1="10.16" y1="63.5" x2="20.32" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="63.5" x2="20.32" y2="63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
