@@ -20,10 +20,50 @@ DynamicJsonBuffer json;
 JsonObject & error = json.createObject();
 JsonObject & telemetry = json.createObject();
 
+void communication_sendResult(bool pass) {
+     telemetry["type"] = "result";
+     telemetry["time"] = millis();
+     telemetry["pass"] = pass;
+}
+
+void communication_sendState(enum state_e state) {
+     telemetry["type"] = "state";
+     telemetry["time"] = millis();
+     telemetry["state"] = states[state];
+}
+
+enum command_e communication_recvCommand() {
+  static char buf[256];
+  static char * ptr;
+  static unsigned int comm = COMM_COUNT;
+
+  if (Serial.available()) {
+    comm = 0;
+
+    JsonObject & command = json.parse(Serial);
+
+    for (int idx = 0; idx < sizeof(commands)/sizeof(const char *); idx++) {
+      if (commands[idx] == command["command"])
+       return (enum command_e)idx;
+    }
+  }
+  else if (comm >= COMM_COUNT) {
+    return NO_COMM;
+  }
+  else {
+    comm++;
+
+    return CMD_NONE;
+  }
+}
+
 void communication_updateTelemetry() {
      ninedof_read(true);
      barometer_read(true);
      gps_read();
+
+     telemetry["type"] = "telemetry";
+     telemetry["time"] = millis();
 
      telemetry["sensors"]["gyro"]["x"] = gyro.x;
      telemetry["sensors"]["gyro"]["y"] = gyro.x;
@@ -62,6 +102,8 @@ void communication_updateTelemetry() {
 
      String str;
      telemetry.printTo(str);
+
+     Serial.println(str);
      datalog_write(str);
 }
 
@@ -70,12 +112,12 @@ void communication_init() {
      error["time"] = millis();
      error["message"] = "none";
 
-     telemetry.createNestedObject("sensors");
-     telemetry["sensors"].createNestedObject("gyro");
-     telemetry["sensors"].createNestedObject("acc");
-     telemetry["sensors"].createNestedObject("mag");
-     telemetry["sensors"].createNestedObject("bar");
-     telemetry["sensors"].createNestedObject("gps");
+     JsonObject & sensors = telemetry.createNestedObject("sensors");
+     sensors.createNestedObject("gyro");
+     sensors.createNestedObject("acc");
+     sensors.createNestedObject("mag");
+     sensors.createNestedObject("bar");
+     sensors.createNestedObject("gps");
 
      telemetry["type"] = "telemetry";
      telemetry["time"] = millis();

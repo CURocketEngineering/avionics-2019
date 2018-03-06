@@ -19,7 +19,7 @@ int eeprom_ground = eeprom_header.length() + sizeof(state) + sizeof(debug);
 void idle() {
     while (state == IDLE) {
         // Update base station state
-        communication_send('s', "h", 1);
+        communication_sendState(IDLE);
 
         // Check on ctrl term
         if (digitalRead(CTRL) == LOW) {
@@ -43,23 +43,23 @@ void idle() {
         }
 
         // Receive base command
-        switch (communication_recv()) {
+        switch (communication_recvCommand()) {
             // Do nothing if no command
-            case 'h':
+            case CMD_NONE:
                 // Debug 1 Green - idling
                 bitClear(debug, 13);
                 bitSet(debug, 14);
                 break;
                 // Run test
-            case 't':
+            case CMD_TEST:
                 state = TEST;
                 break;
                 // Arm rocket
-            case 'a':
+            case CMD_ARM:
                 state = ARM;
                 break;
                 // No communication with base station
-            case ' ':
+            case NO_COMM:
                 // Debug 1 Red - no communication with base station
                 bitSet(debug, 13);
                 bitClear(debug, 14);
@@ -98,21 +98,21 @@ void test() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "t", 1);
+    communication_sendState(TEST);
 
-    char cmd;
+    enum command_e cmd;
 
-    while ((cmd = communication_recv()) == 'h') {
+    while ((cmd = communication_recvCommand()) == CMD_NONE) {
         communication_updateTelemetry();
     }
 
-    if (cmd == 'e') {
-        communication_send('t', "p", 1);
+    if (cmd == CMD_PASS) {
+        communication_sendResult(true);
         // Debug 2 Green - pass test
         bitSet(debug, 11);
     }
     else {
-        communication_send('t', "f", 1);
+        communication_sendResult(false);
         // Debug 2 Red - fail test
         bitSet(debug, 10);
     }
@@ -138,7 +138,7 @@ void arm() {
 
     while (state == ARM) {
         // Update base station state
-        communication_send('s', "a", 1);
+        communication_sendState(ARM);
         communication_updateTelemetry();
 
         // Sample ground altitude
@@ -167,23 +167,23 @@ void arm() {
         }
 
         // Receive base station command
-        switch (communication_recv()) {
+        switch (communication_recvCommand()) {
             // Do nothing if no command
-            case 'h':
+            case CMD_NONE:
                 break;
                 // Disarm rocket
-            case 'd':
+            case CMD_DISARM:
                 bitClear(debug, 3);
                 state = IDLE;
                 break;
 
                 // Ignite rocket
-            case 'i':
+            case CMD_IGNITE:
                 state = IGNITE;
                 break;
 
                 // No communication with base station
-            case ' ':
+            case NO_COMM:
                 // Revert to idle state
                 state = IDLE;
                 break;
@@ -201,7 +201,7 @@ void ignite() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "i", 1);
+    communication_sendState(IGNITE);
 
     // Store ground in EEPROM
     EEPROM.put(eeprom_ground, bar.gnd);
@@ -228,7 +228,7 @@ void ignite() {
                 }
             }
 
-            if (communication_recv() == 'c') {
+            if (communication_recvCommand() == CMD_ABORT) {
                 state = HALT;
                 return;
             }
@@ -250,7 +250,7 @@ void burn() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "b", 1);
+    communication_sendState(BURN);
 
     // Update telemetry during burn
     while (acc.z > THRUST_ACCEL) {
@@ -269,7 +269,7 @@ void coast() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "c", 1);
+    communication_sendState(COAST);
 
     // Update telemetry during coast
     while (bar.dp < APOGEE_DPRES){
@@ -287,7 +287,7 @@ void apogee() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "d", 1);
+    communication_sendState(APOGEE);
 
     // Send parachute signal
     digitalWrite(TERM_DROGUE, HIGH);
@@ -304,7 +304,7 @@ void wait() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "w", 1);
+    communication_sendState(WAIT);
 
     // Update telemetry during descent
     while (bar.alt > MAIN_ALT + bar.gnd) {
@@ -323,7 +323,7 @@ void eject() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "e", 1);
+    communication_sendState(EJECT);
 
     // Send parachute signal
     digitalWrite(TERM_MAIN, HIGH);
@@ -340,7 +340,7 @@ void fall() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "l", 1);
+    communication_sendState(FALL);
 
     // Update telemetry during descent
     while (bar.dp > MIN_DPRES) {
@@ -357,7 +357,7 @@ void recover() {
     debug_write();
 
     // Update base station state
-    communication_send('s', "r", 1);
+    communication_sendState(RECOVER);
 
     // Clear interrupts and put processor to sleep
     cli();

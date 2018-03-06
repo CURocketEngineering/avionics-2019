@@ -13,7 +13,6 @@
 #include <EEPROM.h>
 
 #include "pins.h"
-#include "communication.h"
 #include "ninedof.h"
 #include "barometer.h"
 #include "gps.h"
@@ -59,6 +58,22 @@ static enum state_e {
      FALL,
      RECOVER
 } state, state_prev;
+
+static const char * states[] = {
+     "init",
+     "idle",
+     "halt",
+     "test",
+     "arm",
+     "ignite",
+     "burn",
+     "coast",
+     "apogee",
+     "wait",
+     "eject",
+     "fall",
+     "recover"
+};
 
 extern String eeprom_header;
 extern int eeprom_state;
