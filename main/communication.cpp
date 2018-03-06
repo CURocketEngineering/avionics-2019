@@ -23,7 +23,7 @@ JsonObject & telemetry = json.createObject();
 void communication_updateTelemetry() {
      ninedof_read(true);
      barometer_read(true);
-     gps_read(true);
+     gps_read();
 
      telemetry["sensors"]["gyro"]["x"] = gyro.x;
      telemetry["sensors"]["gyro"]["y"] = gyro.x;
@@ -48,6 +48,17 @@ void communication_updateTelemetry() {
 
      telemetry["sensors"]["gps"]["lat"] = gps.lat;
      telemetry["sensors"]["gps"]["lon"] = gps.lon;
+
+     telemetry["sensors"]["gps"]["lat"] = gps.lat;
+     telemetry["sensors"]["gps"]["lon"] = gps.lon;
+
+     telemetry["sensors"]["gps"]["hour"] = gps.hour;
+     telemetry["sensors"]["gps"]["min"] = gps.min;
+     telemetry["sensors"]["gps"]["sec"] = gps.sec;
+
+     telemetry["sensors"]["gps"]["day"] = gps.day;
+     telemetry["sensors"]["gps"]["mon"] = gps.mon;
+     telemetry["sensors"]["gps"]["year"] = gps.year;
 
      String str;
      telemetry.printTo(str);
@@ -91,6 +102,14 @@ void communication_init() {
 
      telemetry["sensors"]["gps"]["lat"] = 0;
      telemetry["sensors"]["gps"]["lon"] = 0;
+
+     telemetry["sensors"]["gps"]["hour"] = 0;
+     telemetry["sensors"]["gps"]["min"] = 0;
+     telemetry["sensors"]["gps"]["sec"] = 0;
+
+     telemetry["sensors"]["gps"]["day"] = 0;
+     telemetry["sensors"]["gps"]["mon"] = 0;
+     telemetry["sensors"]["gps"]["year"] = 0;
 
      Serial.begin(9600);
 }

@@ -21,6 +21,10 @@
 #define LSM9DS1_M 0x1E
 #define LSM9DS1_AG 0x6B
 
+#define GYRO_GAIN 0.2
+#define ACC_GAIN 0.2
+#define MAG_GAIN 0.2
+
 // Define struct type variables
 static struct acc_s {
      float x, y, z;

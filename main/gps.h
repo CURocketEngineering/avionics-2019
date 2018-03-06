@@ -8,17 +8,12 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
-#include <SoftwareSerial.h>
-
-// GPS pins
-#define GPS_RX 8
-#define GPS_TX 9
-
-extern SoftwareSerial gpscomm;
 
 // Define struct type variables
 static struct gps_s {
      float lat, lon; // Unit: degrees
+     unsigned short hour, min, sec;
+     unsigned short day, mon, year;
 } gps;
 
 /* DEFINE FUNCTIONS */

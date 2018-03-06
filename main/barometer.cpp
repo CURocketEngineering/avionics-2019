@@ -16,13 +16,10 @@ void barometer_init() {
 
      barometer.settings.commInterface = I2C_MODE;
      barometer.settings.I2CAddress = BARO_ADDR;
-     // SPI mode
-     //barometer.settings.commInterface = SPI_MODE;
-     //barometer.settings.chipSelectPin = 10;
 
      barometer.settings.runMode = 3; // run mode
      barometer.settings.tStandby = 0; // 0.5ms
-     barometer.settings.filter = 0; // filter off **
+     barometer.settings.filter = 0; // filter off
 
      barometer.settings.tempOverSample = 1;
      barometer.settings.pressOverSample = 1;

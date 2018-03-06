@@ -41,9 +41,9 @@ void ninedof_read(bool filter) {
         acc.z = imu.calcAccel(imu.az);
 
         if (filter) {
-            acc.x = ACCEL_GAIN*acc.x + (1.0 - ACCEL_GAIN)*acc_prev.x;
-            acc.y = ACCEL_GAIN*acc.y + (1.0 - ACCEL_GAIN)*acc_prev.y;
-            acc.z = ACCEL_GAIN*acc.z + (1.0 - ACCEL_GAIN)*acc_prev.z;
+            acc.x = ACC_GAIN*acc.x + (1.0 - ACC_GAIN)*acc_prev.x;
+            acc.y = ACC_GAIN*acc.y + (1.0 - ACC_GAIN)*acc_prev.y;
+            acc.z = ACC_GAIN*acc.z + (1.0 - ACC_GAIN)*acc_prev.z;
         }
 
         att.r = atan2(acc.y, acc.z);
@@ -72,10 +72,10 @@ void ninedof_read(bool filter) {
 
         att.y -= DECLINATION*PI/180.0;
 
-        if (heading > PI) {
+        if (att.y > PI) {
             att.y -= 2*PI;
         }
-        else if (heading < -PI) {
+        else if (att.y < -PI) {
             att.y += 2*PI;
         }
     }

@@ -4,26 +4,25 @@
 
 /* LIBRARIES */
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 
 #include "pins.h"
 #include "gps.h"
 #include "util.h"
 
-SoftwareSerial gpscomm(GPS_RX, GPS_TX);
-
 void gps_init() {
-     gpscomm.begin(9600);
+     Serial1.begin(9600);
 }
 
 void gps_read() {
      static char sentence[80];
      static char field[20];
 
-     while (gpscomm.available()) {
+     static int time, date;
+
+     while (Serial1.available()) {
           const char * ptr = sentence;
 
-          util_readLine(gpscomm, sentence, sizeof(sentence));
+          util_readLine(Serial1, sentence, sizeof(sentence));
 
           // ID
           ptr = util_getField(ptr, field, sizeof(field));
@@ -31,6 +30,10 @@ void gps_read() {
           if (strcmp(field, "$GPRMC") == 0) {
                // Time
                ptr = util_getField(ptr, field, sizeof(field));
+               time = atoi(field);
+               gps.hour = time/10000 % 100;
+               gps.min = time/100 % 100;
+               gps.sec = time % 100;
 
                // Status
                ptr = util_getField(ptr, field, sizeof(field));
@@ -39,7 +42,7 @@ void gps_read() {
                ptr = util_getField(ptr, field, sizeof(field));
                gps.lat = atof(field);
 
-               // n/s
+               // N/S
                ptr = util_getField(ptr, field, sizeof(field));
                if (field[0] == 'S') {
                     gps.lat = -gps.lat;
@@ -49,11 +52,33 @@ void gps_read() {
                ptr = util_getField(ptr, field, sizeof(field));
                gps.lon = atof(field);
 
-               // e/w
+               // E/W
                ptr = util_getField(ptr, field, sizeof(field));
                if (field[0] == 'W') {
                     gps.lon = -gps.lon;
                }
+
+               // ?
+               ptr = util_getField(ptr, field, sizeof(field));
+
+               // ?
+               ptr = util_getField(ptr, field, sizeof(field));
+
+               // Date
+               ptr = util_getField(ptr, field, sizeof(field));
+               date = atoi(field);
+               gps.day = date/1000000 % 100;
+               gps.mon = date/10000 % 100;
+               gps.year = date % 10000;
+
+               // ?
+               ptr = util_getField(ptr, field, sizeof(field));
+
+               // ?
+               ptr = util_getField(ptr, field, sizeof(field));
+
+               // ?
+               ptr = util_getField(ptr, field, sizeof(field));
           }
      }
 }

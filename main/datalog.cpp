@@ -8,6 +8,8 @@
 
 void datalog_init() {
     SD.begin(BUILTIN_SDCARD);
+
+    datalog_write("---");
 }
 
 void datalog_write(const String & str) {
