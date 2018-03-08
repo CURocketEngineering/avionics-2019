@@ -1,5 +1,5 @@
 /*
- * Main v0.4
+ * Main v0.5
  *
  * Main computer logic handling: button inputs, debug outputs, sensor inputs,
  * ignition, parachute evjection, and telemetry. Telemetry and commands are
@@ -12,9 +12,6 @@
 // Initialization of sensor data
 #define SENSOR_INIT 20
 #define SENSOR_DELAY 10
-
-// Time to hold pin high for parachute charge
-#define DELAY_PARACHUTE 1000
 
 /* LIBRARIES */
 #include "debug.h"

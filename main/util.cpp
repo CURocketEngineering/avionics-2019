@@ -37,7 +37,7 @@ const char * util_getField(const char * sentence, char * buf, unsigned short len
      unsigned short idx = 0;
 
      while (idx < len - 1) {
-          if (*sentence == ',') {
+          if (*sentence == '\0' || *sentence == '\n' || *sentence == ',') {
                sentence++;
                break;
           }
