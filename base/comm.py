@@ -1,7 +1,6 @@
 from __future__ import division, print_function
 
 import serial
-#import struct
 import sys
 import json
 
