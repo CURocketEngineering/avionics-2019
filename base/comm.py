@@ -10,12 +10,12 @@ def init():
 
 def read():
     try:
-        serialIn = json.load(comm)
-        if not serialIn:
+        data = json.load(comm)
+        if not data:
             return {}
-        
-        return serialIn
-        
+
+        return data
+
     except IOError:
         print('Flushing serial buffers...                                                                     ')
 
