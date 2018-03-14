@@ -9,7 +9,7 @@ import box
 import comm
 import term
 
-states = {'-': 'Disconnected', 'h': 'Idle', 't': 'Test', 'p': 'Pass', 'f': 'Fail', 'a': 'Arm', 'i': 'Ignite', 'b': 'Burn', 'c': 'Coast', 'd': 'Apogee', 'w': 'Wait', 'e': 'Eject', 'l': 'Fall', 'r': 'Recover'}
+states = {'no_comm': 'Disconnected', 'idle': 'Idle', 'test': 'Test', 'pass': 'Pass', 'fail': 'Fail', 'arm': 'Arm', 'ignite': 'Ignite', 'burn': 'Burn', 'coast': 'Coast', 'apogee': 'Apogee', 'wait': 'Wait', 'eject': 'Eject', 'fall': 'Fall', 'recover': 'Recover'}
 
 inited = False
 
@@ -19,7 +19,7 @@ try:
 
     box.init('blackbox.json')
 
-    data = {'time': -1, 'state': '-', 'sensor': {'acc': {'x': -1, 'y': -1, 'z': -1}, 'bar': {'p': -1, 'alt': -1}, 'gps': {'lat': -1, 'lon': -1}}}
+    data = {'time': -1, 'state': 'no_comm', 'sensors': None}
 
     while True:
         try:
@@ -33,14 +33,17 @@ try:
         if message:
             data['time'] = message['time']
 
-            if message['type'] == 's':
+            if message['type'] == 'state':
                 data['state'] = message['state']
-            elif message['type'] == 'u':
-                data['sensor'] = message['sensor']
+            elif message['type'] == 'telemetry':
+                data['sensors'] = message['sensors']
 
             box.write(data)
 
-        print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°'.format(data['time'], states[data['state']], data['sensor']['acc']['z'], data['sensor']['bar']['alt'], data['sensor']['gps']['lat'], data['sensor']['gps']['lon']), end='\r')
+        if data['sensors']:
+            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°     '.format(data['time'], states[data['state']], data['sensors']['acc']['z'], data['sensors']['bar']['alt'], data['sensors']['gps']['lat'], data['sensors']['gps']['lon']), end='\r')
+        else:
+            print('[{}] State: {}                                                           '.format(data['time'], states[data['state']], end='\r')
 except KeyboardInterrupt:
     pass
 finally:

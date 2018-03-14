@@ -11,8 +11,6 @@ def init():
 def read():
     try:
         data = json.load(comm)
-        if not data:
-            return {}
 
         return data
 
