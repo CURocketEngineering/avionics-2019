@@ -26,7 +26,7 @@ void communication_sendResult(bool pass) {
      msg_result["type"] = "result";
      msg_result["time"] = millis();
      msg_result["pass"] = pass;
-     
+
      msg_result.printTo(Serial1);
 
      String str;
@@ -38,7 +38,7 @@ void communication_sendState(enum state_e state) {
      msg_state["type"] = "state";
      msg_state["time"] = millis();
      msg_state["state"] = states[state];
-     
+
      msg_state.printTo(Serial1);
 
      String str;
@@ -115,7 +115,7 @@ void communication_updateTelemetry() {
      msg_telemetry["sensors"]["gps"]["day"] = gps.day;
      msg_telemetry["sensors"]["gps"]["mon"] = gps.mon;
      msg_telemetry["sensors"]["gps"]["year"] = gps.year;
-     
+
      msg_telemetry.printTo(Serial1);
 
      String str;
@@ -124,7 +124,7 @@ void communication_updateTelemetry() {
 }
 
 void communication_init() {
-     msg_error["type"] = "msg_error";
+     msg_error["type"] = "error";
      msg_error["time"] = millis();
      msg_error["message"] = "none";
 
@@ -137,7 +137,6 @@ void communication_init() {
 
      msg_telemetry["type"] = "telemetry";
      msg_telemetry["time"] = millis();
-     msg_telemetry["state"] = "init";
 
      msg_telemetry["sensors"]["gyro"]["x"] = 0;
      msg_telemetry["sensors"]["gyro"]["y"] = 0;
@@ -173,9 +172,9 @@ void communication_init() {
      msg_result["time"] = millis();
      msg_result["pass"] = false;
 
-     msg_state["type"] = "result";
+     msg_state["type"] = "state";
      msg_state["time"] = millis();
-     msg_state["pass"] = false;
+     msg_state["state"] = "init";
 
      Serial1.begin(9600);
 }
