@@ -5,6 +5,7 @@
 *.dsn
 *.bin
 *.ses
+*.*#*
 
 *.hex
 *.o
