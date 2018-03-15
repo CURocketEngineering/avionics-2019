@@ -9,6 +9,8 @@
 #include "gps.h"
 #include "util.h"
 
+struct gps_s gps;
+
 void gps_init() {
      Serial2.begin(9600);
 }

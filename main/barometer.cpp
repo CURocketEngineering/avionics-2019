@@ -9,6 +9,8 @@
 #include "pins.h"
 #include "barometer.h"
 
+struct bar_s bar, bar_prev;
+
 BME280 barometer;
 
 void barometer_init() {

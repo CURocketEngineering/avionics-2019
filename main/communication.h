@@ -14,7 +14,6 @@
 #define COMM_COUNT 64
 
 enum command_e {
-  NO_COMM,
   CMD_NONE,
   CMD_TEST,
   CMD_ARM,
@@ -22,20 +21,11 @@ enum command_e {
   CMD_IGNITE,
   CMD_ABORT,
   CMD_PASS,
-  CMD_FAIL
+  CMD_FAIL,
+  NO_COMM
 };
 
-static const char * commands[] = {
-  "",
-  "none",
-  "test",
-  "arm",
-  "disarm",
-  "ignite",
-  "abort",
-  "pass",
-  "fail"
-};
+extern const char ** commands;
 
 /* DEFINE FUNCTIONS */
 void communication_sendResult(bool pass);

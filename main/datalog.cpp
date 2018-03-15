@@ -3,8 +3,10 @@
 #include <SPI.h>
 
 #include "datalog.h"
-#include "ninedof.h"
-#include "pins.h"
+
+#ifndef BUILTIN_SDCARD
+#define BUILTIN_SDCARD 0
+#endif
 
 void datalog_init() {
     SD.begin(BUILTIN_SDCARD);

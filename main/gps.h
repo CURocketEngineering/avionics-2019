@@ -10,11 +10,12 @@
 #include <Arduino.h>
 
 // Define struct type variables
-static struct gps_s {
+struct gps_s {
      float lat, lon; // Unit: degrees
      unsigned short hour, min, sec;
      unsigned short day, mon, year;
-} gps;
+};
+extern struct gps_s gps;
 
 /* DEFINE FUNCTIONS */
 void gps_init();

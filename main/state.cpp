@@ -11,6 +11,26 @@
 #include "debug.h"
 #include "pins.h"
 
+const char * states_arr[] = {
+     "init",
+     "idle",
+     "halt",
+     "test",
+     "arm",
+     "ignite",
+     "burn",
+     "coast",
+     "apogee",
+     "wait",
+     "eject",
+     "fall",
+     "recover"
+};
+
+const char ** states = states_arr;
+
+enum state_e state, state_prev;
+
 String eeprom_header = EEPROM_HEADER;
 int eeprom_state = eeprom_header.length();
 int eeprom_debug = eeprom_header.length() + sizeof(state);

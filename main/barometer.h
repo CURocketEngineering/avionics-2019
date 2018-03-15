@@ -21,12 +21,13 @@
 #define BARO_GAIN 0.2
 
 // Define struct type variables
-static struct bar_s {
+struct bar_s {
      float p, dp;        // Unit: mb
      float alt, gnd;     // Unit: ft
      float temp;         // Unit: deg C
      float hum;          // Unit: %
-} bar, bar_prev;
+};
+extern struct bar_s bar, bar_prev;
 
 /* DEFINE FUNCTIONS */
 void barometer_init();

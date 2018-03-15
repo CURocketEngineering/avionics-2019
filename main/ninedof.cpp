@@ -4,6 +4,11 @@
 
 #include "ninedof.h"
 
+struct acc_s acc, acc_prev;
+struct gyro_s gyro, gyro_prev;
+struct mag_s mag, mag_prev;
+struct att_s att, att_prev;
+
 LSM9DS1 imu;
 
 void ninedof_init() {

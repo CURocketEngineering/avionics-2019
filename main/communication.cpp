@@ -15,6 +15,20 @@
 
 #include "json.h"
 
+const char * commands_arr[] = {
+  "none",
+  "test",
+  "arm",
+  "disarm",
+  "ignite",
+  "abort",
+  "pass",
+  "fail",
+  ""
+};
+
+const char ** commands = commands_arr;
+
 DynamicJsonBuffer json;
 
 JsonObject & msg_error = json.createObject();
@@ -27,7 +41,7 @@ void communication_sendResult(bool pass) {
      msg_result["time"] = millis();
      msg_result["pass"] = pass;
 
-     msg_result.printTo(Serial1);
+     msg_result.printTo(Serial);
 
      String str;
      msg_result.printTo(str);
@@ -39,7 +53,7 @@ void communication_sendState(enum state_e state) {
      msg_state["time"] = millis();
      msg_state["state"] = states[state];
 
-     msg_state.printTo(Serial1);
+     msg_state.printTo(Serial);
 
      String str;
      msg_state.printTo(str);
@@ -47,16 +61,14 @@ void communication_sendState(enum state_e state) {
 }
 
 enum command_e communication_recvCommand() {
-  static char buf[256];
-  static char * ptr;
   static unsigned int comm = COMM_COUNT;
 
-  if (Serial1.available()) {
+  if (Serial.available()) {
     comm = 0;
 
-    JsonObject & command = json.parse(Serial1);
+    JsonObject & command = json.parse(Serial);
 
-    for (int idx = 0; idx < sizeof(commands)/sizeof(commands[0]); idx++) {
+    for (unsigned int idx = 0; idx < sizeof(commands)/sizeof(commands[0]); idx++) {
       if (commands[idx] == command["command"])
        return (enum command_e)idx;
     }
@@ -116,7 +128,7 @@ void communication_updateTelemetry() {
      msg_telemetry["sensors"]["gps"]["mon"] = gps.mon;
      msg_telemetry["sensors"]["gps"]["year"] = gps.year;
 
-     msg_telemetry.printTo(Serial1);
+     msg_telemetry.printTo(Serial);
 
      String str;
      msg_telemetry.printTo(str);
@@ -176,5 +188,5 @@ void communication_init() {
      msg_state["time"] = millis();
      msg_state["state"] = "init";
 
-     Serial1.begin(9600);
+     Serial.begin(9600);
 }

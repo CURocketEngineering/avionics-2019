@@ -10,7 +10,6 @@
 #include <avr/sleep.h>
 
 #include <Arduino.h>
-#include <EEPROM.h>
 
 #include "pins.h"
 #include "ninedof.h"
@@ -43,7 +42,7 @@
 #define MAIN_ALT 2000.0
 
 // Define enum type variables
-static enum state_e {
+enum state_e {
      INIT,
      IDLE,
      HALT,
@@ -57,23 +56,11 @@ static enum state_e {
      EJECT,
      FALL,
      RECOVER
-} state, state_prev;
-
-static const char * states[] = {
-     "init",
-     "idle",
-     "halt",
-     "test",
-     "arm",
-     "ignite",
-     "burn",
-     "coast",
-     "apogee",
-     "wait",
-     "eject",
-     "fall",
-     "recover"
 };
+
+extern const char ** states;
+
+extern enum state_e state, state_prev;
 
 extern String eeprom_header;
 extern int eeprom_state;

@@ -26,21 +26,25 @@
 #define MAG_GAIN 0.2
 
 // Define struct type variables
-static struct acc_s {
+struct acc_s {
      float x, y, z;
-} acc, acc_prev;
+};
+extern struct acc_s acc, acc_prev;
 
-static struct gyro_s {
+struct gyro_s {
     float x, y, z;
-} gyro, gyro_prev;
+};
+extern struct gyro_s gyro, gyro_prev;
 
-static struct mag_s {
+struct mag_s {
     float x, y, z;
-} mag, mag_prev;
+};
+extern struct mag_s mag, mag_prev;
 
-static struct att_s {
+struct att_s {
     float r, p, y;
-} att, att_prev;
+};
+extern struct att_s att, att_prev;
 
 void ninedof_init();
 void ninedof_read(bool filter);
