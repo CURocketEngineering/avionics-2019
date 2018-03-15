@@ -10,7 +10,7 @@
 #include "util.h"
 
 void gps_init() {
-     Serial1.begin(9600);
+     Serial2.begin(9600);
 }
 
 void gps_read() {
@@ -19,10 +19,10 @@ void gps_read() {
 
      static int time, date;
 
-     while (Serial1.available()) {
+     while (Serial2.available()) {
           const char * ptr = sentence;
 
-          util_readLine(Serial1, sentence, sizeof(sentence));
+          util_readLine(Serial2, sentence, sizeof(sentence));
 
           // ID
           ptr = util_getField(ptr, field, sizeof(field));
