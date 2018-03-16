@@ -43,7 +43,7 @@ try:
         if data['sensors']:
             print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°     '.format(data['time'], states[data['state']], data['sensors']['acc']['z'], data['sensors']['bar']['alt'], data['sensors']['gps']['lat'], data['sensors']['gps']['lon']), end='\r')
         else:
-            print('[{}] State: {}                                                           '.format(data['time'], states[data['state']], end='\r')
+            print('[{}] State: {}                                                           '.format(data['time'], states[data['state']]), end='\r')
 except KeyboardInterrupt:
     pass
 finally:
