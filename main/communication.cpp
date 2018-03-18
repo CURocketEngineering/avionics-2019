@@ -42,6 +42,7 @@ void communication_sendResult(bool pass) {
      msg_result["pass"] = pass;
 
      msg_result.printTo(Serial);
+     Serial.println();
 
      String str;
      msg_result.printTo(str);
@@ -54,6 +55,7 @@ void communication_sendState(enum state_e state) {
      msg_state["state"] = states[state];
 
      msg_state.printTo(Serial);
+     Serial.println();
 
      String str;
      msg_state.printTo(str);
@@ -129,6 +131,7 @@ void communication_updateTelemetry() {
      msg_telemetry["sensors"]["gps"]["year"] = gps.year;
 
      msg_telemetry.printTo(Serial);
+     Serial.println();
 
      String str;
      msg_telemetry.printTo(str);
