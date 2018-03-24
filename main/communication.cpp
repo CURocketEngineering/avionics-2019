@@ -96,20 +96,20 @@ void communication_updateTelemetry() {
      msg_telemetry["time"] = millis();
 
      msg_telemetry["sensors"]["gyro"]["x"] = gyro.x;
-     msg_telemetry["sensors"]["gyro"]["y"] = gyro.x;
-     msg_telemetry["sensors"]["gyro"]["z"] = gyro.x;
+     msg_telemetry["sensors"]["gyro"]["y"] = gyro.y;
+     msg_telemetry["sensors"]["gyro"]["z"] = gyro.z;
 
      msg_telemetry["sensors"]["acc"]["x"] = acc.x;
-     msg_telemetry["sensors"]["acc"]["y"] = acc.x;
-     msg_telemetry["sensors"]["acc"]["z"] = acc.x;
+     msg_telemetry["sensors"]["acc"]["y"] = acc.y;
+     msg_telemetry["sensors"]["acc"]["z"] = acc.z;
 
      msg_telemetry["sensors"]["mag"]["x"] = mag.x;
-     msg_telemetry["sensors"]["mag"]["y"] = mag.x;
-     msg_telemetry["sensors"]["mag"]["z"] = mag.x;
+     msg_telemetry["sensors"]["mag"]["y"] = mag.y;
+     msg_telemetry["sensors"]["mag"]["z"] = mag.z;
 
-     msg_telemetry["sensors"]["att"]["r"] = att.x;
-     msg_telemetry["sensors"]["att"]["p"] = att.x;
-     msg_telemetry["sensors"]["att"]["y"] = att.x;
+     msg_telemetry["sensors"]["att"]["r"] = att.r;
+     msg_telemetry["sensors"]["att"]["p"] = att.p;
+     msg_telemetry["sensors"]["att"]["y"] = att.y;
 
      msg_telemetry["sensors"]["bar"]["p"] = bar.p;
      msg_telemetry["sensors"]["bar"]["dp"] = bar.dp;
