@@ -208,7 +208,7 @@ void arm() {
                 state = IDLE;
                 break;
 
-                // Halt program in invalid state
+            // Halt program in invalid state
             default:
                 state = HALT;
         }

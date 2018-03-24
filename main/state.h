@@ -16,12 +16,6 @@
 #include "barometer.h"
 #include "gps.h"
 
-// Pins
-#define CTRL 7
-#define TERM_MAIN 5
-#define TERM_DROGUE 6
-#define TERM_IGNITE 10
-
 // Delay to rate limit idle function
 #define IDLE_DELAY 1000
 

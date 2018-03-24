@@ -1,10 +1,13 @@
 #ifndef PINS_H_
 #define PINS_H_
 
-// Accelerometer pins
-#define ACCEL_X 14
-#define ACCEL_Y 15
-#define ACCEL_Z 16
+// Debug pins
+#define CTRL 7
+
+// Control pins
+#define TERM_MAIN 5
+#define TERM_DROGUE 6
+#define TERM_IGNITE 10
 
 // Communications pins
 #define PANEL_CLOCK 3
