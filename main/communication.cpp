@@ -107,6 +107,10 @@ void communication_updateTelemetry() {
      msg_telemetry["sensors"]["mag"]["y"] = mag.x;
      msg_telemetry["sensors"]["mag"]["z"] = mag.x;
 
+     msg_telemetry["sensors"]["att"]["r"] = att.x;
+     msg_telemetry["sensors"]["att"]["p"] = att.x;
+     msg_telemetry["sensors"]["att"]["y"] = att.x;
+
      msg_telemetry["sensors"]["bar"]["p"] = bar.p;
      msg_telemetry["sensors"]["bar"]["dp"] = bar.dp;
 
@@ -147,6 +151,7 @@ void communication_init() {
      sensors.createNestedObject("gyro");
      sensors.createNestedObject("acc");
      sensors.createNestedObject("mag");
+     sensors.createNestedObject("att");
      sensors.createNestedObject("bar");
      sensors.createNestedObject("gps");
 
@@ -164,6 +169,10 @@ void communication_init() {
      msg_telemetry["sensors"]["mag"]["x"] = 0;
      msg_telemetry["sensors"]["mag"]["y"] = 0;
      msg_telemetry["sensors"]["mag"]["z"] = 0;
+
+     msg_telemetry["sensors"]["att"]["r"] = 0;
+     msg_telemetry["sensors"]["att"]["p"] = 0;
+     msg_telemetry["sensors"]["att"]["y"] = 0;
 
      msg_telemetry["sensors"]["bar"]["p"] = 0;
      msg_telemetry["sensors"]["bar"]["dp"] = 0;
