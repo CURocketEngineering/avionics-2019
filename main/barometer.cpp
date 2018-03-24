@@ -14,8 +14,6 @@ struct bar_s bar, bar_prev;
 BME280 barometer;
 
 void barometer_init() {
-     Wire.begin();
-
      barometer.settings.commInterface = I2C_MODE;
      barometer.settings.I2CAddress = BARO_ADDR;
 
@@ -29,6 +27,8 @@ void barometer_init() {
      barometer.settings.humidOverSample = 1;
 
      delay(10);
+
+     barometer.begin();
 }
 
 void barometer_read(bool filter) {

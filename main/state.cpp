@@ -191,18 +191,18 @@ void arm() {
             // Do nothing if no command
             case CMD_NONE:
                 break;
-                // Disarm rocket
+            // Disarm rocket
             case CMD_DISARM:
                 bitClear(debug, 3);
                 state = IDLE;
                 break;
 
-                // Ignite rocket
+            // Ignite rocket
             case CMD_IGNITE:
                 state = IGNITE;
                 break;
 
-                // No communication with base station
+            // No communication with base station
             case NO_COMM:
                 // Revert to idle state
                 state = IDLE;

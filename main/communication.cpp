@@ -70,7 +70,7 @@ enum command_e communication_recvCommand() {
 
     JsonObject & command = json.parse(Serial);
 
-    for (unsigned int idx = 0; idx < sizeof(commands)/sizeof(commands[0]); idx++) {
+    for (unsigned int idx = 0; idx < sizeof(commands_arr)/sizeof(commands_arr[0]); idx++) {
       if (commands[idx] == command["command"])
        return (enum command_e)idx;
     }
