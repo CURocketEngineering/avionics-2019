@@ -12,9 +12,12 @@ palette = [
 
 def init():
     comm.init()
-    global data = {'time': -1, 'state': 'no_comm', 'sensors': None}
-    global accelArray = []
-    global altArray = []
+    global data
+    data = {'time': -1, 'state': 'no_comm', 'sensors': None}
+    global accelArray
+    accelArray = []
+    global altArray
+    altArray = []
 
 def update():
     global accelArray
