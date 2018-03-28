@@ -11,12 +11,11 @@ palette = [
 ]
 
 def init():
-    states = {'no_comm': 'Disconnected', 'idle': 'Idle', 'test': 'Test', 'pass': 'Pass', 'fail': 'Fail', 'arm': 'Arm', 'ignite': 'Ignite', 'burn': 'Burn', 'coast': 'Coast', 'apogee': 'Apogee', 'wait': 'Wait', 'eject': 'Eject', 'fall': 'Fall', 'recover': 'Recover'}
+    #states = {'no_comm': 'Disconnected', 'idle': 'Idle', 'test': 'Test', 'pass': 'Pass', 'fail': 'Fail', 'arm': 'Arm', 'ignite': 'Ignite', 'burn': 'Burn', 'coast': 'Coast', 'apogee': 'Apogee', 'wait': 'Wait', 'eject': 'Eject', 'fall': 'Fall', 'recover': 'Recover'}
     comm.init()
-    data = {'time': -1, 'state': 'no_comm', 'sensors': None}
-    accelArray = []
-    altArray = []
-    pass
+    global data = {'time': -1, 'state': 'no_comm', 'sensors': None}
+    global accelArray = []
+    global altArray = []
 
 def update():
     try:
@@ -35,12 +34,9 @@ def update():
         elif message['type'] == 'telemetry':
             data['sensors'] = message['sensors']
 
-        
     if data['sensors']:
         accelArray.append(states['sensors']['acc']['z'])
         altArray.append(states['sensors']['bar']['alt'])
-
-    pass
 
 ##AltitudeGraph
 def graph():
