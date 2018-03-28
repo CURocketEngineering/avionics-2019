@@ -11,13 +11,14 @@ palette = [
 ]
 
 def init():
-    #states = {'no_comm': 'Disconnected', 'idle': 'Idle', 'test': 'Test', 'pass': 'Pass', 'fail': 'Fail', 'arm': 'Arm', 'ignite': 'Ignite', 'burn': 'Burn', 'coast': 'Coast', 'apogee': 'Apogee', 'wait': 'Wait', 'eject': 'Eject', 'fall': 'Fall', 'recover': 'Recover'}
     comm.init()
     global data = {'time': -1, 'state': 'no_comm', 'sensors': None}
     global accelArray = []
     global altArray = []
 
 def update():
+    global accelArray
+    global altArray
     try:
         cmd = sys.stdin.read(1)
         comm.send(cmd)
@@ -38,7 +39,7 @@ def update():
         accelArray.append(states['sensors']['acc']['z'])
         altArray.append(states['sensors']['bar']['alt'])
 
-##AltitudeGraph
+##Just altitude graph for now
 def graph():
     altitudeGraph = urwid.BarGraph(
         ['normal', 'inverse'],
@@ -51,9 +52,8 @@ def graph():
     loop = urwid.MainLoop(altitudeGraph, palette)
     loop.run()
                              
-altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)]
+altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)] #temp until fake data parse
 #init()
-#graph()
 while(True):
     #update()
     graph()
