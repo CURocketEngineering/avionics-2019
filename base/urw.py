@@ -5,13 +5,17 @@ import json
 import comm
 import box
 
+palette = [
+    ('normal', 'dark magenta', 'dark gray'),
+    ('inverse', 'dark gray', 'dark magenta'),
+]
+
 def init():
     #states = {'no_comm': 'Disconnected', 'idle': 'Idle', 'test': 'Test', 'pass': 'Pass', 'fail': 'Fail', 'arm': 'Arm', 'ignite': 'Ignite', 'burn': 'Burn', 'coast': 'Coast', 'apogee': 'Apogee', 'wait': 'Wait', 'eject': 'Eject', 'fall': 'Fall', 'recover': 'Recover'}
     comm.init()
     global data = {'time': -1, 'state': 'no_comm', 'sensors': None}
     global accelArray = []
     global altArray = []
-    pass
 
 def update():
     try:
@@ -34,19 +38,22 @@ def update():
         accelArray.append(states['sensors']['acc']['z'])
         altArray.append(states['sensors']['bar']['alt'])
 
-    pass
-
-##
+##AltitudeGraph
 def graph():
-    x = [1,2,3,4,5]
-    y = [1,10,4,8,5]
-    graph = urwid.BarGraph('dark magenta')
-    graph.set_data(x,100)
-    graph.render()
-
-init()
-graph()
+    altitudeGraph = urwid.BarGraph(
+        ['normal', 'inverse'],
+        ['normal', 'inverse'],
+        { (1,0): 'normal', },
+    )
+    global altArray
+    lines = [50]
+    altitudeGraph.set_data(altArray, 50, lines)
+    loop = urwid.MainLoop(altitudeGraph, palette)
+    loop.run()
+                             
+altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)]
+#init()
+#graph()
 while(True):
-    pass
-    update()
+    #update()
     graph()
