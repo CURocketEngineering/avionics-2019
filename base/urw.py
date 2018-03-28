@@ -1,9 +1,11 @@
 ## Loops through updating graphs 
 
 import urwid as urwid
+import threading as jackysux
 import json
 import comm
 import box
+import time
 
 palette = [
     ('normal', 'dark magenta', 'dark gray'),
@@ -42,6 +44,16 @@ def update():
         accelArray.append(states['sensors']['acc']['z'])
         altArray.append(states['sensors']['bar']['alt'])
 
+def updatelol(loop):
+    global altArray
+    while(True):
+        altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)]
+        time.sleep(3)
+        loop.draw_screen()
+        altArray = [(5,),(4,),(5,),(4,),(0,),(6,),(3,)]
+        time.sleep(3)
+        loop.draw_screen()
+
 ##Just altitude graph for now
 def graph():
     altitudeGraph = urwid.BarGraph(
@@ -53,10 +65,18 @@ def graph():
     lines = [50]
     altitudeGraph.set_data(altArray, 50, lines)
     loop = urwid.MainLoop(altitudeGraph, palette)
+    refresh = jackysux.Thread(target=updatelol, args=(loop))
+    refresh.start()
     loop.run()
                              
 altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)] #temp until fake data parse
+
 #init()
 while(True):
     #update()
+    graph()
+    #time.sleep(3)
+    #print("swag")
+    #time.sleep(3)
+    altArray = [(3,),(2,),(0,),(0,),(0,),(6,),(1,)]
     graph()
