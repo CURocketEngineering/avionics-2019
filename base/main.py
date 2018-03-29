@@ -19,18 +19,37 @@ try:
 
     box.init('blackbox.json')
 
-    data = {'time': -1, 'state': 'no_comm', 'sensors': None}
+    data = {'time': 0, 'state': 'no_comm', 'sensors': None}
+    count = 0
 
     while True:
         try:
             cmd = sys.stdin.read(1)
-            comm.send(cmd)
+
+            if cmd == 't':
+                comm.send({'command': 'test'})
+            elif cmd == 'a':
+                comm.send({'command': 'arm'})
+            elif cmd == 'd':
+                comm.send({'command': 'disarm'})
+            elif cmd == 'i':
+                comm.send({'command': 'ignite'})
+            elif cmd == 'b':
+                comm.send({'command': 'abort'})
+            elif cmd == 'p':
+                comm.send({'command': 'pass'})
+            elif cmd == 'f':
+                comm.send({'command': 'fail'})
+            else:
+                comm.send({'command': 'none'})
         except IOError:
             pass
 
         message = comm.read()
 
         if message:
+            count = 0
+
             data['time'] = message['time']
 
             if message['type'] == 'state':
@@ -39,11 +58,16 @@ try:
                 data['sensors'] = message['sensors']
 
             box.write(data)
+        else:
+            count += 1
+
+            if count > 1000:
+                data['state'] = 'no_comm'
 
         if data['sensors']:
-            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°     '.format(data['time'], states[data['state']], data['sensors']['acc']['z'], data['sensors']['bar']['alt'], data['sensors']['gps']['lat'], data['sensors']['gps']['lon']), end='\r')
+            print('[{}] State: {} ∙ Acceleration: {} g ∙ Altitude: {} ft ∙ GPS: {}° {}°     '.format(data['time']/1000, states[data['state']], data['sensors']['acc']['z'], data['sensors']['bar']['alt'], data['sensors']['gps']['lat'], data['sensors']['gps']['lon']), end='\r')
         else:
-            print('[{}] State: {}                                                           '.format(data['time'], states[data['state']]), end='\r')
+            print('[{}] State: {}                                                           '.format(data['time']/1000, states[data['state']]), end='\r')
 except KeyboardInterrupt:
     pass
 finally:
