@@ -1,4 +1,4 @@
-## Loops through updating graphs 
+## Loops through updating graphs
 
 import urwid as urwid
 import json
@@ -11,21 +11,23 @@ palette = [
     ('inverse', 'dark gray', 'dark magenta'),
 ]
 
-height = 50 ##Change
+height = 50 ##Variable can(should) be changed
 
 myiter = 0
 data2 = []
 altArray = []
 accelArray = []
 
+# Initializes some data before graphing
 def init():
     comm.init()
-    global data
+    #global data
     data = {'time': -1, 'state': 'no_comm', 'sensors': None}
-    global accelArray
-    accelArray = []
-    global altArray
+    #global accelArray
+    #accelArray = []
+    #global altArray
 
+# Update function stolen from main.py, updates independently
 def update():
     global accelArray
     global altArray
@@ -51,12 +53,13 @@ def update():
 
 
 # Converts integer to list containing only integer
+# Urwid is dumb by wanting a list of tuples
 def toList(someinteger):
     mylist = []
     mylist.append(someinteger)
     return mylist
 
-#A loop for updating a graph with fake data
+#Fake data grapher
 def updatefake(loop, data):
     time.sleep(2)
     global myiter
@@ -85,6 +88,7 @@ def updatefake(loop, data):
     loop.set_alarm_in(0.1,updatefake)
     loop.run()
 
+#Growing list grapher
 def updategetbig(loop, data):
     time.sleep(1)
     global data2
@@ -106,7 +110,7 @@ def updategetbig(loop, data):
     loop.set_alarm_in(0.1,updategetbig)
     loop.run()
         
-##Just altitude graph for now
+#Just altitude graph for now
 def graph():
     altitudeGraph = urwid.BarGraph(
         ['normal', 'inverse'],
@@ -123,5 +127,3 @@ def graph():
 while(True):
     #init()
     graph()
-
-    
