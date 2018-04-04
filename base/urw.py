@@ -11,6 +11,13 @@ palette = [
     ('inverse', 'dark gray', 'dark magenta'),
 ]
 
+height = 50 ##Change
+
+myiter = 0
+data2 = []
+altArray = []
+accelArray = []
+
 def init():
     comm.init()
     global data
@@ -18,7 +25,6 @@ def init():
     global accelArray
     accelArray = []
     global altArray
-    altArray = []
 
 def update():
     global accelArray
@@ -43,18 +49,62 @@ def update():
         accelArray.append(states['sensors']['acc']['z'])
         altArray.append(states['sensors']['bar']['alt'])
 
+
+# Converts integer to list containing only integer
+def toList(someinteger):
+    mylist = []
+    mylist.append(someinteger)
+    return mylist
+
+#A loop for updating a graph with fake data
 def updatefake(loop, data):
-    print(data)
     time.sleep(2)
-    newData = [(1,),(3,),(9,),(4,),(0,),(0,),(15,)]
-    lines = [50]
-    #data.set_data(newData, 50, lines)
-    loop.draw_screen()
-    time.sleep(0.5)
-    newData = [(5,),(2,),(3,),(4,),(0,),(3,),(0,)]
-    loop.draw_screen()
-    time.sleep(0.5)
-    #updatefake(loop,data)
+    global myiter
+    data = [1,2,3,4,5,0,9]
+    if myiter == 2:
+        data = [4,6,8,1,2,0,0,0,0,10,3,5]
+    elif myiter == 4:
+        data = [1,4,2]
+    elif myiter == 6:
+        data = [3,2,5,6,8,9,5,3,5,7,8]
+    myiter += 1
+    for i in data:
+        i = i*myiter
+    newData = []
+    for i in data:
+        newData.append(tuple(toList(i)))
+    graph = urwid.BarGraph(
+        ['normal', 'inverse'],
+        ['normal', 'inverse'],
+        { (1,0): 'normal', },
+    )
+    lines = [height]
+    graph.set_data(newData, 50, lines)
+    loop.stop()
+    loop = urwid.MainLoop(graph, palette)
+    loop.set_alarm_in(0.1,updatefake)
+    loop.run()
+
+def updategetbig(loop, data):
+    time.sleep(1)
+    global data2
+    global myiter
+    myiter += 1
+    data2.append(myiter)
+    lines = [height]
+    newData = []
+    for i in data2:
+        newData.append(tuple(toList(i)))
+    graph = urwid.BarGraph(
+        ['normal', 'inverse'],
+        ['normal', 'inverse'],
+        { (1,0): 'normal', },
+    )
+    graph.set_data(newData, 50, lines)
+    loop.stop()
+    loop = urwid.MainLoop(graph, palette)
+    loop.set_alarm_in(0.1,updategetbig)
+    loop.run()
         
 ##Just altitude graph for now
 def graph():
@@ -67,14 +117,11 @@ def graph():
     lines = [50]
     altitudeGraph.set_data(altArray, 50, lines)
     loop = urwid.MainLoop(altitudeGraph, palette)
-    loop.set_alarm_in(2,updatefake)
+    loop.set_alarm_in(0.1,updategetbig)
     loop.run()
     
-                             
-altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)] #temp until fake data parse
-
-#init()
 while(True):
+    #init()
     graph()
 
     
