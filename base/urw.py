@@ -68,15 +68,29 @@ def graph():
     refresh = jackysux.Thread(target=updatelol, args=(loop))
     refresh.start()
     loop.run()
-                             
+
 altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)] #temp until fake data parse
+altitudeGraph = urwid.BarGraph(
+    ['normal', 'inverse'],
+    ['normal', 'inverse'],
+    { (1,0): 'normal', },
+)
+
+def updateGraph():
+    altitudeGraph.set_data(altArray, 50)
+    altArray = [(1,),(2,),(3,),(4,),(0,),(3,),(6,)]
+    altitudeGraph.set_data(altArray, 50)
+    altArray = [(5,),(4,),(5,),(4,),(0,),(6,),(3,)]
+
+loop = urwid.MainLoop(updateGraph, palette)
+loop.run()
 
 #init()
-while(True):
+'''while(True):
     #update()
     graph()
     #time.sleep(3)
     #print("swag")
     #time.sleep(3)
     altArray = [(3,),(2,),(0,),(0,),(0,),(6,),(1,)]
-    graph()
+    graph()'''
