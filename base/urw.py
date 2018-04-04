@@ -123,7 +123,7 @@ def graph():
     loop = urwid.MainLoop(altitudeGraph, palette)
     loop.set_alarm_in(0.1,updategetbig)
     loop.run()
-    
+
+#init()
 while(True):
-    #init()
     graph()
