@@ -42,7 +42,7 @@ void gps_read() {
 
                // Latitude
                ptr = util_getField(ptr, field, sizeof(field));
-               gps.lat = atof(field);
+               gps.lat = atof(field)/100.0;
 
                // N/S
                ptr = util_getField(ptr, field, sizeof(field));
@@ -52,7 +52,7 @@ void gps_read() {
 
                // Longitude
                ptr = util_getField(ptr, field, sizeof(field));
-               gps.lon = atof(field);
+               gps.lon = atof(field)/100.0;
 
                // E/W
                ptr = util_getField(ptr, field, sizeof(field));

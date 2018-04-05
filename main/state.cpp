@@ -107,9 +107,11 @@ void halt() {
     digitalWrite(TERM_IGNITE, LOW);
 
     // Clear interrupts and put processor to sleep
-    cli();
-    sleep_enable();
-    sleep_cpu();
+    //cli();
+    //sleep_enable();
+    //sleep_cpu();
+
+    state = IDLE;
 }
 
 void test() {
@@ -419,6 +421,8 @@ void state_init() {
 
         bitSet(debug, 15);
     }
+
+    communication_sendState(state);
 
     // Wait on CTRL press
     if (digitalRead(CTRL) == LOW) {
