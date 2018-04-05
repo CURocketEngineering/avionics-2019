@@ -3,6 +3,7 @@
 from __future__ import division, print_function
 
 import json
+import time
 import sys
 
 import box
@@ -43,7 +44,7 @@ try:
             else:
                 comm.send({'command': 'none'})
         except IOError:
-            pass
+            comm.send({'command': 'none'})
 
         message = comm.read()
 
