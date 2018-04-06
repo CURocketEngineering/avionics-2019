@@ -22,7 +22,39 @@ def fakeAnimate(var):
     time.sleep(1)
 
 ##Real functions
+arr_acc = [0]
+arr_alt = [0]
+arr_sec = [0]
+start_time = time.time()
 #Functions for animating altitude and acceleration
+def animate(i):
+    global arr_acc
+    global arr_alt
+    global arr_sec
+    
+    message = comm.read()
+    if message:
+        count = 0
+        data['time'] = message['time']
+        if message['type'] == 'state':
+            data['state'] = message['state']
+        elif message['type'] == 'telemetry':
+            data['sensors'] = message['sensors']
+    else:
+        count += 1
+        if count > 1000:
+            data['state'] = 'no_comm'
+            
+    if data['sensors']:
+        arr_acc.append(states['sensors']['acc']['z'])
+        arr_alt.append(states['sensors']['bar']['alt'])
+        arr_sec.append(time.time()-start_time)
+    
+    plot_acc.clear()
+    plot_acc.plot(arr_sec,arr_acc)
+    plot_alt.clear()
+    plot_alt.plot(arr_sec,arr_alt)
+    
 graphs = plt.figure()
 plot_acc = graphs.add_subplot(1,2,1)
 plot_acc.xlabel("time, s")
@@ -37,5 +69,6 @@ plot_acc.title("Altitude")
 #update function
 
 
-update = animation.FuncAnimation(graphs, updateFunction, interval=1000)
+update = animation.FuncAnimation(graphs, animate, interval=200)
 graphs.show()
+
