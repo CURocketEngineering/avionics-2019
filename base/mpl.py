@@ -57,14 +57,14 @@ def animate(i):
     
 graphs = plt.figure()
 plot_acc = graphs.add_subplot(1,2,1)
-plot_acc.xlabel("time, s")
-plot_acc.ylabel("g's")
-plot_acc.title("Acceleration")
+plot_acc.set_xlabel("time, s")
+plot_acc.set_ylabel("g's")
+plot_acc.set_title("Acceleration")
 
 plot_alt = graphs.add_subplot(1,2,2)
-plot_acc.xlabel("time, s")
-plot_acc.ylabel("ft")
-plot_acc.title("Altitude")
+plot_acc.set_xlabel("time, s")
+plot_acc.set_ylabel("ft")
+plot_acc.set_title("Altitude")
 
 #update function
 
