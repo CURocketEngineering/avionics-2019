@@ -37,32 +37,36 @@ arr_sec = [0]
 start_time = time.time()
 #Functions for animating altitude and acceleration
 def animate(i):
-    global arr_acc
-    global arr_alt
-    global arr_sec
-    message = comm.read()
-    if message:
-        count = 0
-        data['time'] = message['time']
-        if message['type'] == 'state':
-            data['state'] = message['state']
-        elif message['type'] == 'telemetry':
-            data['sensors'] = message['sensors']
-    else:
-        count += 1
-        if count > 1000:
-            data['state'] = 'no_comm'
+    try:
+        global arr_acc
+        global arr_alt
+        global arr_sec
+        message = comm.read()
+        if message:
+            count = 0
+            data['time'] = message['time']
+            if message['type'] == 'state':
+                data['state'] = message['state']
+            elif message['type'] == 'telemetry':
+                data['sensors'] = message['sensors']
+        else:
+            count += 1
+            if count > 1000:
+                data['state'] = 'no_comm'
+                    
+        if data['sensors']:
+            print("Type: ",str(type(states['sensors']['acc']['z'])))
+            arr_acc.append(states['sensors']['acc']['z'])
+            arr_alt.append(states['sensors']['bar']['alt'])
+            arr_sec.append(time.time()-start_time)
             
-    if data['sensors']:
-        print("Type: ",str(type(states['sensors']['acc']['z'])))
-        arr_acc.append(states['sensors']['acc']['z'])
-        arr_alt.append(states['sensors']['bar']['alt'])
-        arr_sec.append(time.time()-start_time)
-    
-    plot_acc.clear()
-    plot_acc.plot(arr_sec,arr_acc)
-    plot_alt.clear()
-    plot_alt.plot(arr_sec,arr_alt)
+            plot_acc.clear()
+            plot_acc.plot(arr_sec,arr_acc)
+            plot_alt.clear()
+            plot_alt.plot(arr_sec,arr_alt)
+    except:
+        print("Error in Try.")
+        fakeGraphs()
     
     
 graphs = plt.figure()
@@ -79,13 +83,14 @@ plot_acc.set_title("Altitude")
 
 
 #update function
-
-try:
-    comm.init()
-    update = animation.FuncAnimation(graphs, animate, interval=200)
-    plt.show()
-except:
+def fakeGraphs():
     print("There was an error with comm, graphs will not operate.")
     print("I recommend restarting, unless this is a test")
     update = animation.FuncAnimation(graphs, fakeAnimate,interval=200)
     plt.show()
+
+try:
+    update = animation.FuncAnimation(graphs, animate, interval=200)
+    plt.show()
+except:
+    fakeGraphs()
