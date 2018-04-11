@@ -17,10 +17,16 @@ ax1 = fig.add_subplot(1,1,1)
 '''
 def fakeAnimate(var):
     global z
+    global arr_sec
+    global arr_acc
+    global arr_alt
     arr_sec.append(z)
-    arr_alt.append(math.pow(z,2))
+    arr_acc.append(math.pow(z,2))
+    arr_alt.append(math.sin(z*(3.14/6)))
     plot_acc.clear()
     plot_acc.plot(arr_sec,arr_acc)
+    plot_alt.clear()
+    plot_alt.plot(arr_sec,arr_alt)
     z += 1
     time.sleep(1)
 
@@ -48,6 +54,7 @@ def animate(i):
             data['state'] = 'no_comm'
             
     if data['sensors']:
+        print("Type: ",str(type(states['sensors']['acc']['z'])))
         arr_acc.append(states['sensors']['acc']['z'])
         arr_alt.append(states['sensors']['bar']['alt'])
         arr_sec.append(time.time()-start_time)
