@@ -14,9 +14,6 @@
 
 #include "pins.h"
 
-// National Weather Service altimeter reading (http://www.weather.gov/)
-#define NWS_ALTI 1013.25
-
 #define BARO_ADDR 0x77
 #define BARO_GAIN 0.2
 
