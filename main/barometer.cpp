@@ -9,6 +9,10 @@
 #include "pins.h"
 #include "barometer.h"
 
+#ifdef SIM
+#include "sim.h"
+#endif
+
 struct bar_s bar, bar_prev;
 
 BME280 barometer;
@@ -34,10 +38,14 @@ void barometer_init() {
 void barometer_read(bool filter) {
      bar_prev = bar;
 
+#ifndef SIM
      bar.p = barometer.readFloatPressure();
      bar.alt = barometer.readFloatAltitudeMeters();
      bar.temp = barometer.readTempC();
      bar.hum = barometer.readFloatHumidity();
+#else
+     sim_getBarometer();
+#endif
 
      if (filter) {
           bar.p = BARO_GAIN*bar.p + (1.0 - BARO_GAIN)*bar_prev.p;

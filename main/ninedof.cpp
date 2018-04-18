@@ -4,6 +4,10 @@
 
 #include "ninedof.h"
 
+#ifdef SIM
+#include "sim.h"
+#endif
+
 struct acc_s acc, acc_prev;
 struct gyro_s gyro, gyro_prev;
 struct mag_s mag, mag_prev;
@@ -20,30 +24,44 @@ void ninedof_init() {
 }
 
 void ninedof_read(bool filter) {
+#ifndef SIM
     if (imu.gyroAvailable()) {
         imu.readGyro();
+#endif
 
         gyro_prev = gyro;
 
+#ifndef SIM
         gyro.x = imu.calcGyro(imu.gx);
         gyro.y = imu.calcGyro(imu.gy);
         gyro.z = imu.calcGyro(imu.gz);
+#else
+        sim_getGyro();
+#endif
 
         if (filter) {
             gyro.x = GYRO_GAIN*gyro.x + (1.0 - GYRO_GAIN)*gyro_prev.x;
             gyro.y = GYRO_GAIN*gyro.y + (1.0 - GYRO_GAIN)*gyro_prev.y;
             gyro.z = GYRO_GAIN*gyro.z + (1.0 - GYRO_GAIN)*gyro_prev.z;
         }
+#ifndef SIM
     }
+#endif
 
+#ifndef SIM
     if (imu.accelAvailable()) {
         imu.readAccel();
+#endif
 
         acc_prev = acc;
 
+#ifndef SIM
         acc.x = imu.calcAccel(imu.ax);
         acc.y = imu.calcAccel(imu.ay);
         acc.z = imu.calcAccel(imu.az);
+#else
+        sim_getAccel();
+#endif
 
         if (filter) {
             acc.x = ACC_GAIN*acc.x + (1.0 - ACC_GAIN)*acc_prev.x;
@@ -53,14 +71,22 @@ void ninedof_read(bool filter) {
 
         att.r = atan2(acc.y, acc.z);
         att.p = atan2(-acc.x, sqrt(acc.y*acc.y + acc.z*acc.z));
+#ifndef SIM
     }
+#endif
 
+#ifndef SIM
     if (imu.magAvailable()) {
         imu.readMag();
+#endif
 
+#ifndef SIM
         mag.x = imu.calcMag(imu.mx);
         mag.y = imu.calcMag(imu.my);
         mag.z = imu.calcMag(imu.mz);
+#else
+        sim_getMag();
+#endif
 
         if (filter) {
             mag.x = MAG_GAIN*mag.x + (1.0 - MAG_GAIN)*mag_prev.x;
@@ -83,5 +109,7 @@ void ninedof_read(bool filter) {
         else if (att.y < -PI) {
             att.y += 2*PI;
         }
+#ifndef SIM
     }
+#endif
 }

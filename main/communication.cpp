@@ -13,6 +13,10 @@
 #include "gps.h"
 #include "communication.h"
 
+#ifdef SIM
+#include "sim.h"
+#endif
+
 #include "json.h"
 
 const char * commands_arr[] = {
@@ -91,6 +95,10 @@ void communication_updateTelemetry() {
      ninedof_read(true);
      barometer_read(true);
      gps_read();
+
+#ifdef SIM
+     sim_updateTelemetry();
+#endif
 
      msg_telemetry["type"] = "telemetry";
      msg_telemetry["time"] = millis();
