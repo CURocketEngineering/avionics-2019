@@ -20,15 +20,23 @@ def fakeAnimate(var):
     global arr_sec
     global arr_acc
     global arr_alt
+    #Reset labels
+    plot_acc.clear()
+    plot_alt.clear()
+    plot_acc.set_xlabel("time, s")
+    plot_acc.set_ylabel("g's")
+    plot_acc.set_title("Acceleration")
+    plot_alt.set_xlabel("time, s")
+    plot_alt.set_ylabel("ft")
+    plot_alt.set_title("Altitude")
+    #Update
     arr_sec.append(z)
     arr_acc.append(math.pow(z,2))
     arr_alt.append(math.sin(z*(3.14/6)))
-    plot_acc.clear()
-    plot_acc.plot(arr_sec,arr_acc)
-    plot_alt.clear()
-    plot_alt.plot(arr_sec,arr_alt)
+    plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
+    plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
     z += 1
-    time.sleep(1)
+    #time.sleep(0.01)
 
 ##Real functions
 arr_acc = [0]
@@ -71,15 +79,21 @@ def animate(i):
     
 graphs = plt.figure()
 graphs.canvas.set_window_title("THE AVIONICS GUYS ARE AWESOME")
-plot_acc = graphs.add_subplot(1,2,1)
+plot_acc = graphs.add_subplot(2,2,1)
 plot_acc.set_xlabel("time, s")
 plot_acc.set_ylabel("g's")
 plot_acc.set_title("Acceleration")
 
-plot_alt = graphs.add_subplot(1,2,2)
-plot_acc.set_xlabel("time, s")
-plot_acc.set_ylabel("ft")
-plot_acc.set_title("Altitude")
+plot_alt = graphs.add_subplot(2,2,2)
+plot_alt.set_xlabel("time, s")
+plot_alt.set_ylabel("ft")
+plot_alt.set_title("Altitude")
+
+#cosmetics
+plot_acc.set_facecolor((.964,.404,.2))
+plot_alt.set_facecolor((.964,.404,.2))
+graphs.patch.set_facecolor((.52,.53,.55))
+clemsonPurple = '#522D80'
 
 
 #update function
@@ -94,3 +108,7 @@ try:
     plt.show()
 except:
     fakeGraphs()
+
+
+
+#1050 ft/s
