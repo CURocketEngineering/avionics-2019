@@ -24,7 +24,7 @@
 /* MAIN PROGRAM FUNCTIONS */
 
 void setup() {
-    // Initialize communication with the base station
+    // Initialize debug leds
     debug_init();
 
     // Initialize communication with the ninedof sensor
