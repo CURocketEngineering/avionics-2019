@@ -9,12 +9,6 @@ from serial import Serial
 
 ##Used for Testing
 z = 1
-'''
-x = [0]
-y = [0]
-fig = plt.figure()
-ax1 = fig.add_subplot(1,1,1)
-'''
 def fakeAnimate(var):
     global z
     global arr_sec
@@ -69,9 +63,9 @@ def animate(i):
             arr_sec.append(time.time()-start_time)
             
             plot_acc.clear()
-            plot_acc.plot(arr_sec,arr_acc)
+            plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
             plot_alt.clear()
-            plot_alt.plot(arr_sec,arr_alt)
+            plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
     except:
         print("Error in Try.")
         fakeGraphs()
@@ -108,7 +102,5 @@ try:
     plt.show()
 except:
     fakeGraphs()
-
-
 
 #1050 ft/s
