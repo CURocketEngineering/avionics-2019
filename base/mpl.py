@@ -1,6 +1,7 @@
 ##Use python3, requires matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.widgets import Slider, Button, RadioButtons
 import time
 import math
 import sys
@@ -9,34 +10,49 @@ from serial import Serial
 
 ##Used for Testing
 z = 1
-def fakeAnimate(var):
+clemsonPurple = '#522D80'
+
+##Calculations
+def calcspeed(arr_acc,arr_sec,arr_vel):
+    #Calc based approach does not check for false values
+    time = len(arr_sec) - 1
+    dt = arr_sec[time] - arr_sec[time - 1]
+    g_to_feet = 32.174
+    new_vel = arr_vel[time] + (dt * (arr_acc[time] * g_to_feet))
+    arr_vel.append(new_vel)
+
+##Speedometer heavily based on https://matplotlib.org/examples/widgets/slider_demo.html
+
+def fake_animate(var):
     global z
     global arr_sec
     global arr_acc
     global arr_alt
+    global arr_vel
     #Reset labels
     plot_acc.clear()
     plot_alt.clear()
+    plot_vel.clear()
     plot_acc.set_xlabel("time, s")
     plot_acc.set_ylabel("g's")
     plot_acc.set_title("Acceleration")
     plot_alt.set_xlabel("time, s")
     plot_alt.set_ylabel("ft")
     plot_alt.set_title("Altitude")
+    plot_vel.set_xlabel("time, s")
+    plot_vel.set_ylabel("ft/s")
+    plot_vel.set_title("Velocity")
     #Update
+    calcspeed(arr_acc,arr_sec,arr_vel)
     arr_sec.append(z)
-    arr_acc.append(math.pow(z,2))
-    arr_alt.append(math.sin(z*(3.14/6)))
+    arr_alt.append(math.pow(z,2))
+    arr_acc.append(math.sin(z*(3.14/6)))
+    plot_spd.set_val(arr_vel[len(arr_vel)-1])
     plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
     plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
+    plot_vel.plot(arr_sec,arr_vel,color=clemsonPurple)
     z += 1
-    #time.sleep(0.01)
 
-##Real functions
-arr_acc = [0]
-arr_alt = [0]
-arr_sec = [0]
-start_time = time.time()
 #Functions for animating altitude and acceleration
 def animate(i):
     try:
@@ -66,6 +82,11 @@ def animate(i):
             plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
             plot_alt.clear()
             plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
+            calcspeed(arr_acc,arr_sec,arr_vel)
+            plot_spd.set_val(arr_vel[len(arr_vel)-1])
+            plot_vel.clear()
+            plot_vel.plot(arr_sec,arr_vel,color=clemsonPurple)
+
     except:
         print("Error in Try.")
         fakeGraphs()
@@ -83,18 +104,32 @@ plot_alt.set_xlabel("time, s")
 plot_alt.set_ylabel("ft")
 plot_alt.set_title("Altitude")
 
+plot_vel = graphs.add_subplot(2,2,3)
+plot_vel.set_xlabel("time, s")
+plot_vel.set_ylabel("ft/s")
+plot_vel.set_title("Velocity")
+
+speedometer = plt.axes([0.6, 0.1, 0.3, 0.05], facecolor=clemsonPurple)
+maxspeed = 1050
+plot_spd = Slider(speedometer, 'ft/s', 0, maxspeed, valinit=0) 
+
 #cosmetics
 plot_acc.set_facecolor((.964,.404,.2))
 plot_alt.set_facecolor((.964,.404,.2))
+plot_vel.set_facecolor((.964,.404,.2))
 graphs.patch.set_facecolor((.52,.53,.55))
-clemsonPurple = '#522D80'
 
+arr_acc = [0]
+arr_alt = [0]
+arr_vel = [0]
+arr_sec = [0]
+start_time = time.time()
 
 #update function
 def fakeGraphs():
     print("There was an error with comm, graphs will not operate.")
     print("I recommend restarting, unless this is a test")
-    update = animation.FuncAnimation(graphs, fakeAnimate,interval=200)
+    update = animation.FuncAnimation(graphs, fake_animate,interval=200)
     plt.show()
 
 try:
@@ -102,5 +137,3 @@ try:
     plt.show()
 except:
     fakeGraphs()
-
-#1050 ft/s
