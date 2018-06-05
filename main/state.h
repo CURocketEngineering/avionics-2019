@@ -24,8 +24,6 @@
 
 // Time to hold pin high for parachute charge
 #define DELAY_PARACHUTE 1000
-// Time before allowing the rocket to be controlled from ignite to halt
-#define MAX_IGNITE 300
 // Accelerometer values to determine changes in state
 #define MIN_ACCEL 2.0
 #define THRUST_ACCEL 0.0

@@ -44,7 +44,7 @@ void idle() {
         // Check on ctrl term
         if (digitalRead(CTRL) == LOW) {
             // Wait for debounce and intent
-            delay(500);
+            delay(5000);
 
             // If button still held
             if (digitalRead(CTRL) == LOW) {
@@ -169,7 +169,7 @@ void arm() {
         // Check on ctrl term
         if (digitalRead(CTRL) == LOW) {
             // Wait for debounce and intent
-            delay(500);
+            delay(5000);
 
             // If button still held
             if (digitalRead(CTRL) == LOW) {
@@ -237,25 +237,6 @@ void ignite() {
     // Wait for rocket to move up
     communication_updateTelemetry();
     while (acc.z < MIN_ACCEL) {
-        // Halt if button pressed after still time
-        if (millis() - start > MAX_IGNITE*1000U) {
-            if (digitalRead(CTRL) == LOW) {
-                // Wait for debounce and intent
-                delay(500);
-
-                // Cancel launch if button still pressed
-                if (digitalRead(CTRL) == LOW) {
-                    state = HALT;
-                    return;
-                }
-            }
-
-            if (communication_recvCommand() == CMD_ABORT) {
-                state = HALT;
-                return;
-            }
-        }
-
         communication_updateTelemetry();
     }
 
@@ -275,6 +256,7 @@ void burn() {
     communication_sendState(BURN);
 
     // Update telemetry during burn
+    communication_updateTelemetry();
     while (acc.z > THRUST_ACCEL) {
         communication_updateTelemetry();
     }
@@ -294,6 +276,7 @@ void coast() {
     communication_sendState(COAST);
 
     // Update telemetry during coast
+    communication_updateTelemetry();
     while (bar.dp < APOGEE_DPRES){
         communication_updateTelemetry();
     }
@@ -329,6 +312,7 @@ void wait() {
     communication_sendState(WAIT);
 
     // Update telemetry during descent
+    communication_updateTelemetry();
     while (bar.alt > MAIN_ALT + bar.gnd) {
         communication_updateTelemetry();
     }
@@ -365,6 +349,7 @@ void fall() {
     communication_sendState(FALL);
 
     // Update telemetry during descent
+    communication_updateTelemetry();
     while (bar.dp > MIN_DPRES) {
         communication_updateTelemetry();
     }
@@ -381,10 +366,9 @@ void recover() {
     // Update base station state
     communication_sendState(RECOVER);
 
-    // Clear interrupts and put processor to sleep
-    cli();
-    sleep_enable();
-    sleep_cpu();
+    while (true) {
+        communication_updateTelemetry();
+    }
 }
 
 void state_init() {
