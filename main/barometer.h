@@ -15,7 +15,7 @@
 #include "pins.h"
 
 #define BARO_ADDR 0x77
-#define BARO_GAIN 0.2
+#define BARO_GAIN 0.9
 
 // Define struct type variables
 struct bar_s {

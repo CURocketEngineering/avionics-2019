@@ -1,8 +1,12 @@
-#ifdef SIM
-
 #include "sim.h"
 
+#ifdef SIM
+#include "barometer.h"
+#include "ninedof.h"
+
 #include "flight.h"
+
+const struct flight_s * sim_cur = &flight[0];
 
 void sim_init() {
 }
@@ -37,7 +41,5 @@ void sim_getMag() {
     mag.y = sim_cur->mag_y;
     mag.z = sim_cur->mag_z;
 }
-
-struct flight_s * sim_cur = &flight[0];
 
 #endif

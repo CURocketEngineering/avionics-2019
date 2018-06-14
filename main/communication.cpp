@@ -13,9 +13,7 @@
 #include "gps.h"
 #include "communication.h"
 
-#ifdef SIM
 #include "sim.h"
-#endif
 
 #include "json.h"
 

@@ -366,6 +366,11 @@ void recover() {
     // Update base station state
     communication_sendState(RECOVER);
 
+    state = IDLE;
+
+    EEPROM.put(eeprom_state, state);
+    EEPROM.put(eeprom_debug, debug);
+
     while (true) {
         communication_updateTelemetry();
     }

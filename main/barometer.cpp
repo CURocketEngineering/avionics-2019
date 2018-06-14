@@ -9,9 +9,7 @@
 #include "pins.h"
 #include "barometer.h"
 
-#ifdef SIM
 #include "sim.h"
-#endif
 
 struct bar_s bar, bar_prev;
 

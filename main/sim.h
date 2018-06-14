@@ -1,5 +1,3 @@
-#ifdef SIM
-
 /*
  * Declaration file for simulation
  */
@@ -7,6 +5,8 @@
 /* DEFINE */
 #ifndef SIM_H_
 #define SIM_H_
+
+//#define SIM
 
 /* LIBRARIES */
 #include <Arduino.h>
@@ -20,9 +20,13 @@ struct flight_s {
     float mag_x, mag_y, mag_z;
 };
 
+#ifdef SIM
 void sim_init();
 void sim_updateTelemetry();
-
+void sim_getBarometer();
+void sim_getGyro();
+void sim_getAccel();
+void sim_getMag();
 #endif
 
 #endif
