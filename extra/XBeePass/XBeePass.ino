@@ -7,7 +7,6 @@
  */
 
 //#define SS
-
 #ifdef SS
 #include <SoftwareSerial.h>
 
@@ -18,19 +17,18 @@
 SoftwareSerial xbee(XBEE_RX, XBEE_TX);
 
 #else
-#define xbee Serial1
+#define xbee Serial2
 #endif
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 #ifdef SS
   pinMode(XBEE_RX, INPUT);
   pinMode(XBEE_TX, OUTPUT);
 
 #endif
-  xbee.begin(9600);
-  xbee.println();
+  xbee.begin(115200);
 }
 
 void loop() {
