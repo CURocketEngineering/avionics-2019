@@ -43,8 +43,8 @@ void communication_sendResult(bool pass) {
      msg_result["time"] = millis();
      msg_result["pass"] = pass;
 
-     msg_result.printTo(Serial);
-     Serial.println();
+     msg_result.printTo(Serial2);
+     Serial2.println();
 
      String str;
      msg_result.printTo(str);
@@ -56,8 +56,8 @@ void communication_sendState(enum state_e state) {
      msg_state["time"] = millis();
      msg_state["state"] = states[state];
 
-     msg_state.printTo(Serial);
-     Serial.println();
+     msg_state.printTo(Serial2);
+     Serial2.println();
 
      String str;
      msg_state.printTo(str);
@@ -67,10 +67,10 @@ void communication_sendState(enum state_e state) {
 enum command_e communication_recvCommand() {
   static unsigned int comm = COMM_COUNT;
 
-  if (Serial.available()) {
+  if (Serial2.available()) {
     comm = 0;
 
-    JsonObject & command = json.parse(Serial);
+    JsonObject & command = json.parse(Serial2);
 
     for (unsigned int idx = 0; idx < sizeof(commands_arr)/sizeof(commands_arr[0]); idx++) {
       if (commands[idx] == command["command"])
@@ -100,6 +100,7 @@ void communication_updateTelemetry() {
 
      msg_telemetry["type"] = "telemetry";
      msg_telemetry["time"] = millis();
+     msg_telemetry["state"] = states[state];
 
      msg_telemetry["sensors"]["gyro"]["x"] = gyro.x;
      msg_telemetry["sensors"]["gyro"]["y"] = gyro.y;
@@ -140,8 +141,8 @@ void communication_updateTelemetry() {
      msg_telemetry["sensors"]["gps"]["mon"] = gps.mon;
      msg_telemetry["sensors"]["gps"]["year"] = gps.year;
 
-     msg_telemetry.printTo(Serial);
-     Serial.println();
+     msg_telemetry.printTo(Serial2);
+     Serial2.println();
 
      String str;
      msg_telemetry.printTo(str);
@@ -163,6 +164,7 @@ void communication_init() {
 
      msg_telemetry["type"] = "telemetry";
      msg_telemetry["time"] = millis();
+     msg_telemetry["state"] = "init";
 
      msg_telemetry["sensors"]["gyro"]["x"] = 0;
      msg_telemetry["sensors"]["gyro"]["y"] = 0;
@@ -206,5 +208,5 @@ void communication_init() {
      msg_state["time"] = millis();
      msg_state["state"] = "init";
 
-     Serial.begin(9600);
+     Serial2.begin(115200);
 }

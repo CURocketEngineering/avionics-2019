@@ -4,6 +4,7 @@
  * A program to test latency to a single radio running XBeeEcho.
  */
 
+//#define SS
 #ifdef SS
 #include <SoftwareSerial.h>
 
@@ -13,7 +14,7 @@
 
 SoftwareSerial xbee(XBEE_RX, XBEE_TX);
 #else
-#define xbee Serial1
+#define xbee Serial2
 #endif
 
 #define TIMEOUT 1000

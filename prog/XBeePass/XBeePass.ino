@@ -6,7 +6,7 @@
  * software.
  */
 
-#define SS
+//#define SS
 
 #ifdef SS
 #include <SoftwareSerial.h>

@@ -4,6 +4,7 @@
  * A program that repeats anything received over the radio.
  */
 
+//#define SS
 #ifdef SS
 #include <SoftwareSerial.h>
 
@@ -14,7 +15,7 @@
 SoftwareSerial xbee(XBEE_RX, XBEE_TX);
 
 #else
-#define xbee Serial
+#define xbee Serial2
 #endif
 void setup() {
 #ifdef SS
@@ -22,8 +23,7 @@ void setup() {
   pinMode(XBEE_TX, OUTPUT);
 
 #endif
-  xbee.begin(9600);
-  xbee.println();
+  xbee.begin(115200);
 }
 
 void loop() {
