@@ -7,7 +7,6 @@
 // Control pins
 #define TERM_MAIN 5
 #define TERM_DROGUE 6
-#define TERM_IGNITE 10
 
 // Communications pins
 #define PANEL_CLOCK 3

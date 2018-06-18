@@ -104,7 +104,6 @@ void halt() {
     // Turn off all important lines
     digitalWrite(TERM_MAIN, LOW);
     digitalWrite(TERM_DROGUE, LOW);
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Clear interrupts and put processor to sleep
     //cli();
@@ -228,20 +227,11 @@ void ignite() {
     // Store ground in EEPROM
     EEPROM.put(eeprom_ground, bar.gnd);
 
-    // Send ignition signal
-    digitalWrite(TERM_IGNITE, HIGH);
-
-    // Ignition time for measuring
-    unsigned long start = millis();
-
     // Wait for rocket to move up
     communication_updateTelemetry();
     while (acc.z < MIN_ACCEL) {
         communication_updateTelemetry();
     }
-
-    // End ignition signal
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Change to burn
     state = BURN;
@@ -383,8 +373,6 @@ void state_init() {
     digitalWrite(TERM_MAIN, LOW);
     pinMode(TERM_DROGUE, OUTPUT);
     digitalWrite(TERM_DROGUE, LOW);
-    pinMode(TERM_IGNITE, OUTPUT);
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Check for saved data in EEPROM
     bool stored = true;
