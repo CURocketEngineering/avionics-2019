@@ -284,9 +284,13 @@ void apogee() {
     // Update base station state
     communication_sendState(APOGEE);
 
+    // Wait for ejection delay
+    if (PARACHUTE_WAIT)
+        delay(PARACHUTE_WAIT);
+
     // Send parachute signal
     digitalWrite(TERM_DROGUE, HIGH);
-    delay(DELAY_PARACHUTE);
+    delay(PARACHUTE_DELAY);
     digitalWrite(TERM_DROGUE, LOW);
 
     // Change to wait
@@ -321,9 +325,13 @@ void eject() {
     // Update base station state
     communication_sendState(EJECT);
 
+    // Wait for ejection delay
+    if (PARACHUTE_WAIT)
+        delay(PARACHUTE_WAIT);
+
     // Send parachute signal
     digitalWrite(TERM_MAIN, HIGH);
-    delay(DELAY_PARACHUTE);
+    delay(PARACHUTE_DELAY);
     digitalWrite(TERM_MAIN, LOW);
 
     // Change to fall

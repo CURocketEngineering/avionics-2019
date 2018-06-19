@@ -23,15 +23,18 @@
 #define EEPROM_HEADER "MainRev6"
 
 // Time to hold pin high for parachute charge
-#define DELAY_PARACHUTE 1000
+#define PARACHUTE_DELAY 1000
 // Accelerometer values to determine changes in state
 #define MIN_ACCEL 2.0
 #define THRUST_ACCEL 0.0
 // Barometer values to determine changes in state
 #define APOGEE_DPRES 1.0
 #define MIN_DPRES 1.0
+
+// Time to wait before deploying parachute
+#define PARACHUTE_WAIT 0
 // Altitude to deploy main parachute
-#define MAIN_ALT 2000.0
+#define MAIN_ALT 1500.0
 
 // Define enum type variables
 enum state_e {
