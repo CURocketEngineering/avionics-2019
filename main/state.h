@@ -20,7 +20,7 @@
 #define IDLE_DELAY 1000
 
 // Header bytes for EEPROM
-#define EEPROM_HEADER "MainRev5"
+#define EEPROM_HEADER "MainRev6"
 
 // Time to hold pin high for parachute charge
 #define DELAY_PARACHUTE 1000

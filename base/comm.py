@@ -6,7 +6,7 @@ import json
 
 def init():
     global comm
-    comm = serial.Serial('/dev/cu.usbmodem3591001' if len(sys.argv) != 2 else sys.argv[1], 9600, timeout=1)
+    comm = serial.Serial('/dev/cu.usbserial-DN04QDIF' if len(sys.argv) != 2 else sys.argv[1], 9600, timeout=1)
 
 def read():
     try:

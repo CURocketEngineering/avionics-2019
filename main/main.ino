@@ -18,6 +18,7 @@
 #include "ninedof.h"
 #include "state.h"
 #include "barometer.h"
+#include "datalog.h"
 #include "communication.h"
 #include "gps.h"
 
@@ -35,6 +36,9 @@ void setup() {
 
     // Initialize communication with GPS receiver
     gps_init();
+
+    // Initialize blackbox datalogger
+    datalog_init();
 
     // Initialize communication with the base station
     communication_init();
