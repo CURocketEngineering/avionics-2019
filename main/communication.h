@@ -12,6 +12,7 @@
 #include "state.h"
 
 #define COMM_COUNT 64
+#define COMM_DELAY 200
 
 enum command_e {
   CMD_NONE,

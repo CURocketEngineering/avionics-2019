@@ -6,14 +6,14 @@
 #ifndef SIM_H_
 #define SIM_H_
 
-//#define SIM
+#define SIM
 
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
 
 struct flight_s {
-    long time;
+    unsigned long time;
     float bar_p, bar_alt, bar_temp, bar_hum;
     float gyro_x, gyro_y, gyro_z;
     float acc_x, acc_y, acc_z;

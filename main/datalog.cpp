@@ -12,7 +12,6 @@ void datalog_init() {
 
 void datalog_write(const String & str) {
     File file = SD.open("datalog.box", FILE_WRITE);
-    Serial.println(file && true);
     file.println(str);
     file.close();
 }

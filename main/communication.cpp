@@ -47,11 +47,13 @@ void communication_sendResult(bool pass) {
 
   msg_result.printTo(Serial2);
   Serial2.println();
-  Serial2.flush();
 
   String str;
   msg_result.printTo(str);
   datalog_write(str);
+
+  delay(COMM_DELAY);
+  Serial2.flush();
 }
 
 void communication_sendState(enum state_e state) {
@@ -63,11 +65,13 @@ void communication_sendState(enum state_e state) {
 
   msg_state.printTo(Serial2);
   Serial2.println();
-  Serial2.flush();
 
   String str;
   msg_state.printTo(str);
   datalog_write(str);
+
+  delay(COMM_DELAY);
+  Serial2.flush();
 }
 
 enum command_e communication_recvCommand() {
@@ -76,7 +80,7 @@ enum command_e communication_recvCommand() {
   if (Serial2.available()) {
     comm = 0;
 
-    JsonObject & command = json.parse(Serial2);
+    JsonObject & command = json.parseObject(Serial2);
 
     for (unsigned int idx = 0; idx < sizeof(commands_arr)/sizeof(commands_arr[0]); idx++) {
       if (commands[idx] == command["command"])
@@ -149,11 +153,13 @@ void communication_updateTelemetry() {
 
   msg_telemetry.printTo(Serial2);
   Serial2.println();
-  Serial2.flush();
 
   String str;
   msg_telemetry.printTo(str);
   datalog_write(str);
+
+  delay(COMM_DELAY);
+  Serial2.flush();
 }
 
 void communication_init() {

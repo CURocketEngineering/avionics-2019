@@ -10,6 +10,7 @@
 #include "communication.h"
 #include "debug.h"
 #include "pins.h"
+#include "config.h"
 
 const char * states_arr[] = {
      "init",
@@ -157,9 +158,10 @@ void arm() {
     bitSet(debug, 3);
     debug_write();
 
+    communication_sendState(ARM);
+
     while (state == ARM) {
         // Update base station state
-        communication_sendState(ARM);
         communication_updateTelemetry();
 
         // Sample ground altitude
@@ -191,7 +193,9 @@ void arm() {
         switch (communication_recvCommand()) {
             // Do nothing if no command
             case CMD_NONE:
+            case CMD_ARM:
                 break;
+
             // Disarm rocket
             case CMD_DISARM:
                 bitClear(debug, 3);
@@ -229,7 +233,7 @@ void ignite() {
 
     // Wait for rocket to move up
     communication_updateTelemetry();
-    while (acc.z < MIN_ACCEL) {
+    while (NINEDOF_UP < MIN_ACCEL) {
         communication_updateTelemetry();
     }
 
@@ -247,7 +251,7 @@ void burn() {
 
     // Update telemetry during burn
     communication_updateTelemetry();
-    while (acc.z > THRUST_ACCEL) {
+    while (NINEDOF_UP > THRUST_ACCEL) {
         communication_updateTelemetry();
     }
 
@@ -391,6 +395,7 @@ void state_init() {
         }
     }
 
+#ifndef SIM
     // Set state from EEPROM if CTRL is not pressed
     if (stored && digitalRead(CTRL) == HIGH) {
         EEPROM.get(eeprom_state, state);
@@ -406,6 +411,9 @@ void state_init() {
 
         bitSet(debug, 15);
     }
+#else
+    state = IGNITE;
+#endif
 
     communication_sendState(state);
 
