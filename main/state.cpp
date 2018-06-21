@@ -8,6 +8,7 @@
 #include <EEPROM.h>
 #include "state.h"
 #include "communication.h"
+#include "sim.h"
 #include "debug.h"
 #include "pins.h"
 #include "config.h"
@@ -228,6 +229,10 @@ void ignite() {
     // Update base station state
     communication_sendState(IGNITE);
 
+#ifdef SIM
+    sim_start = millis();
+#endif
+
     // Store ground in EEPROM
     EEPROM.put(eeprom_ground, bar.gnd);
 
@@ -298,7 +303,8 @@ void apogee() {
     digitalWrite(TERM_DROGUE, LOW);
 
     // Change to wait
-    state = WAIT;
+    //state = WAIT;
+    state = IDLE;
 }
 
 void wait() {
@@ -412,7 +418,7 @@ void state_init() {
         bitSet(debug, 15);
     }
 #else
-    state = IGNITE;
+    state = IDLE;
 #endif
 
     communication_sendState(state);

@@ -12,6 +12,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+extern unsigned long sim_start;
+
 struct flight_s {
     unsigned long time;
     float bar_p, bar_alt, bar_temp, bar_hum;
