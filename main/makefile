@@ -328,7 +328,7 @@ target: $(TARGET).hex
 
 upload: target
 	@echo "Uploading to board..."
-	$(TEENSYPOST) -file=$(TARGET) -path=$(PWD) -tools=$(ARDUINODIR)/hardware/tools/
+	$(TEENSYPOST) -file=$(TARGET) -path=$(PWD) -tools=$(ARDUINODIR)/hardware/tools/ -reboot
 
 clean:
 	rm -f $(OBJECTS)
