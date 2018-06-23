@@ -9,6 +9,9 @@
 
 *.hex
 *.o
+*.eep
+*.sym
+*.elf
 .dep/
 .lib/
 

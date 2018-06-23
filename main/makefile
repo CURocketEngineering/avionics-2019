@@ -1,10 +1,11 @@
 #_______________________________________________________________________________
 #
-#                         edam's Arduino makefile
+#                             Teensy makefile
+#                     based on edam's Arduino makefile
 #_______________________________________________________________________________
-#                                                                    version 0.5
+#                                                                    version 0.1
 #
-# Copyright (C) 2017 Foster McLane <fkmclane@gmail.com>
+# Copyright (C) 2017-2018 Foster McLane <fkmclane@gmail.com>
 # Copyright (C) 2011, 2012, 2013 Tim Marston <tim@ed.am>.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -82,8 +83,8 @@
 #
 #   SOURCES := main.cc other.cc
 #   LIBRARIES := EEPROM
-#   BOARD := pro5v
-#   include ~/src/arduino.mk
+#   BOARD := teensy35
+#   include ~/src/teensy.mk
 #
 # Here is a complete list of configuration parameters:
 #
@@ -92,18 +93,9 @@
 # ARDUINOCONST The Arduino software version, as an integer, used to define the
 #              ARDUINO version constant.  This defaults to 100 if undefined.
 #
-# AVRDUDECONF  The avrdude.conf to use.  If undefined, this defaults to a guess
-#              based on where avrdude is.  If set empty, no avrdude.conf is
-#              passed to avrdude (so the system default is used).
-#
-# AVRDUDEFLAGS Specify any additional flags for avrdude.  The usual flags,
-#              required to build the project, will be appended to this.
-#
-# AVRTOOLSPATH A space-separated list of directories that is searched in order
+# ARMTOOLSPATH A space-separated list of directories that is searched in order
 #              when looking for the avr build tools.  This defaults to PATH,
 #              followed by subdirectories in ARDUINODIR.
-#
-# PROGRAMMER   Specify the programmer to use instead of the default.
 #
 # BOARD        Specify a target board type.  Run `make boards` to see available
 #              board types.
@@ -156,15 +148,15 @@
 #
 # size         Displays size information about the built target.
 #
-# bootloader   Burns the bootloader for your board to it.
-#
 # <file>       Builds the specified file, either an object file or the target,
 #              from those that that would be built for the project.
 #_______________________________________________________________________________
 #
 
-BOARD=mega
-PROCESSOR=atmega2560
+BOARD=teensy35
+SPEED=120
+USB=serial
+LAYOUT=US_ENGLISH
 
 CWD := $(shell basename $(shell pwd))
 
@@ -174,25 +166,25 @@ ARDUINODIR := $(firstword $(wildcard ~/opt/arduino /usr/share/arduino \
 	/Applications/Arduino.app/Contents/Java \
 	$(HOME)/Applications/Arduino.app/Contents/Java))
 endif
-ifeq "$(wildcard $(ARDUINODIR)/hardware/arduino/avr/boards.txt)" ""
-$(error ARDUINODIR is not set correctly; arduino software not found)
+ifeq "$(wildcard $(ARDUINODIR)/hardware/teensy/avr/boards.txt)" ""
+$(error ARDUINODIR is not set correctly; teensyduino software not found)
 endif
 
 # default arduino version
 ARDUINOCONST ?= 100
 
 # default path for avr tools
-AVRTOOLSPATH ?= $(subst :, , $(PATH)) $(ARDUINODIR)/hardware/tools \
-	$(ARDUINODIR)/hardware/tools/avr/bin
+ARMTOOLSPATH ?= $(subst :, , $(PATH)) $(ARDUINODIR)/hardware/tools \
+	$(ARDUINODIR)/hardware/tools/arm/bin
 
 # default path to find libraries
-LIBRARYPATH ?= libraries libs $(SKETCHBOOKDIR)/libraries $(ARDUINODIR)/libraries $(ARDUINODIR)/hardware/arduino/avr/libraries
+LIBRARYPATH ?= libraries libs $(SKETCHBOOKDIR)/libraries $(ARDUINODIR)/hardware/teensy/avr/libraries $(ARDUINODIR)/libraries
 
 ifeq "$(SERIALBAUD)" ""
     SERIALBAUD := 9600
 endif
 
-# default serial device to a poor guess (something that might be an arduino)
+# default serial device to a poor guess (something that might be an teensy)
 SERIALDEVGUESS := 0
 ifndef SERIALDEV
 SERIALDEV := $(firstword $(wildcard \
@@ -209,24 +201,18 @@ endif
 endif
 endif
 
-# obtain board parameters from the arduino boards.txt file
-BOARDSFILE := $(ARDUINODIR)/hardware/arduino/avr/boards.txt
-BOARD_MENU_CPU := $(shell grep "$(BOARD)\.menu\.cpu" $(BOARDSFILE))
+# obtain board parameters from the teensy boards.txt file
+BOARDSFILE := $(ARDUINODIR)/hardware/teensy/avr/boards.txt
 readboardsparam = $(shell sed -ne "s/^$(BOARD)\.$(1)=\(.*\)/\1/p" $(BOARDSFILE))
-BOARD_BUILD_MCU := $(call readboardsparam,build.mcu)
-BOARD_BUILD_FCPU := $(call readboardsparam,build.f_cpu)
-BOARD_BUILD_VARIANT := $(call readboardsparam,build.variant)
-BOARD_UPLOAD_SPEED := $(call readboardsparam,upload.speed)
-BOARD_UPLOAD_PROTOCOL := $(call readboardsparam,upload.protocol)
-BOARD_USB_VID := $(call readboardsparam,build.vid)
-BOARD_USB_PID := $(call readboardsparam,build.pid)
-BOARD_BOOTLOADER_UNLOCK := $(call readboardsparam,bootloader.unlock_bits)
-BOARD_BOOTLOADER_LOCK := $(call readboardsparam,bootloader.lock_bits)
-BOARD_BOOTLOADER_LFUSES := $(call readboardsparam,bootloader.low_fuses)
-BOARD_BOOTLOADER_HFUSES := $(call readboardsparam,bootloader.high_fuses)
-BOARD_BOOTLOADER_EFUSES := $(call readboardsparam,bootloader.extended_fuses)
-BOARD_BOOTLOADER_PATH := $(call readboardsparam,bootloader.path)
-BOARD_BOOTLOADER_FILE := $(call readboardsparam,bootloader.file)
+BOARD_BUILD_CORE := $(call readboardsparam,build.core)
+BOARD_BUILD_FCPU := $(call readboardsparam,menu.speed.$(SPEED).build.fcpu)
+BOARD_BUILD_USBTYPE := $(call readboardsparam,menu.usb.$(USB).build.usbtype)
+BOARD_BUILD_FLAGS_COMMON := $(call readboardsparam,build.flags.common)
+BOARD_BUILD_FLAGS_CPU := $(call readboardsparam,build.flags.cpu)
+BOARD_BUILD_FLAGS_DEFS := $(call readboardsparam,build.flags.defs)
+BOARD_BUILD_FLAGS_CPP := $(call readboardsparam,build.flags.cpp)
+BOARD_BUILD_FLAGS_LD := $(call readboardsparam,build.flags.ld)
+BOARD_BUILD_FLAGS_LIBS := $(call readboardsparam,build.flags.libs)
 
 # obtain preferences from the IDE's preferences.txt
 PREFERENCESFILE := $(firstword $(wildcard \
@@ -236,56 +222,11 @@ readpreferencesparam = $(shell sed -ne "s/^$(1)=\(.*\)/\1/p" $(PREFERENCESFILE))
 SKETCHBOOKDIR := $(call readpreferencesparam,sketchbook.path)
 endif
 
-ifneq "$(BOARD_MENU_CPU)" ""
-ifdef PROCESSOR
-readmenuparam = $(shell sed -ne "s/^$(BOARD)\.menu\.cpu\.$(PROCESSOR)\.$(1)=\(.*\)/\1/p" $(BOARDSFILE))
-PROCESSOR_BUILD_MCU := $(call readmenuparam,build.mcu)
-PROCESSOR_BUILD_FCPU := $(call readmenuparam,build.f_cpu)
-PROCESSOR_BUILD_VARIANT := $(call readmenuparam,build.variant)
-PROCESSOR_UPLOAD_SPEED := $(call readmenuparam,upload.speed)
-PROCESSOR_UPLOAD_PROTOCOL := $(call readmenuparam,upload.protocol)
-PROCESSOR_USB_VID := $(call readmenuparam,build.vid)
-PROCESSOR_USB_PID := $(call readmenuparam,build.pid)
-PROCESSOR_BOOTLOADER_UNLOCK := $(call readmenuparam,bootloader.unlock_bits)
-PROCESSOR_BOOTLOADER_LOCK := $(call readmenuparam,bootloader.lock_bits)
-PROCESSOR_BOOTLOADER_LFUSES := $(call readmenuparam,bootloader.low_fuses)
-PROCESSOR_BOOTLOADER_HFUSES := $(call readmenuparam,bootloader.high_fuses)
-PROCESSOR_BOOTLOADER_EFUSES := $(call readmenuparam,bootloader.extended_fuses)
-PROCESSOR_BOOTLOADER_PATH := $(call readmenuparam,bootloader.path)
-PROCESSOR_BOOTLOADER_FILE := $(call readmenuparam,bootloader.file)
-
-BOARD_BUILD_MCU := $(if $(PROCESSOR_BUILD_MCU),$(PROCESSOR_BUILD_MCU),$(BOARD_BUILD_MCU))
-BOARD_BUILD_FCPU := $(if $(PROCESSOR_BUILD_FCPU),$(PROCESSOR_BUILD_FCPU),$(BOARD_BUILD_FCPU))
-BOARD_BUILD_VARIANT := $(if $(PROCESSOR_BUILD_VARIANT),$(PROCESSOR_BUILD_VARIANT),$(BOARD_BUILD_VARIANT))
-BOARD_UPLOAD_SPEED := $(if $(PROCESSOR_UPLOAD_SPEED),$(PROCESSOR_UPLOAD_SPEED),$(BOARD_UPLOAD_SPEED))
-BOARD_UPLOAD_PROTOCOL := $(if $(PROCESSOR_UPLOAD_PROTOCOL),$(PROCESSOR_UPLOAD_PROTOCOL),$(BOARD_UPLOAD_PROTOCOL))
-BOARD_USB_VID := $(if $(PROCESSOR_USB_VID),$(PROCESSOR_USB_VID),$(BOARD_USB_VID))
-BOARD_USB_PID := $(if $(PROCESSOR_USB_PID),$(PROCESSOR_USB_PID),$(BOARD_USB_PID))
-BOARD_BOOTLOADER_UNLOCK := $(if $(PROCESSOR_BOOTLOADER_UNLOCK),$(PROCESSOR_BOOTLOADER_UNLOCK),$(BOARD_BOOTLOADER_UNLOCK))
-BOARD_BOOTLOADER_LOCK := $(if $(PROCESSOR_BOOTLOADER_LOCK),$(PROCESSOR_BOOTLOADER_LOCK),$(BOARD_BOOTLOADER_LOCK))
-BOARD_BOOTLOADER_LFUSES := $(if $(PROCESSOR_BOOTLOADER_LFUSES),$(PROCESSOR_BOOTLOADER_LFUSES),$(BOARD_BOOTLOADER_LFUSES))
-BOARD_BOOTLOADER_HFUSES := $(if $(PROCESSOR_BOOTLOADER_HFUSES),$(PROCESSOR_BOOTLOADER_HFUSES),$(BOARD_BOOTLOADER_HFUSES))
-BOARD_BOOTLOADER_EFUSES := $(if $(PROCESSOR_BOOTLOADER_EFUSES),$(PROCESSOR_BOOTLOADER_EFUSES),$(BOARD_BOOTLOADER_EFUSES))
-BOARD_BOOTLOADER_PATH := $(if $(PROCESSOR_BOOTLOADER_PATH),$(PROCESSOR_BOOTLOADER_PATH),$(BOARD_BOOTLOADER_PATH))
-BOARD_BOOTLOADER_FILE := $(if $(PROCESSOR_BOOTLOADER_FILE),$(PROCESSOR_BOOTLOADER_FILE),$(BOARD_BOOTLOADER_FILE))
-else
-ifneq "$(MAKECMDGOALS)" "processors"
-ifneq "$(MAKECMDGOALS)" "boards"
-ifneq "$(MAKECMDGOALS)" "clean"
-$(error Board '$(BOARD)' requires PROCESSOR.  Type 'make processors' to see possible values)
-endif
-endif
-endif
-endif
-endif
-
 # invalid board?
-ifeq "$(BOARD_BUILD_MCU)" ""
-ifneq "$(MAKECMDGOALS)" "processors"
+ifeq "$(BOARD_BUILD_CORE)" ""
 ifneq "$(MAKECMDGOALS)" "boards"
 ifneq "$(MAKECMDGOALS)" "clean"
-$(error BOARD or PROCESSOR is invalid.  Type 'make boards' or 'make processors' to see possible values)
-endif
+$(error BOARD is invalid.  Type 'make boards' to see possible values)
 endif
 endif
 endif
@@ -311,17 +252,18 @@ LIBRARIES := $(filter $(notdir $(wildcard $(addsuffix /*, $(LIBRARYPATH)))), \
 endif
 
 # software
-findsoftware = $(firstword $(wildcard $(addsuffix /$(1), $(AVRTOOLSPATH))))
-CC := $(call findsoftware,avr-gcc)
-CXX := $(call findsoftware,avr-g++)
-LD := $(call findsoftware,avr-ld)
-AR := $(call findsoftware,avr-ar)
-OBJCOPY := $(call findsoftware,avr-objcopy)
-AVRDUDE := $(call findsoftware,avrdude)
-AVRSIZE := $(call findsoftware,avr-size)
+findsoftware = $(firstword $(wildcard $(addsuffix /$(1), $(ARMTOOLSPATH))))
+CC := $(call findsoftware,arm-none-eabi-gcc)
+CXX := $(call findsoftware,arm-none-eabi-g++)
+LD := $(call findsoftware,arm-none-eabi-ld)
+AR := $(call findsoftware,arm-none-eabi-gcc-ar)
+OBJCOPY := $(call findsoftware,arm-none-eabi-objcopy)
+OBJDUMP := $(call findsoftware,arm-none-eabi-objdump)
+ARMSIZE := $(call findsoftware,arm-none-eabi-size)
+TEENSYPOST := $(call findsoftware,teensy_post_compile)
 
 # directories
-ARDUINOCOREDIR := $(ARDUINODIR)/hardware/arduino/avr/cores/arduino
+ARDUINOCOREDIR := $(ARDUINODIR)/hardware/teensy/avr/cores/${BOARD_BUILD_CORE}
 LIBRARYDIRS := $(foreach lib, $(LIBRARIES), \
 	$(firstword $(wildcard $(addsuffix /$(lib), $(LIBRARYPATH)))))
 LIBRARYDIRS += $(addsuffix /utility, $(LIBRARYDIRS))
@@ -335,38 +277,21 @@ DEPFILES := $(patsubst %, .dep/%.dep, $(SOURCES))
 ARDUINOLIB := .lib/arduino.a
 ARDUINOLIBOBJS := $(foreach dir, $(ARDUINOCOREDIR) $(LIBRARYDIRS), \
 	$(patsubst %, .lib/%.o, $(wildcard $(addprefix $(dir)/, *.c *.cpp))))
-BOOTLOADERHEX := $(addprefix \
-	$(ARDUINODIR)/hardware/arduino/avr/bootloaders/$(BOARD_BOOTLOADER_PATH)/, \
-	$(BOARD_BOOTLOADER_FILE))
-
-# avrdude confifuration
-ifeq "$(AVRDUDECONF)" ""
-ifeq "$(AVRDUDE)" "$(ARDUINODIR)/hardware/tools/avr/bin/avrdude"
-AVRDUDECONF := $(ARDUINODIR)/hardware/tools/avr/etc/avrdude.conf
-else
-AVRDUDECONF := $(wildcard $(AVRDUDE).conf)
-endif
-endif
 
 # flags
-CPPFLAGS += -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections
-CPPFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CPPFLAGS += -mmcu=$(BOARD_BUILD_MCU)
-CPPFLAGS += -DF_CPU=$(BOARD_BUILD_FCPU) -DARDUINO=$(ARDUINOCONST)
-CPPFLAGS += -DUSB_VID=$(BOARD_USB_VID) -DUSB_PID=$(BOARD_USB_PID)
+CPPFLAGS += -Os -Wall -ffunction-sections -fdata-sections -nostdlib
+CPPFLAGS += -DARDUINO=$(ARDUINOCONST) -DF_CPU=$(BOARD_BUILD_FCPU) -D$(BOARD_BUILD_USBTYPE) -DLAYOUT_$(LAYOUT)
+CPPFLAGS += $(BOARD_BUILD_FLAGS_CPU)
+CPPFLAGS += $(BOARD_BUILD_FLAGS_DEFS)
+CPPFLAGS += $(BOARD_BUILD_FLAGS_CPP)
 CPPFLAGS += -I. -Iutil -Iutility -I $(ARDUINOCOREDIR)
-CPPFLAGS += -I $(ARDUINODIR)/hardware/arduino/avr/variants/$(BOARD_BUILD_VARIANT)/
 CPPFLAGS += $(addprefix -I , $(LIBRARYDIRS))
 CPPDEPFLAGS = -MMD -MP -MF .dep/$<.dep
 CPPINOFLAGS := -x c++ -include $(ARDUINOCOREDIR)/Arduino.h
-AVRDUDEFLAGS += $(addprefix -C , $(AVRDUDECONF)) -DV
-AVRDUDEFLAGS += -p $(BOARD_BUILD_MCU)
-ifeq "$(PROGRAMMER)" ""
-AVRDUDEFLAGS += -c $(BOARD_UPLOAD_PROTOCOL) -b $(BOARD_UPLOAD_SPEED) -P $(SERIALDEV)
-else
-AVRDUDEFLAGS += -c $(PROGRAMMER)
-endif
-LINKFLAGS += -Os -Wl,--gc-sections -mmcu=$(BOARD_BUILD_MCU)
+LINKFLAGS += -Os -Wl,--gc-sections
+LINKFLAGS += $(shell echo '$(BOARD_BUILD_FLAGS_LD)' | sed -e "s@{extra\.time\.local}@`date +%s`@" | sed -e "s@{build\.core\.path}@$(ARDUINOCOREDIR)@")
+LINKFLAGS += $(BOARD_BUILD_FLAGS_CPU)
+LINKFLAGS += $(BOARD_BUILD_FLAGS_LIBS)
 
 # figure out which arg to use with stty (for OS X, GNU and busybox stty)
 STTYFARG := $(shell stty --help 2>&1 | \
@@ -383,7 +308,7 @@ endif
 #_______________________________________________________________________________
 #                                                                          RULES
 
-.PHONY:	all target upload clean boards monitor size bootloader
+.PHONY:	all target upload clean boards monitor size
 
 all: target
 
@@ -391,32 +316,12 @@ target: $(TARGET).hex
 
 upload: target
 	@echo "Uploading to board..."
-ifeq "$(PROGRAMMER)" ""
-	@test -n "$(SERIALDEV)" || { \
-		echo "error: SERIALDEV could not be determined automatically." >&2; \
-		exit 1; }
-	@test 0 -eq $(SERIALDEVGUESS) || { \
-		echo "*GUESSING* at serial device:" $(SERIALDEV); \
-		echo; }
-ifeq "$(BOARD_BOOTLOADER_PATH)" "caterina"
-	stty $(STTYFARG) $(SERIALDEV) speed 1200
-	sleep 1
-else
-	stty $(STTYFARG) $(SERIALDEV) hupcl
-endif
-endif
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$(TARGET).hex:i
+	$(TEENSYPOST) -file=$(TARGET) -path=$(PWD) -tools=$(ARDUINODIR)/hardware/tools/ -board=$(BOARD)
 
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(TARGET).elf $(TARGET).hex $(ARDUINOLIB) *~
 	rm -rf .lib .dep
-
-processors:
-	@echo "Available values for PROCESSOR for '$(BOARD)':"
-	@sed -nEe "s/^$(BOARD)\.menu\.cpu\.([^.=]*)=(.*)/\1            \2/p" $(BOARDSFILE) \
-		-e 's/(.{12}) *(.*)/\1 \2/'
-	@for cpu in $(BOARD_MENU_CPUS); do echo $$cpu; done
 
 boards:
 	@echo "Available values for BOARD:"
@@ -426,39 +331,23 @@ boards:
 
 monitor:
 	stty raw $(SERIALBAUD) igncr hupcl -echo $(STTYFARG) $(SERIALDEV)
-	@echo Connected. Press Ctrl+D to close the monitor.
+	@echo "Connected. Press Ctrl+D to close the monitor."
 	@sh -c 'trap "kill %1" INT; cat -v $(SERIALDEV) & cat >$(SERIALDEV); kill %1'
 	stty sane $(STTYFARG) $(SERIALDEV)
 
 size: $(TARGET).elf
-	echo && $(AVRSIZE) --format=avr --mcu=$(BOARD_BUILD_MCU) $(TARGET).elf
-
-bootloader:
-	@echo "Burning bootloader to board..."
-ifeq "$(PROGRAMMER)" ""
-	@test -n "$(SERIALDEV)" || { \
-		echo "error: SERIALDEV could not be determined automatically." >&2; \
-		exit 1; }
-	@test 0 -eq $(SERIALDEVGUESS) || { \
-		echo "*GUESSING* at serial device:" $(SERIALDEV); \
-		echo; }
-	stty $(STTYFARG) $(SERIALDEV) hupcl
-endif
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U lock:w:$(BOARD_BOOTLOADER_UNLOCK):m
-	$(AVRDUDE) $(AVRDUDEFLAGS) -eU lfuse:w:$(BOARD_BOOTLOADER_LFUSES):m
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U hfuse:w:$(BOARD_BOOTLOADER_HFUSES):m
-ifneq "$(BOARD_BOOTLOADER_EFUSES)" ""
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U efuse:w:$(BOARD_BOOTLOADER_EFUSES):m
-endif
-ifneq "$(BOOTLOADERHEX)" ""
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$(BOOTLOADERHEX):i
-endif
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U lock:w:$(BOARD_BOOTLOADER_LOCK):m
+	echo && $(ARMSIZE) $(TARGET).elf
 
 # building the target
 
+$(TARGET).eep: $(TARGET).elf
+	$(OBJCOPY) -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $< $@
+
 $(TARGET).hex: $(TARGET).elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
+
+$(TARGET).sym: $(TARGET).elf
+	$(OBJDUMP) -t -C $< >$@
 
 .INTERMEDIATE: $(TARGET).elf
 
