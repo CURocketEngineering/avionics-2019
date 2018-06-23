@@ -100,6 +100,13 @@
 # BOARD        Specify a target board type.  Run `make boards` to see available
 #              board types.
 #
+# SPEED        Specify a target board speed.  Run `make speeds` to see available
+#              board types.
+#
+# USB          Specify a target usb type.
+#
+# LAYOUT       Specify a target usb keyboard layout type (if applicable).
+#
 # CPPFLAGS     Specify any additional flags for the compiler.  The usual flags,
 #              required to build the project, will be appended to this.
 #
@@ -155,8 +162,6 @@
 
 BOARD=teensy35
 SPEED=120
-USB=serial
-LAYOUT=US_ENGLISH
 
 CWD := $(shell basename $(shell pwd))
 
@@ -200,6 +205,13 @@ $(error BOARD is unset.  Type 'make boards' to see possible values)
 endif
 endif
 endif
+
+ifndef SPEED
+$(error SPEED is unset.  Type 'make speeds' to see possible values)
+endif
+
+USB ?= serial
+LAYOUT ?= US_ENGLISH
 
 # obtain board parameters from the teensy boards.txt file
 BOARDSFILE := $(ARDUINODIR)/hardware/teensy/avr/boards.txt
@@ -328,6 +340,12 @@ boards:
 	@sed -nEe '/^#/d; /^[^.]+\.name=/p' $(BOARDSFILE) | \
 		sed -Ee 's/([^.]+)\.name=(.*)/\1            \2/' \
 			-e 's/(.{12}) *(.*)/\1 \2/'
+
+speeds:
+	@echo "Available values for SPEED for '$(BOARD)':"
+	@sed -nEe "s/^$(BOARD)\.menu\.speed\.([^.=]*)=(.*)/\1            \2/p" $(BOARDSFILE) \
+		-e 's/(.{12}) *(.*)/\1 \2/'
+	@for cpu in $(BOARD_MENU_SPEEDS); do echo $$cpu; done
 
 monitor:
 	stty raw $(SERIALBAUD) igncr hupcl -echo $(STTYFARG) $(SERIALDEV)
