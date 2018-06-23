@@ -302,9 +302,21 @@ void apogee() {
     delay(PARACHUTE_DELAY);
     digitalWrite(TERM_DROGUE, LOW);
 
+#ifdef SIM
+    unsigned long sim_last = sim_start;
+    unsigned long sim_cur = millis();
+
+    sim_start = 0;
+
+    while (communication_recvCommand() != CMD_ARM) {
+        communication_updateTelemetry();
+    }
+
+    sim_start = sim_last + millis() - sim_cur;
+#endif
+
     // Change to wait
-    //state = WAIT;
-    state = IDLE;
+    state = WAIT;
 }
 
 void wait() {

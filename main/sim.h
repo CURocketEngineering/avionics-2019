@@ -6,11 +6,10 @@
 #ifndef SIM_H_
 #define SIM_H_
 
-#define SIM
-
 /* LIBRARIES */
 #include <Arduino.h>
 #include <Wire.h>
+#include "config.h"
 
 extern unsigned long sim_start;
 
