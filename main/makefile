@@ -300,7 +300,7 @@ CPPFLAGS += -I. -Iutil -Iutility -I $(ARDUINOCOREDIR)
 CPPFLAGS += $(addprefix -I , $(LIBRARYDIRS))
 CPPDEPFLAGS = -MMD -MP -MF .dep/$<.dep
 CPPINOFLAGS := -x c++ -include $(ARDUINOCOREDIR)/Arduino.h
-LINKFLAGS += -Os -Wl,--gc-sections
+LINKFLAGS += -Os
 LINKFLAGS += $(shell echo '$(BOARD_BUILD_FLAGS_LD)' | sed -e "s@{extra\.time\.local}@`date +%s`@" | sed -e "s@{build\.core\.path}@$(ARDUINOCOREDIR)@")
 LINKFLAGS += $(BOARD_BUILD_FLAGS_CPU)
 LINKFLAGS += $(BOARD_BUILD_FLAGS_LIBS)
@@ -328,7 +328,7 @@ target: $(TARGET).hex
 
 upload: target
 	@echo "Uploading to board..."
-	$(TEENSYPOST) -file=$(TARGET) -path=$(PWD) -tools=$(ARDUINODIR)/hardware/tools/ -board=$(BOARD)
+	$(TEENSYPOST) -file=$(TARGET) -path=$(PWD) -tools=$(ARDUINODIR)/hardware/tools/
 
 clean:
 	rm -f $(OBJECTS)
