@@ -364,6 +364,9 @@ $(TARGET).eep: $(TARGET).elf
 $(TARGET).hex: $(TARGET).elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
+$(TARGET).lst: $(TARGET).elf
+	$(OBJDUMP) -d -S -C $< >$@
+
 $(TARGET).sym: $(TARGET).elf
 	$(OBJDUMP) -t -C $< >$@
 
