@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-datafile = open("flight.json","r")
+datafile = open(str(input("JSON to be graphed (ex. flight.json)\n>> ")),"r")
 datafile = datafile.readlines()
 
 vert = []
