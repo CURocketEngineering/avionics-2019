@@ -38,11 +38,11 @@
 #   http://ed.am/dev/make/arduino-mk
 #
 # This makefile can be used as a drop-in replacement for the Arduino IDE's
-# build system.  To use it, just copy arduino.mk in to your project directory.
-# Or, you could save it somewhere (I keep mine at ~/src/arduino.mk) and create
+# build system.  To use it, just copy teensy.mk in to your project directory.
+# Or, you could save it somewhere (I keep mine at ~/src/teensy.mk) and create
 # a symlink to it in your project directory, named "Makefile".  For example:
 #
-#   $ ln -s ~/src/arduino.mk Makefile
+#   $ ln -s ~/src/teensy.mk Makefile
 #
 # The Arduino software (version 1.0 or later) is required.  On GNU/Linux you
 # can probably install the software from your package manager.  If you are
@@ -63,12 +63,12 @@
 # you're building for.  Type `make boards` for a list of acceptable values.
 # For example:
 #
-#   $ export BOARD=uno
+#   $ export BOARD=teensy35
 #   $ make
 #
 # You may also need to set SERIALDEV if it is not detected correctly.
 #
-# The presence of a .ino (or .pde) file causes the arduino.mk to automatically
+# The presence of a .ino (or .pde) file causes the teensy.mk to automatically
 # determine values for SOURCES, TARGET and LIBRARIES.  Any .c, .cc and .cpp
 # files in the project directory (or any "util" or "utility" subdirectories)
 # are automatically included in the build and are scanned for Arduino libraries
@@ -77,7 +77,7 @@
 # should be called the same as the directory name.
 #
 # Alternatively, if you want to manually specify build variables, create a
-# Makefile that defines SOURCES and LIBRARIES and then includes arduino.mk.
+# Makefile that defines SOURCES and LIBRARIES and then includes teensy.mk.
 # (There is no need to define TARGET).  You can also specify the BOARD here, if
 # the project has a specific one.  Here is an example Makefile:
 #
@@ -207,7 +207,9 @@ endif
 endif
 
 ifndef SPEED
+ifneq "$(MAKECMDGOALS)" "speeds"
 $(error SPEED is unset.  Type 'make speeds' to see possible values)
+endif
 endif
 
 USB ?= serial
