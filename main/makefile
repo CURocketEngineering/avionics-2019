@@ -207,8 +207,12 @@ endif
 endif
 
 ifndef SPEED
+ifneq "$(MAKECMDGOALS)" "boards"
 ifneq "$(MAKECMDGOALS)" "speeds"
+ifneq "$(MAKECMDGOALS)" "clean"
 $(error SPEED is unset.  Type 'make speeds' to see possible values)
+endif
+endif
 endif
 endif
 
