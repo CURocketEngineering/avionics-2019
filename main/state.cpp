@@ -8,8 +8,10 @@
 #include <EEPROM.h>
 #include "state.h"
 #include "communication.h"
+#include "sim.h"
 #include "debug.h"
 #include "pins.h"
+#include "config.h"
 
 const char * states_arr[] = {
      "init",
@@ -44,7 +46,7 @@ void idle() {
         // Check on ctrl term
         if (digitalRead(CTRL) == LOW) {
             // Wait for debounce and intent
-            delay(500);
+            delay(5000);
 
             // If button still held
             if (digitalRead(CTRL) == LOW) {
@@ -104,7 +106,6 @@ void halt() {
     // Turn off all important lines
     digitalWrite(TERM_MAIN, LOW);
     digitalWrite(TERM_DROGUE, LOW);
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Clear interrupts and put processor to sleep
     //cli();
@@ -158,9 +159,10 @@ void arm() {
     bitSet(debug, 3);
     debug_write();
 
+    communication_sendState(ARM);
+
     while (state == ARM) {
         // Update base station state
-        communication_sendState(ARM);
         communication_updateTelemetry();
 
         // Sample ground altitude
@@ -169,7 +171,7 @@ void arm() {
         // Check on ctrl term
         if (digitalRead(CTRL) == LOW) {
             // Wait for debounce and intent
-            delay(500);
+            delay(5000);
 
             // If button still held
             if (digitalRead(CTRL) == LOW) {
@@ -192,7 +194,9 @@ void arm() {
         switch (communication_recvCommand()) {
             // Do nothing if no command
             case CMD_NONE:
+            case CMD_ARM:
                 break;
+
             // Disarm rocket
             case CMD_DISARM:
                 bitClear(debug, 3);
@@ -225,42 +229,18 @@ void ignite() {
     // Update base station state
     communication_sendState(IGNITE);
 
+#ifdef SIM
+    sim_start = millis();
+#endif
+
     // Store ground in EEPROM
     EEPROM.put(eeprom_ground, bar.gnd);
 
-    // Send ignition signal
-    digitalWrite(TERM_IGNITE, HIGH);
-
-    // Ignition time for measuring
-    unsigned long start = millis();
-
     // Wait for rocket to move up
     communication_updateTelemetry();
-    while (acc.z < MIN_ACCEL) {
-        // Halt if button pressed after still time
-        if (millis() - start > MAX_IGNITE*1000U) {
-            if (digitalRead(CTRL) == LOW) {
-                // Wait for debounce and intent
-                delay(500);
-
-                // Cancel launch if button still pressed
-                if (digitalRead(CTRL) == LOW) {
-                    state = HALT;
-                    return;
-                }
-            }
-
-            if (communication_recvCommand() == CMD_ABORT) {
-                state = HALT;
-                return;
-            }
-        }
-
+    while (NINEDOF_UP < MIN_ACCEL) {
         communication_updateTelemetry();
     }
-
-    // End ignition signal
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Change to burn
     state = BURN;
@@ -275,7 +255,8 @@ void burn() {
     communication_sendState(BURN);
 
     // Update telemetry during burn
-    while (acc.z > THRUST_ACCEL) {
+    communication_updateTelemetry();
+    while (NINEDOF_UP > THRUST_ACCEL) {
         communication_updateTelemetry();
     }
 
@@ -294,6 +275,7 @@ void coast() {
     communication_sendState(COAST);
 
     // Update telemetry during coast
+    communication_updateTelemetry();
     while (bar.dp < APOGEE_DPRES){
         communication_updateTelemetry();
     }
@@ -311,10 +293,27 @@ void apogee() {
     // Update base station state
     communication_sendState(APOGEE);
 
+    // Wait for ejection delay
+    if (PARACHUTE_WAIT)
+        delay(PARACHUTE_WAIT);
+
     // Send parachute signal
     digitalWrite(TERM_DROGUE, HIGH);
-    delay(DELAY_PARACHUTE);
+    delay(PARACHUTE_DELAY);
     digitalWrite(TERM_DROGUE, LOW);
+
+#ifdef SIM
+    unsigned long sim_last = sim_start;
+    unsigned long sim_cur = millis();
+
+    sim_start = 0;
+
+    while (communication_recvCommand() != CMD_ARM) {
+        communication_updateTelemetry();
+    }
+
+    sim_start = sim_last + millis() - sim_cur;
+#endif
 
     // Change to wait
     state = WAIT;
@@ -329,6 +328,7 @@ void wait() {
     communication_sendState(WAIT);
 
     // Update telemetry during descent
+    communication_updateTelemetry();
     while (bar.alt > MAIN_ALT + bar.gnd) {
         communication_updateTelemetry();
     }
@@ -347,9 +347,13 @@ void eject() {
     // Update base station state
     communication_sendState(EJECT);
 
+    // Wait for ejection delay
+    if (PARACHUTE_WAIT)
+        delay(PARACHUTE_WAIT);
+
     // Send parachute signal
     digitalWrite(TERM_MAIN, HIGH);
-    delay(DELAY_PARACHUTE);
+    delay(PARACHUTE_DELAY);
     digitalWrite(TERM_MAIN, LOW);
 
     // Change to fall
@@ -365,6 +369,7 @@ void fall() {
     communication_sendState(FALL);
 
     // Update telemetry during descent
+    communication_updateTelemetry();
     while (bar.dp > MIN_DPRES) {
         communication_updateTelemetry();
     }
@@ -381,10 +386,14 @@ void recover() {
     // Update base station state
     communication_sendState(RECOVER);
 
-    // Clear interrupts and put processor to sleep
-    cli();
-    sleep_enable();
-    sleep_cpu();
+    state = IDLE;
+
+    EEPROM.put(eeprom_state, state);
+    EEPROM.put(eeprom_debug, debug);
+
+    while (true) {
+        communication_updateTelemetry();
+    }
 }
 
 void state_init() {
@@ -394,8 +403,6 @@ void state_init() {
     digitalWrite(TERM_MAIN, LOW);
     pinMode(TERM_DROGUE, OUTPUT);
     digitalWrite(TERM_DROGUE, LOW);
-    pinMode(TERM_IGNITE, OUTPUT);
-    digitalWrite(TERM_IGNITE, LOW);
 
     // Check for saved data in EEPROM
     bool stored = true;
@@ -406,6 +413,7 @@ void state_init() {
         }
     }
 
+#ifndef SIM
     // Set state from EEPROM if CTRL is not pressed
     if (stored && digitalRead(CTRL) == HIGH) {
         EEPROM.get(eeprom_state, state);
@@ -421,6 +429,9 @@ void state_init() {
 
         bitSet(debug, 15);
     }
+#else
+    state = IDLE;
+#endif
 
     communication_sendState(state);
 

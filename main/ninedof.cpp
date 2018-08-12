@@ -4,9 +4,7 @@
 
 #include "ninedof.h"
 
-#ifdef SIM
 #include "sim.h"
-#endif
 
 struct acc_s acc, acc_prev;
 struct gyro_s gyro, gyro_prev;

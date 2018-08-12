@@ -19,22 +19,6 @@
 // Delay to rate limit idle function
 #define IDLE_DELAY 1000
 
-// Header bytes for EEPROM
-#define EEPROM_HEADER "MainRev5"
-
-// Time to hold pin high for parachute charge
-#define DELAY_PARACHUTE 1000
-// Time before allowing the rocket to be controlled from ignite to halt
-#define MAX_IGNITE 300
-// Accelerometer values to determine changes in state
-#define MIN_ACCEL 2.0
-#define THRUST_ACCEL 0.0
-// Barometer values to determine changes in state
-#define APOGEE_DPRES 1.0
-#define MIN_DPRES 1.0
-// Altitude to deploy main parachute
-#define MAIN_ALT 2000.0
-
 // Define enum type variables
 enum state_e {
      INIT,

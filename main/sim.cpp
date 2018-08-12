@@ -1,14 +1,22 @@
-#ifdef SIM
-
 #include "sim.h"
 
+#ifdef SIM
+#include "barometer.h"
+#include "ninedof.h"
+
 #include "flight.h"
+
+unsigned long sim_start = 0;
+const struct flight_s * sim_cur = &flight[0];
 
 void sim_init() {
 }
 
 void sim_updateTelemetry() {
-    if (sim_cur != &flight[sizeof(flight)/sizeof(flight[0]) - 1] && millis() > (sim_cur + 1)->time) {
+    if (sim_start == 0)
+        return;
+
+    while (sim_cur != &flight[sizeof(flight)/sizeof(flight[0]) - 1] && millis() - sim_start > (sim_cur + 1)->time) {
         sim_cur++;
     }
 }
@@ -37,7 +45,5 @@ void sim_getMag() {
     mag.y = sim_cur->mag_y;
     mag.z = sim_cur->mag_z;
 }
-
-struct flight_s * sim_cur = &flight[0];
 
 #endif

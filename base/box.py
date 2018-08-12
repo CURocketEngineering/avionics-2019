@@ -7,10 +7,10 @@ def init(filename):
 
     output = open(filename, 'ab', 0)
 
-    output.write(b'[')
+    output.write(b'[\n')
 
 def deinit():
-    output.write(b']')
+    output.write(b']\n')
     output.close()
 
 def write(data):

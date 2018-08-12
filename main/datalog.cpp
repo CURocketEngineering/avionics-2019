@@ -4,10 +4,6 @@
 
 #include "datalog.h"
 
-#ifndef BUILTIN_SDCARD
-#define BUILTIN_SDCARD 0
-#endif
-
 void datalog_init() {
     SD.begin(BUILTIN_SDCARD);
 
@@ -15,8 +11,7 @@ void datalog_init() {
 }
 
 void datalog_write(const String & str) {
-    static File file;
-    file = SD.open("box.json", FILE_WRITE);
+    File file = SD.open("datalog.box", FILE_WRITE);
     file.println(str);
     file.close();
 }

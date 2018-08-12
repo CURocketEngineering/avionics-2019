@@ -12,19 +12,17 @@
 struct gps_s gps;
 
 void gps_init() {
-     Serial2.begin(9600);
+     Serial1.begin(9600);
 }
 
 void gps_read() {
      static char sentence[80];
      static char field[20];
 
-     static int time, date;
-
-     while (Serial2.available()) {
+     while (Serial1.available()) {
           const char * ptr = sentence;
 
-          util_readLine(Serial2, sentence, sizeof(sentence));
+          util_readLine(Serial1, sentence, sizeof(sentence));
 
           // ID
           ptr = util_getField(ptr, field, sizeof(field));
@@ -32,7 +30,7 @@ void gps_read() {
           if (strcmp(field, "$GPRMC") == 0) {
                // Time
                ptr = util_getField(ptr, field, sizeof(field));
-               time = atoi(field);
+               long time = atoi(field);
                gps.hour = time/10000 % 100;
                gps.min = time/100 % 100;
                gps.sec = time % 100;
@@ -68,10 +66,10 @@ void gps_read() {
 
                // Date
                ptr = util_getField(ptr, field, sizeof(field));
-               date = atoi(field);
-               gps.day = date/1000000 % 100;
-               gps.mon = date/10000 % 100;
-               gps.year = date % 10000;
+               long date = atoi(field);
+               gps.day = date/10000 % 100;
+               gps.mon = date/100 % 100;
+               gps.year = 2000 + date % 100;
 
                // ?
                ptr = util_getField(ptr, field, sizeof(field));
