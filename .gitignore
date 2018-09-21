@@ -17,5 +17,6 @@
 
 *.pyc
 __pycache__
+*~
 
 blackbox.json
