@@ -1,4 +1,4 @@
-[CURocket Logo](pics/logo.png)
+![CURocket Logo](pics/logo.png)
 
 ### About
 
