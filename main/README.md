@@ -44,15 +44,11 @@
   4. gps_init():
   5. datalog_init():
   6. communication_init():
-<<<<<<< HEAD
   7. state_init():state.cpp
      * EEPROM functions
   8. Sensor Setup
-=======
      * set up JSON tables
      * Serial2.begin()
-  7. Sensor Setup
->>>>>>> 9ecc57b92387b49076508543e252f7def1edf047
 * Loop():main.ino
   * state_loop():state.cpp
     1. init
@@ -128,3 +124,13 @@
         * communication_sendState(RECOVER): communication.cpp
         * state = IDLE
     14. EEPROM.put():?
+
+### Questions for Foster
+1. How do we make/run the program?
+2. How do we debug the program?
+main.ino
+    71: why byte? a: less memory than int
+    74-96: why +=?
+ninedof.cpp
+    25: ifndefs for SIM? In almost all _read() function
+what does util.h do?
