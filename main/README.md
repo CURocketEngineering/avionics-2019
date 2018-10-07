@@ -44,15 +44,11 @@
   4. gps_init():
   5. datalog_init():
   6. communication_init():
-<<<<<<< HEAD
   7. state_init():state.cpp
      * EEPROM functions
   8. Sensor Setup
-=======
      * set up JSON tables
      * Serial2.begin()
-  7. Sensor Setup
->>>>>>> 9ecc57b92387b49076508543e252f7def1edf047
 * Loop():main.ino
   * state_loop():state.cpp
     1. init
