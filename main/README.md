@@ -27,18 +27,40 @@
 * Setup():main.ino
   1. debug_init():
   2. ninedof_init():
+     * .settings.device.commInterface: LSM9DS1
+     * .settings.device.mAddress: LSM9DS1
+     * .settings.device.agAddress: LSM9DS1
+     * .begin(): LSM9DS1
   3. barometer_init():
+     * .settings.commInterface: BME280
+     * .settings.I2CAddress: BME280
+     * .settings.runMode: BME280
+     * .settings.tStandby: BME280
+     * .settings.filter: BME280
+     * .settings.tempOverSample: BME280
+     * .settings.pressOverSample: BME280
+     * .settings.humidOverSample: BME280
+     * .begin(): BME280
   4. gps_init():
   5. datalog_init():
   6. communication_init():
+<<<<<<< HEAD
   7. state_init():state.cpp
      * EEPROM functions
   8. Sensor Setup
+=======
+     * set up JSON tables
+     * Serial2.begin()
+  7. Sensor Setup
+>>>>>>> 9ecc57b92387b49076508543e252f7def1edf047
 * Loop():main.ino
   * state_loop():state.cpp
     1. init
        * state = IDLE
     2. idle():state.cpp
+       * communication_sendState(IDLE): communication.cpp
+       * communication_recvCommand(): communication.cpp
+       * debug_write(): debug.cpp
     3. halt():state.cpp
        * debug_write():debug.cpp
        * state = IDLE
@@ -66,12 +88,43 @@
          * digital_write()
        * state = IDLE
     5. arm():state.cpp
+       * communication_sendState(ARM): communication.cpp
+       * communication_updateTelemetry(): communication.cpp
+       * communication_recvCommand(): communication.cpp
+       * change state on command
     6. ignite():state.cpp
+       * communication_sendState(IGNITE): communication.cpp
+       * sim_start = millis()
+       * EEPROPM.put(): 
+       * communication_updateTelemetry(): communication.cpp
+       * state = BURN
     7. burn():state.cpp
+       * communication_sendState(BURN): communication.cpp
+       * communication_updateTelemetry(): communication.cpp
+       * state = COAST
     8. coast():state.cpp
+       * communication_sendState(COAST): communication.cpp
+       * communication_updateTelemetry(): communication.cpp
+       * state = APOGEE
     9. apogee():state.cpp
+       * communication_sendState(APOGEE): communication.cpp
+       * wait for ejection delay, send parachute signal
+       * communication_recvCommand(): communication.cpp
+       * communication_updateTelemetry(): communication.cpp
+       * state = WAIT
     10. wait():state.cpp
+        * communicaiton_sendState(WAIT): communication.cpp
+        * communication_updateTelemetry(): communication.cpp
+        * state = EJECT
     11. eject():state.cpp
+        * communication_sendState(EJECT): communication.cpp
+        * wait for ejection delay, send parachute signal
+        * state = FALL
     12. fall():state.cpp
+        * communication_sendState(FALL): communication.cpp
+        * communication_updateTelemetry(): communication.cpp
+        * state = RECOVER
     13. recover():state.cpp
+        * communication_sendState(RECOVER): communication.cpp
+        * state = IDLE
     14. EEPROM.put():?
