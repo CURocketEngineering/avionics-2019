@@ -31,15 +31,40 @@
   4. gps_init():
   5. datalog_init():
   6. communication_init():
-  7. Sensor Setup
+  7. state_init():state.cpp
+     * EEPROM functions
+  8. Sensor Setup
 * Loop():main.ino
   * state_loop():state.cpp
-    1. init():state.cpp
-       * communication_sendstate(IDLE):?
-       * 
+    1. init
+       * state = IDLE
     2. idle():state.cpp
     3. halt():state.cpp
+       * debug_write():debug.cpp
+       * state = IDLE
     4. test():state.cpp
+       * communication_sendState():communication.cpp
+         * msg_state.printTo(serial2)
+         * datalog_write():datalog.cpp
+           * Write to SD card
+       * communication_updateTelemetry():communication.cpp
+         * ninedof_read():ninedof.cpp
+           * ?
+         * barometer_read():barometer.cpp
+           * Uses libary bme280.cpp
+           * sim_getBarometer():?
+           * Set barometer data
+         * gps_read():gps.cpp
+           * ?
+         * sim_updateTelemetry:?
+         * datalog_write():datalog.cpp
+           * Write to SD card
+       * communication_sendResult():communication.cpp
+         * datalog_write():datalog.cpp
+           * Write to SD card
+       * debug_write:debug.cpp
+         * digital_write()
+       * state = IDLE
     5. arm():state.cpp
     6. ignite():state.cpp
     7. burn():state.cpp
