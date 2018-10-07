@@ -23,7 +23,6 @@
 #include "gps.h"
 
 /* MAIN PROGRAM FUNCTIONS */
-
 void setup() {
     // Initialize debug leds
     debug_init();
