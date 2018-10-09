@@ -1,9 +1,8 @@
 ![CURocket Logo](pics/logo.png)
 
 ### About
-This is the repository containing the Clemson University Rocket Engineering (CURE) Avionics 
-subteam. Powers CURE's non-competitive rockets and rockets that participate in the annual
-Intercollegiate Rocket Engineering Competition. Begun by Foster McLane in 2016.
+Clemson University Rocket Engineering (CURE) Avionics subteam program files. Powers CURE's competitive and non-competitive rockets. Used in the Intercollegiate Rocket Engineering Competition. Begun 
+by Foster McLane, 2016.
 
 ### Documentation
 * `base/`

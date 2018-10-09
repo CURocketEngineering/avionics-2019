@@ -26,13 +26,13 @@
 
 ### Order of Operations
 * Setup():main.ino
-  1. debug_init():
-  2. ninedof_init():
+  1. debug_init():debug.cpp
+  2. ninedof_init():ninedof.cpp
      * .settings.device.commInterface: LSM9DS1
      * .settings.device.mAddress: LSM9DS1
      * .settings.device.agAddress: LSM9DS1
      * .begin(): LSM9DS1
-  3. barometer_init():
+  3. barometer_init():barometer.cpp
      * .settings.commInterface: BME280
      * .settings.I2CAddress: BME280
      * .settings.runMode: BME280
@@ -42,9 +42,9 @@
      * .settings.pressOverSample: BME280
      * .settings.humidOverSample: BME280
      * .begin(): BME280
-  4. gps_init():
-  5. datalog_init():
-  6. communication_init():
+  4. gps_init():gps.cpp
+  5. datalog_init():datalog.cpp
+  6. communication_init():communication.cpp
   7. state_init():state.cpp
      * EEPROM functions
   8. Sensor Setup
@@ -124,14 +124,15 @@
     13. recover():state.cpp
         * communication_sendState(RECOVER): communication.cpp
         * state = IDLE
-    14. EEPROM.put():?
+    * EEPROM.put()
+      * If state change
 
 ### Questions for Foster
-1. How do we make/run the program?
-2. How do we debug the program?
-main.ino
-    71: why byte? a: less memory than int
-    74-96: why +=?
-ninedof.cpp
-    25: ifndefs for SIM? In almost all _read() function
-what does util.h do?
+1. How do we make/run the program?  
+2. How do we debug the program?  
+main.ino  
+    71: why byte? a: less memory than int  
+    74-96: why +=?  
+ninedof.cpp  
+    25: ifndefs for SIM? In almost all _read() function  
+what does util.h do?  
