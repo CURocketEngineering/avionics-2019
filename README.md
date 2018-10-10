@@ -17,7 +17,7 @@ by Foster McLane, 2016.
   * Code ran on CURE rockets used for data collection, state changes, and telemetry
 * `pics/` 
   * Pictures used in this github
-* `xbee/bypadd/`
+* `xbee/bypass/`
   * Communication and ?
 
 ### License

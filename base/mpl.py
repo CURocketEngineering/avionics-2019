@@ -1,4 +1,14 @@
-##Use python3, requires matplotlib
+## mpl.py - Harrison Hall - use python3
+## Designed to essentially replace communications with a graphical interface
+'''
+TODO
+* Integrate necessary code to be pulled from main
+* Graphs for altitude(target height), velocity, acceleration
+* Animation for rocket spin, tilt, ...
+* Meters for temperature, pressure, ...
+* Print data that was in comm.py in matplotlib window (GPS, ...)
+* What is the json data format?
+'''
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider, Button, RadioButtons
@@ -6,11 +16,10 @@ import time
 import math
 import sys
 import comm as comm
-from serial import Serial 
+import serial
+import json
 
-##Used for Testing
-z = 1
-clemsonPurple = '#522D80'
+PURPLE = '#522D80'
 
 ##Calculations
 def calcspeed(arr_acc,arr_sec,arr_vel):
@@ -20,38 +29,6 @@ def calcspeed(arr_acc,arr_sec,arr_vel):
     g_to_feet = 32.174
     new_vel = arr_vel[time] + (dt * (arr_acc[time] * g_to_feet))
     arr_vel.append(new_vel)
-
-##Speedometer heavily based on https://matplotlib.org/examples/widgets/slider_demo.html
-
-def fake_animate(var):
-    global z
-    global arr_sec
-    global arr_acc
-    global arr_alt
-    global arr_vel
-    #Reset labels
-    plot_acc.clear()
-    plot_alt.clear()
-    plot_vel.clear()
-    plot_acc.set_xlabel("time, s")
-    plot_acc.set_ylabel("g's")
-    plot_acc.set_title("Acceleration")
-    plot_alt.set_xlabel("time, s")
-    plot_alt.set_ylabel("ft")
-    plot_alt.set_title("Altitude")
-    plot_vel.set_xlabel("time, s")
-    plot_vel.set_ylabel("ft/s")
-    plot_vel.set_title("Velocity")
-    #Update
-    calcspeed(arr_acc,arr_sec,arr_vel)
-    arr_sec.append(z)
-    arr_alt.append(math.pow(z,2))
-    arr_acc.append(math.sin(z*(3.14/6)))
-    plot_spd.set_val(arr_vel[len(arr_vel)-1])
-    plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
-    plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
-    plot_vel.plot(arr_sec,arr_vel,color=clemsonPurple)
-    z += 1
 
 #Functions for animating altitude and acceleration
 def animate(i):
@@ -79,13 +56,13 @@ def animate(i):
             arr_sec.append(time.time()-start_time)
             
             plot_acc.clear()
-            plot_acc.plot(arr_sec,arr_acc,color=clemsonPurple)
+            plot_acc.plot(arr_sec,arr_acc,color=PURPLE)
             plot_alt.clear()
-            plot_alt.plot(arr_sec,arr_alt,color=clemsonPurple)
+            plot_alt.plot(arr_sec,arr_alt,color=PURPLE)
             calcspeed(arr_acc,arr_sec,arr_vel)
             plot_spd.set_val(arr_vel[len(arr_vel)-1])
             plot_vel.clear()
-            plot_vel.plot(arr_sec,arr_vel,color=clemsonPurple)
+            plot_vel.plot(arr_sec,arr_vel,color=PURPLE)
 
     except:
         print("Error in Try.")
@@ -109,7 +86,7 @@ plot_vel.set_xlabel("time, s")
 plot_vel.set_ylabel("ft/s")
 plot_vel.set_title("Velocity")
 
-speedometer = plt.axes([0.6, 0.1, 0.3, 0.05], facecolor=clemsonPurple)
+speedometer = plt.axes([0.6, 0.1, 0.3, 0.05], facecolor=PURPLE)
 maxspeed = 1050
 plot_spd = Slider(speedometer, 'ft/s', 0, maxspeed, valinit=0) 
 

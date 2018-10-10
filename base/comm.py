@@ -23,6 +23,7 @@ def read():
         comm.reset_input_buffer()
         comm.reset_output_buffer()
 
+# ???        
 def send(cmd):
     comm.write(json.dumps(cmd))
     comm.flush()

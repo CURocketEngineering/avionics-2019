@@ -1,3 +1,5 @@
+## jsongrapher.py by Harrison Hall
+## graphs height and states for the use of debugging
 import json
 import matplotlib.pyplot as plt
 import math
