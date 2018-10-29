@@ -1,21 +1,31 @@
 # Base Telemetry
 ### TODO
-* Decide between keeping in python2 or converting to python3
-* `mpl.py` and `graphs/`
+* ~~Decide between keeping in python2 or converting to python3~~
+  * Old in python2, new in python3 (they run independently)
 * Decide what needs to be represented on base station
   * Graphs
-    * Altitude, acceleration, velocity
-  * Numbers/Animations?
-    * GPS, tilt, ...
-  * Other
-    * Air pressure, temperature, other 9DOF
-* Save json to file on base station
+    * GPS
+    * Accleration
+  * Animations
+    * Pitch
+    * Yaw
+    * Roll
+    * Velocity (speedometer)
+    * Altitude (single bar)
+  * Numbers
+    * All else
 
 ### Running
 #### Compiling and Running
-1. `python main.py`
+1. `python2 main.py`
 #### Debugging
-1. 
+* To debug and test `mpl.py`
+  1. Run `python3 mpl_simulator.py`
+  2. Also run `python3 mpl.py` while the other is running
+  3. Look at graphs and adjust program
+  4. Remove `quickbox.json` when complete, or don't, just don't push it
+* To debug and test `main.py`
+  1. Pray to the gods that it works
 
 ### Information
 * JSON Formatting
@@ -28,6 +38,5 @@
 
 ### Components
 #### Current Components
-* Antenna thing???
-
-### Questions for Foster
+* Communications Antenna
+  * ???
