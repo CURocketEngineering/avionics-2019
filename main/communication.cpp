@@ -6,15 +6,12 @@
 #include <Arduino.h>
 
 #include "pins.h"
-
 #include "datalog.h"
 #include "ninedof.h"
 #include "barometer.h"
 #include "gps.h"
 #include "communication.h"
-
 #include "sim.h"
-
 #include "json.h"
 
 const char * commands_arr[] = {
