@@ -1,7 +1,14 @@
 # Base Telemetry
 ### TODO
+* Decide between keeping in python2 or converting to python3
 * `mpl.py` and `graphs/`
 * Decide what needs to be represented on base station
+  * Graphs
+    * Altitude, acceleration, velocity
+  * Numbers/Animations?
+    * GPS, tilt, ...
+  * Other
+    * Air pressure, temperature, other 9DOF
 * Save json to file on base station
 
 ### Running

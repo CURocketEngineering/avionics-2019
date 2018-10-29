@@ -5,17 +5,17 @@ Clemson University Rocket Engineering (CURE) Avionics subteam program files. Pow
 by Foster McLane, 2016.
 
 ### Documentation
-* `base/`
+* [`base/`](base/)
   * Code ran on the CURE base station for communication and telemetry
-* `cad/`
+* [`cad/`](/cad)
   * Files for electrically engineering components in `eagle`
-* `data/`
+* [`data/`](data/)
   * Flight data and simulation programs
-* `extra/`
+* [`extra/`](extra/)
   * ?
-* [`main/`](main/README.md)
+* [`main/`](main/)
   * Code ran on CURE rockets used for data collection, state changes, and telemetry
-* `pics/` 
+* [`pics/`](pics/)
   * Pictures used in this github
 * `xbee/bypass/`
   * Communication and ?

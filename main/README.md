@@ -10,7 +10,7 @@
 #### Current Components
 * General Hardware
   * Teensy 3.5 Arduino
-  ![Teensy](../pics/Teensy_3.5.jpg)
+  * ![Teensy](../pics/Teensy_3.5.jpg)
 * Sensors
   1. 9DOF - 3D gyroscope, magnetometer, and accelerometer
      * [sparkfun link](https://www.sparkfun.com/products/13944)
