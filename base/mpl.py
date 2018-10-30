@@ -10,6 +10,7 @@ import sys
 import comm as comm
 import serial
 import json
+from graphs import barometer as bar
 
 PURPLE = '#522D80'
 ORANGE = '#F66733'
@@ -42,8 +43,7 @@ def animate(i):
                 arr_sec.append(time.time()-start_time)
                 plot_acc.clear()
                 plot_acc.plot(arr_sec,arr_acc,color=PURPLE)
-                plot_alt.clear()
-                plot_alt.plot(arr_sec,arr_alt,color=PURPLE)
+                bar.plot_alt(arr_sec,arr_alt,plot_alt)
                 plot_spd.set_val(arr_vel[len(arr_vel)-1])
                 plot_vel.clear()
                 plot_vel.plot(arr_sec,arr_vel,color=PURPLE)
@@ -57,7 +57,9 @@ try:
     plot_acc = graphs.add_subplot(2,2,1)
     plot_alt = graphs.add_subplot(2,2,2)
     plot_vel = graphs.add_subplot(2,2,3)
-    update = animation.FuncAnimation(graphs, animate, interval=200)
+    graphs.patch.set_facecolor(ORANGE)
+    graphs.canvas.set_window_title("Avionics Telemetry")
+    update = animation.FuncAnimation(graphs, animate, interval=100)
     plt.show()
     
 except:

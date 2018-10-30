@@ -4,7 +4,7 @@ import time
 dataFile = open("graphs/testData/flight.json","r")
 dataFile = dataFile.readlines()
 i = 0
-dt = 0.5
+dt = 0.005
 while(i < len(dataFile)):
     q = open("quickbox.json","w")
     dataFile[i].rstrip("\n")

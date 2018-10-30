@@ -1,75 +1,28 @@
-## mpl.py - Harrison Hall - use python3
-## Designed to essentially replace communications with a graphical interface
-'''
-TODO
-* Integrate necessary code to be pulled from main
-* Graphs for altitude(target height), velocity, acceleration
-* Animation for rocket spin, tilt, ...
-* Meters for temperature, pressure, ...
-* Print data that was in comm.py in matplotlib window (GPS, ...)
-* What is the json data format?
-'''
+## barometer.py
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider, Button, RadioButtons
 import time
 import math
-import sys
-import comm as comm
-import serial
-import json
 
 PURPLE = '#522D80'
+img = plt.imread("graphs/logo.png")
+img[:, :, -1] = 0.5
 
-##Calculations
-def calcspeed(arr_acc,arr_sec,arr_vel):
-    #Calc based approach does not check for false values
-    time = len(arr_sec) - 1
-    dt = arr_sec[time] - arr_sec[time - 1]
-    g_to_feet = 32.174
-    new_vel = arr_vel[time] + (dt * (arr_acc[time] * g_to_feet))
-    arr_vel.append(new_vel)
 
-#Functions for animating altitude and acceleration
-def animate(i):
-    try:
-        global arr_acc
-        global arr_alt
-        global arr_sec
-        message = comm.read()
-        if message:
-            count = 0
-            data['time'] = message['time']
-            if message['type'] == 'state':
-                data['state'] = message['state']
-            elif message['type'] == 'telemetry':
-                data['sensors'] = message['sensors']
-        else:
-            count += 1
-            if count > 1000:
-                data['state'] = 'no_comm'
-                    
-        if data['sensors']:
-            print("Type: ",str(type(states['sensors']['acc']['z'])))
-            arr_acc.append(states['sensors']['acc']['z'])
-            arr_alt.append(states['sensors']['bar']['alt'])
-            arr_sec.append(time.time()-start_time)
-            
-            plot_acc.clear()
-            plot_acc.plot(arr_sec,arr_acc,color=PURPLE)
-            plot_alt.clear()
-            plot_alt.plot(arr_sec,arr_alt,color=PURPLE)
-            calcspeed(arr_acc,arr_sec,arr_vel)
-            plot_spd.set_val(arr_vel[len(arr_vel)-1])
-            plot_vel.clear()
-            plot_vel.plot(arr_sec,arr_vel,color=PURPLE)
-
-    except:
-        print("Error in Try.")
-        fakeGraphs()
-
-try:
-    update = animation.FuncAnimation(graphs, animate, interval=200)
-    plt.show()
-except:
-    print("RIP you broke it m8")
+def plot_alt(arr_sec,arr_alt,plot_alt):
+    plot_alt.clear()
+    if len(arr_sec) > 50:
+        sec = arr_sec[len(arr_sec)-50:]
+        alt = arr_alt[len(arr_sec)-50:]
+    else:
+        sec = arr_sec
+        alt = arr_alt
+    # set_axis_off, set_xlim, and set_ylim has the effect of removing the axis and just plotting the line
+    plot_alt.plot(sec,alt,color=PURPLE)
+    plot_alt.set_title("Altitude" + " with " + str(len(sec)) + " length")
+    plot_alt.set_xlabel("unit with max "+str(max(sec)))
+    plot_alt.set_ylabel("other unit")
+    plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
+    return

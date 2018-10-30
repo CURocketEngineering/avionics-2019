@@ -21,3 +21,4 @@ def write(data):
 def quickWrite(filename,data):
     quick = open(filename,'ab',0)
     quick.write(json.dumbs(data).encode())
+    quick.close()

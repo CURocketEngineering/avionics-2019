@@ -1,13 +1,10 @@
 # Graphing
 
 ## Components
-* `master.py` calls:
-  * 9dof.py
-    * 
+* `mpl.py` calls:
+  * ninedof.py
+    * ?
   * baromter.py
-    * altitude
-    * air pressure
-    * velocity
-    * accleration
+    * ?
   * gps.py
-  
+    * ?
