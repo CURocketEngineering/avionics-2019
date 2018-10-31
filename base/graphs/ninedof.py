@@ -1,4 +1,4 @@
-## barometer.py
+## ninedof.py
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -9,7 +9,6 @@ import math
 PURPLE = '#522D80'
 img = plt.imread("graphs/logo.png")
 img[:, :, -1] = 0.5
-
 
 def plot_alt(arr_sec,arr_alt,plot_alt):
     plot_alt.clear()
@@ -25,4 +24,17 @@ def plot_alt(arr_sec,arr_alt,plot_alt):
     plot_alt.set_xlabel("unit with max "+str(max(sec)))
     plot_alt.set_ylabel("other unit")
     plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
+    return
+
+def plot_accelerometer():
+    #plot z, we want to know vertical acceleration
+    return
+
+def plot_pitch():
+    return
+
+def plot_yaw():
+    return
+
+def plot_roll():
     return

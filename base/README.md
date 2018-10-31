@@ -17,7 +17,10 @@
 
 ### Running
 #### Compiling and Running
-1. `python2 main.py`
+1. `python2 main.py` for main telemetry
+2. `python3 mpl.py` for visual data
+   * Requires `main.py` to be running
+   ![gui](../pics/gui_beta.png)
 #### Debugging
 * To debug and test `mpl.py`
   1. Run `python3 mpl_simulator.py`

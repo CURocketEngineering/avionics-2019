@@ -26,9 +26,3 @@ def plot_alt(arr_sec,arr_alt,plot_alt):
     plot_alt.set_ylabel("other unit")
     plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)])
     return
-
-def plot_alt_meter():
-    return
-
-def plot_speedometer():
-    return

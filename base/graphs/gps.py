@@ -1,4 +1,4 @@
-## barometer.py
+## gps.py
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -6,23 +6,23 @@ from matplotlib.widgets import Slider, Button, RadioButtons
 import time
 import math
 
-PURPLE = '#522D80'
-img = plt.imread("graphs/logo.png")
-img[:, :, -1] = 0.5
+ORANGE = '#F66733'
+img = plt.imread("graphs/logo.png") # Change to site location
+img[:, :, -1] = 0.8
+gps_bl = [0,0] #TODO
+gps_br = [1,0] #TODO
+gps_tl = [0,1] #TODO
+gps_tr = [1,1] #TODO
 
-
-def plot_alt(arr_sec,arr_alt,plot_alt):
+def plot_gps(gps_x,gps_y,plot_alt):
     plot_alt.clear()
-    if len(arr_sec) > 50:
-        sec = arr_sec[len(arr_sec)-50:]
-        alt = arr_alt[len(arr_sec)-50:]
-    else:
-        sec = arr_sec
-        alt = arr_alt
-    # set_axis_off, set_xlim, and set_ylim has the effect of removing the axis and just plotting the line
-    plot_alt.plot(sec,alt,color=PURPLE)
-    plot_alt.set_title("Altitude" + " with " + str(len(sec)) + " length")
-    plot_alt.set_xlabel("unit with max "+str(max(sec)))
-    plot_alt.set_ylabel("other unit")
-    plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
+    #map gps
+    gps_x = gps_x #TODO
+    gps_y = gps_y #TODO
+    
+    plot_alt.plot(gps_x,gps_y,color=ORANGE)
+    plot_alt.set_title("GPS")
+    plot_alt.set_xlabel("Latitude")
+    plot_alt.set_ylabel("Longitude")
+    #plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
     return
