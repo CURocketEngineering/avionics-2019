@@ -2,18 +2,20 @@
 ### TODO
 * ~~Decide between keeping in python2 or converting to python3~~
   * Old in python2, new in python3 (they run independently)
-* Decide what needs to be represented on base station
+* ~~Decide what needs to be represented on base station~~
   * Graphs
     * GPS
     * Accleration
+    * Altitude (set of few points)
   * Animations
     * Pitch
     * Yaw
     * Roll
     * Velocity (speedometer)
-    * Altitude (single bar)
   * Numbers
     * All else
+* Write `graph/` functions
+* Make mpl "look pretty"
 
 ### Running
 #### Compiling and Running
@@ -29,6 +31,7 @@
   4. Remove `quickbox.json` when complete, or don't, just don't push it
 * To debug and test `main.py`
   1. Pray to the gods that it works
+  2. TODO
 
 ### Information
 * JSON Formatting
@@ -36,7 +39,8 @@
   * Rocket will return self-contained json
     * Will always contain `type`, `time`, and `state`
       * `type` will be 1 of: state, telemetry, 
-      * `state` will be 1 of the states: ignite, 
+      * `time` is in units of ...
+      * `state` will be 1 of the states: ignite, ...
     * Telemetry contains ... TODO
 
 ### Components

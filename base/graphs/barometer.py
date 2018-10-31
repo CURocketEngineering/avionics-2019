@@ -13,6 +13,9 @@ PURPLE = '#522D80'
 img = plt.imread("graphs/logo.png")
 img[:, :, -1] = 0.5
 
+MAX_HEIGHT = 10000 #ft, varies
+height = MAX_HEIGHT * (3/2)
+
 ## Plots altitude in ft onto a graph
 ## Only plots 50 most recent coordinates
 def plot_acc(arr_sec,arr_alt,plot_alt):
@@ -35,8 +38,13 @@ def plot_acc(arr_sec,arr_alt,plot_alt):
 
 ## Plots POINTS of most recent altitude, with scaled coloring
 def plot_alt(arr_sec,arr_alt,plot_alt):
+    size = len(arr_sec) - 1
     plot_alt.clear()
-    plot_alt.plot(arr_sec,arr_alt,color=PURPLE)
+    plot_alt.plot([0],arr_alt[size:],color=PURPLE,marker='o') # Plot most current point
+    plot_alt.set_title("Altitude")
+    plot_alt.set_xlabel("n/a")
+    plot_alt.set_ylabel("ft")
+    plot_alt.set_ylim([0,height])
     plot_alt.grid(True)
     return
 

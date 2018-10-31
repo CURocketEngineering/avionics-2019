@@ -37,18 +37,19 @@ def animate(i):
             data = json.loads(data[0])
             if data not in allJson:
                 allJson.append(data)
-        print("Count: "+str(i)+ " " + str(data))
+        #print("Count: "+str(i)+ " " + str(data))
         # If the json has telemetry data, update telemetry
         if 'sensors' in data:
             if ('time' in data) and ('bar' in data['sensors']):
                 # Append data
                 arr_acc.append(data['sensors']['acc']['z'])
                 arr_alt.append(data['sensors']['bar']['alt'])
-                arr_sec.append(time.time()-start_time)
+                #arr_sec.append(time.time()-start_time)
+                arr_sec.append(data['time'])
                 # Update graphs
                 # Everything should be self-contained, like bar.plot_alt()
                 bar.plot_acc(arr_sec,arr_acc,plot_acc)
-                bar.plot_alt(arr_sec,arr_acc,plot_alt)
+                bar.plot_alt(arr_sec,arr_alt,plot_alt)
                 nd.plot_pitch(plot_pitch)
                 nd.plot_yaw(plot_yaw)
                 nd.plot_roll(plot_roll)
@@ -61,6 +62,13 @@ def animate(i):
             state = data['state']
     except:
         print("pass")
+        try:
+            with open("quickbox.json",'r') as jsonFile:
+                data = jsonFile.readlines()
+                data = json.loads(data[0])
+                print(data)
+        except:
+            print("pass again")
 
 try:
     graphs = plt.figure() # So we can manipulate things easier
@@ -77,11 +85,10 @@ try:
     graphs.patch.set_facecolor(ORANGE) # CLEMSON
     graphs.canvas.set_window_title("Avionics Telemetry") # Does not change
     update = animation.FuncAnimation(graphs, animate) # Uses animate function
-    # Use subplots_adjust to make graphs look pretty
-    # tight_layout() Used to make sure everything fits,
+    # Note: Use subplots_adjust to make graphs look pretty
+    # plt.tight_layout() is used to make sure everything fits,
     # looks weird when used dynamically
     plt.tight_layout()
-
     plt.show() # Show plot
     
 except:
