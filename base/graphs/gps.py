@@ -14,6 +14,8 @@ gps_br = [1,0] #TODO
 gps_tl = [0,1] #TODO
 gps_tr = [1,1] #TODO
 
+## Plots CURRENT gps POINT onto a gps image of the area,
+## which can vary based on location
 def plot_gps(gps_x,gps_y,plot_alt):
     plot_alt.clear()
     #map gps

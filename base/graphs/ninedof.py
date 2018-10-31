@@ -10,31 +10,21 @@ PURPLE = '#522D80'
 img = plt.imread("graphs/logo.png")
 img[:, :, -1] = 0.5
 
-def plot_alt(arr_sec,arr_alt,plot_alt):
-    plot_alt.clear()
-    if len(arr_sec) > 50:
-        sec = arr_sec[len(arr_sec)-50:]
-        alt = arr_alt[len(arr_sec)-50:]
-    else:
-        sec = arr_sec
-        alt = arr_alt
-    # set_axis_off, set_xlim, and set_ylim has the effect of removing the axis and just plotting the line
-    plot_alt.plot(sec,alt,color=PURPLE)
-    plot_alt.set_title("Altitude" + " with " + str(len(sec)) + " length")
-    plot_alt.set_xlabel("unit with max "+str(max(sec)))
-    plot_alt.set_ylabel("other unit")
-    plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
-    return
-
+## Plots Z acceleration as a function of time
 def plot_accelerometer():
-    #plot z, we want to know vertical acceleration
     return
 
-def plot_pitch():
+## Shows animation of current pitch
+def plot_pitch(plot_pitch):
+    plot_pitch.set_title("Pitch")
     return
 
-def plot_yaw():
+## Shows animation of current yaw
+def plot_yaw(plot_yaw):
+    plot_yaw.set_title("Yaw")
     return
 
-def plot_roll():
+## Shows animation of current roll
+def plot_roll(plot_roll):
+    plot_roll.set_title("Roll")
     return
