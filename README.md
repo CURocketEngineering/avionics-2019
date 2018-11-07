@@ -24,7 +24,7 @@ Intercollegiate Rocket Engineering Competition. Begun by Foster McLane, 2016.
   * Code ran on CURE rockets used for data collection, state changes, and telemetry
 * [`pics/`](pics/)
   * Pictures used in this github
-* `xbee/bypass/`
+* [`xbee/bypass/`](xbee/bypass/)
   * Communication
 
 ### License
