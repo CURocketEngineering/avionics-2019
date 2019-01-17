@@ -4,6 +4,8 @@ from __future__ import division, print_function
 
 import json
 
+current_state = "wait"
+
 def init(filename):
     global output
     output = open(filename, 'ab', 0)
@@ -16,9 +18,15 @@ def deinit():
 def write(data):
     output.write(json.dumps(data).encode())
     output.write(b',\n')
-    quickWrite("quickbox.json",data)
+    update_state(data)
+    quick_write("quickbox.json",data)
 
-def quickWrite(filename,data):
+def update_state(data):
+    if 'type' in data:
+        if data['type'] == "state":
+            current_state = data['state']
+
+def quick_write(filename,data):
     quick = open(filename,'ab',0)
-    quick.write(json.dumps(data).encode())
+    quick.write(current_state + "\n" + json.dumps(data).encode())
     quick.close()

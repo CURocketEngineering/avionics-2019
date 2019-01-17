@@ -1,4 +1,8 @@
 # On-board avionics
+### TODO
+1. ~Make lightweight version~ **Not necessary?**
+2. XBEE Voice Messages
+5. Live video feed
 
 ### Making
 #### Compiling and Running

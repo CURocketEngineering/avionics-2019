@@ -1,21 +1,12 @@
 # Base Telemetry
 ### TODO
-* ~~Decide between keeping in python2 or converting to python3~~
-  * Old in python2, new in python3 (they run independently)
-* ~~Decide what needs to be represented on base station~~
-  * Graphs
-    * GPS
-    * Accleration
-    * Altitude (set of few points)
-  * Animations
-    * Pitch
-    * Yaw
-    * Roll
-    * Velocity (speedometer)
-  * Numbers
-    * All else
 * Write `graph/` functions
-* Make mpl "look pretty"
+  * speedometer
+  * pitch, yaw, roll
+* `mpl.py` aesthetic
+* Where is command located in main?
+* Command integration in mpl
+* Camera?
 
 ### Running
 #### Compiling and Running
@@ -39,8 +30,8 @@
   * Rocket will return self-contained json
     * Will always contain `type`, `time`, and `state`
       * `type` will be 1 of: state, telemetry, 
-      * `time` is in units of ...
-      * `state` will be 1 of the states: ignite, ...
+      * `time` is in units of (ms?)...
+      * `state` will be 1 of the states: ignite, burn, apogee, wait, eject, fall, recover
     * Telemetry contains ... TODO
 
 ### Components

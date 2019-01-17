@@ -13,18 +13,21 @@ gps_bl = [0,0] #TODO
 gps_br = [1,0] #TODO
 gps_tl = [0,1] #TODO
 gps_tr = [1,1] #TODO
+gps_center_x = 0
+gps_center_y = 0
+
 
 ## Plots CURRENT gps POINT onto a gps image of the area,
 ## which can vary based on location
-def plot_gps(gps_x,gps_y,plot_alt):
-    plot_alt.clear()
-    #map gps
-    gps_x = gps_x #TODO
-    gps_y = gps_y #TODO
+def plot_gps(gps_x,gps_y,gps_x_init,gps_y_init,plot_gps):
+    plot_gps.clear()
     
-    plot_alt.plot(gps_x,gps_y,color=ORANGE)
-    plot_alt.set_title("GPS")
-    plot_alt.set_xlabel("Latitude")
-    plot_alt.set_ylabel("Longitude")
-    #plot_alt.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(alt),max(alt)+500])
+    gps_center_x = gps_x_init
+    gps_center_y = gps_y_init
+    
+    plot_gps.plot(gps_x,gps_y,color=ORANGE)
+    plot_gps.set_title(f'GPS [lat:{gps_x},lon:{gps_y}]')
+    plot_gps.set_xlabel("Latitude")
+    plot_gps.set_ylabel("Longitude")
+    #plot_gps.imshow(img,aspect='auto',extent=[min(sec),max(sec),min(gps),max(gps)+500])
     return
