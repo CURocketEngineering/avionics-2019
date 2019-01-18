@@ -9,6 +9,7 @@ import json
 from graphs import barometer as bar
 from graphs import ninedof as nd
 from graphs import gps as gps
+from graphs import other
 
 PURPLE = '#522D80'
 ORANGE = '#F66733'
@@ -27,18 +28,9 @@ start_time = time.time()
 # Update (animate) the graphs
 def animate(i):
     try:
-        # TODO - Necessary?
-        global allJson
-        global arr_sec
-        global arr_acc
-        global arr_alt
-        global arr_vel
-        global gps_x_init
-        global gps_y_init
-        global gps_x
-        global gps_y
-        global state
-        global start_time
+        global allJson, arr_sec, arr_acc, arr_alt, arr_vel
+        global gps_x_init, gps_y_init, gps_x, gps_y
+        global state, start_time
         data = ""
         with open("quickbox.json",'r') as jsonFile:
             data = jsonFile.readlines()
@@ -68,8 +60,7 @@ def animate(i):
                 nd.plot_yaw(plot_yaw)
                 nd.plot_roll(plot_roll)
                 gps.plot_gps(gps_x,gps_y,gps_x_init,gps_y_init,plot_gps)
-
-                plot_gps.text(gps_x_init,gps_y_init,state) # TODO
+                other.plot_data(data,state,plot_data)
                 
     except:
         print("Parse Error")
@@ -85,8 +76,9 @@ try:
     graphs = plt.figure() # So we can manipulate things easier
 
     # Define plots
+    plot_data = plt.subplot2grid((5,5),(0,0),colspan=2,rowspan=2)
     plot_alt = plt.subplot2grid((5,5),(0,4),rowspan=5)
-    plot_gps = plt.subplot2grid((5,5),(0,0),colspan=4,rowspan=2)
+    plot_gps = plt.subplot2grid((5,5),(0,2),colspan=2,rowspan=2)
     plot_acc = plt.subplot2grid((5,5),(2,2),colspan=2,rowspan=2)
     #plot_st = plt.subplot2grid((5,5),(0,0),colspan=2)
     plot_pitch = plt.subplot2grid((5,5),(4,0))

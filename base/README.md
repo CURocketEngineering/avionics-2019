@@ -19,10 +19,8 @@
   1. Run `python3 mpl_simulator.py`
   2. Also run `python3 mpl.py` while the other is running
   3. Look at graphs and adjust program
-  4. Remove `quickbox.json` when complete, or don't, just don't push it
 * To debug and test `main.py`
-  1. Pray to the gods that it works
-  2. TODO
+  1. Pray to ~~the gods~~Foster that it works
 
 ### Information
 * JSON Formatting
