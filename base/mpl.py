@@ -97,4 +97,4 @@ try:
     plt.show() 
     
 except:
-    print("Something went wrong. Contact Charlie Dove at <cadove@g.clemson.edu>.")
+    print("Something went wrong. Submit an issue on the github page.")
