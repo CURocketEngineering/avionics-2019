@@ -27,6 +27,7 @@
      * 10 pins, < 6 used
   3. GPS - What gps did we use?? Are we still using it???
 #### Past Components
+*none*
 
 ### Order of Operations
 * Setup():main.ino
@@ -131,12 +132,3 @@
     * EEPROM.put()
       * If state change
 
-### Questions for Foster
-1. How do we make/run the program?  
-2. How do we debug the program?  
-main.ino  
-    71: why byte? a: less memory than int  
-    74-96: why +=?  
-ninedof.cpp  
-    25: ifndefs for SIM? In almost all _read() function  
-what does util.h do?  

@@ -22,11 +22,18 @@ def write(data):
     quick_write("quickbox.json",data)
 
 def update_state(data):
-    if 'type' in data:
-        if data['type'] == "state":
-            current_state = data['state']
+    try:
+        if 'type' in data:
+            if data['type'] == "state":
+                current_state = data['state']
+    except:
+        pass
 
 def quick_write(filename,data):
-    quick = open(filename,'ab',0)
-    quick.write(current_state + "\n" + json.dumps(data).encode())
-    quick.close()
+    try:
+        quick = open(filename,'ab',0)
+        quick.flush()
+        quick.write(current_state + "\n" + json.dumps(data).encode())
+        quick.close()
+    except:
+        pass
