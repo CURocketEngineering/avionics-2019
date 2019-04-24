@@ -29,12 +29,15 @@ try:
 
             if cmd == 't':
                 comm.send({'command': 'test'})
+                print ('sent command')
             elif cmd == 'a':
                 comm.send({'command': 'arm'})
+                print ('arm')
             elif cmd == 'd':
                 comm.send({'command': 'disarm'})
             elif cmd == 'i':
                 comm.send({'command': 'ignite'})
+                print ('sent ignite')
             elif cmd == 'b':
                 comm.send({'command': 'abort'})
             elif cmd == 'p':

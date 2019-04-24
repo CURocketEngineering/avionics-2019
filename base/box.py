@@ -31,7 +31,7 @@ def update_state(data):
 
 def quick_write(filename,data):
     try:
-        quick = open(filename,'ab',0)
+        quick = open(filename,'w',0)
         quick.flush()
         quick.write(current_state + "\n" + json.dumps(data).encode())
         quick.close()
