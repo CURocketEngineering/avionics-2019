@@ -56,9 +56,9 @@ def animate(i):
                 ## Update graphs
                 bar.plot_acc(arr_sec,arr_acc,plot_acc)
                 bar.plot_alt(arr_sec,arr_alt,plot_alt)
-                nd.plot_pitch(plot_pitch)
-                nd.plot_yaw(plot_yaw)
-                nd.plot_roll(plot_roll)
+                #nd.plot_pitch(plot_pitch)
+                #nd.plot_yaw(plot_yaw)
+                #nd.plot_roll(plot_roll)
                 gps.plot_gps(gps_x,gps_y,gps_x_init,gps_y_init,plot_gps)
                 other.plot_data(data,state,plot_data)
                 
@@ -81,10 +81,10 @@ try:
     plot_gps = plt.subplot2grid((5,5),(0,2),colspan=2,rowspan=2)
     plot_acc = plt.subplot2grid((5,5),(2,2),colspan=2,rowspan=2)
     #plot_st = plt.subplot2grid((5,5),(0,0),colspan=2)
-    plot_pitch = plt.subplot2grid((5,5),(4,0))
-    plot_yaw = plt.subplot2grid((5,5),(4,1))
-    plot_roll = plt.subplot2grid((5,5),(4,2))
-    plot_tbd = plt.subplot2grid((5,5),(2,0),colspan=2,rowspan=2)
+    #plot_pitch = plt.subplot2grid((5,5),(4,0))
+    #plot_yaw = plt.subplot2grid((5,5),(4,1))
+    #plot_roll = plt.subplot2grid((5,5),(4,2))
+    #plot_tbd = plt.subplot2grid((5,5),(2,0),colspan=2,rowspan=2)
 
     graphs.patch.set_facecolor(ORANGE)
     graphs.canvas.set_window_title("Avionics Telemetry") 

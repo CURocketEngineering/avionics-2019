@@ -18,12 +18,8 @@ def plot_data(json_data,state,plot_data):
     plot_data.set_ylim()
     # set_axis_off, set_xlim, and set_ylim has the effect of removing the axis and just plotting the line
     try:
-        plot_data.text(0,0.9,f'State: {state}')
-        plot_data.text(0,0.85,f'Time: {json_data["time"]/1000} s')
-        plot_data.text(0,0.7,f'Pressure: {json_data["sensors"]["bar"]["p"]}')
-        plot_data.text(0,0.5,f'Temperature: {json_data["sensors"]["bar"]["temp"]}')
-        plot_data.text(0,0.4,f'Humidity: {state}')
-        plot_data.text(0,0,f'Gyro: x {state} y {state} z {state}')
+        newline = "\n"
+        plot_data.text(0,0.3,f'State: {state.replace(newline,"")}\nTime: {json_data["time"]/1000} s\nPressure: {json_data["sensors"]["bar"]["p"]}\nTemperature: {json_data["sensors"]["bar"]["temp"]}\nHumidity: {json_data["sensors"]["bar"]["hum"]}\nx {json_data["sensors"]["acc"]["x"]} y {json_data["sensors"]["acc"]["y"]} z {json_data["sensors"]["acc"]["z"]}',verticalalignment='center')
     except:
         pass
     
