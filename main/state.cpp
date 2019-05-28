@@ -6,6 +6,7 @@
 #include <avr/sleep.h>
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <"wire.h">
 #include "state.h"
 #include "communication.h"
 #include "sim.h"
@@ -294,13 +295,18 @@ void apogee() {
     communication_sendState(APOGEE);
 
     // Wait for ejection delay
-    if (PARACHUTE_WAIT)
-        delay(PARACHUTE_WAIT);
+    if (PARACHUTE_WAIT) delay(PARACHUTE_WAIT);
 
     // Send parachute signal
+    /* OLD
     digitalWrite(TERM_DROGUE, HIGH);
     delay(PARACHUTE_DELAY);
     digitalWrite(TERM_DROGUE, LOW);
+    */
+    // Qwiic
+    toggleRelay(true,qwiicRelayAddressAp);
+    delay(PARACHUTE_DELAY);
+    toggleRelay(false,qwiicRelayAddressAp);
 
 #ifdef SIM
     unsigned long sim_last = sim_start;
@@ -352,9 +358,15 @@ void eject() {
         delay(PARACHUTE_WAIT);
 
     // Send parachute signal
+    /* old
     digitalWrite(TERM_MAIN, HIGH);
     delay(PARACHUTE_DELAY);
     digitalWrite(TERM_MAIN, LOW);
+    */
+    // Qwiic
+    toggleRelay(true,qwiicRelayAddressMa);
+    delay(PARACHUTE_DELAY);
+    toggleRelay(false,qwiicRelayAddressMa);
 
     // Change to fall
     state = FALL;
@@ -444,6 +456,16 @@ void state_init() {
         delay(500);
     }
     bitClear(debug, 15);
+}
+
+void toggleRelay(bool on, byte relayAddress){
+  if (on) {
+    Wire.beginTransmission(relayAddress);
+    Wire.write(COMMAND_RELAY_ON);
+  } else {
+    Wire.write(COMMAND_RELAY_OFF);
+    Wire.endTransmission();
+  }
 }
 
 void state_loop() {
