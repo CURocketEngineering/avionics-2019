@@ -63,7 +63,7 @@ void state_init();
 void state_loop();
 
 // Qwiic
-void toggleRelayOn(bool on);
+void toggleRelay(bool on, byte relayAddress);
 const byte qwiicRelayAddressAp = 0x18; //Apogee
 const byte qwiicRelayAddressMa = 0x19; //Main
 

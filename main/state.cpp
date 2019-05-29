@@ -6,7 +6,7 @@
 #include <avr/sleep.h>
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <"wire.h">
+#include "Wire.h"
 #include "state.h"
 #include "communication.h"
 #include "sim.h"

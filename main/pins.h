@@ -9,8 +9,8 @@
 #define TERM_DROGUE 6
 
 // Communications pins
-//#define PANEL_CLOCK 3
-//#define PANEL_DATA 4
+#define PANEL_CLOCK 3
+#define PANEL_DATA 4
 #define PANEL_LATCH 2
 
 //QWIC Relay
