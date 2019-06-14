@@ -161,6 +161,8 @@ void arm() {
     debug_write();
 
     communication_sendState(ARM);
+    state = IGNITE;    //DEBUG TODDO REMOVE
+    return;
 
     while (state == ARM) {
         // Update base station state
@@ -220,6 +222,7 @@ void arm() {
                 state = HALT;
         }
     }
+
 }
 
 void ignite() {
@@ -304,9 +307,9 @@ void apogee() {
     digitalWrite(TERM_DROGUE, LOW);
     */
     // Qwiic
-    toggleRelay(true,qwiicRelayAddressAp);
+    toggleRelay(true,TOGGLE_RELAY_ONE);
     delay(PARACHUTE_DELAY);
-    toggleRelay(false,qwiicRelayAddressAp);
+    toggleRelay(false,TOGGLE_RELAY_ONE);
 
 #ifdef SIM
     unsigned long sim_last = sim_start;
@@ -364,9 +367,9 @@ void eject() {
     digitalWrite(TERM_MAIN, LOW);
     */
     // Qwiic
-    toggleRelay(true,qwiicRelayAddressMa);
+    toggleRelay(true,TOGGLE_RELAY_TWO);
     delay(PARACHUTE_DELAY);
-    toggleRelay(false,qwiicRelayAddressMa);
+    toggleRelay(false,TOGGLE_RELAY_TWO);
 
     // Change to fall
     state = FALL;
@@ -397,7 +400,7 @@ void recover() {
 
     // Update base station state
     communication_sendState(RECOVER);
-
+    
     state = IDLE;
 
     EEPROM.put(eeprom_state, state);
@@ -457,17 +460,18 @@ void state_init() {
         delay(500);
     }
     bitClear(debug, 15);
+
 }
 
 void toggleRelay(bool on, byte relayAddress){
   Wire.begin();
   if (on) {
     Wire.beginTransmission(RELAY_ADDR);
-    Wire.write(TOGGLE_RELAY_ONE);
+    Wire.write(relayAddress);
     Wire.endTransmission();
   } else {
     Wire.beginTransmission(RELAY_ADDR);
-    Wire.write(TOGGLE_RELAY_ONE);
+    Wire.write(relayAddress);
     Wire.endTransmission();
   }
 }

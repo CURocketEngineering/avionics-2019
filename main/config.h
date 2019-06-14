@@ -5,7 +5,7 @@
 #define EEPROM_HEADER "MainRev7"
 
 // Time to hold pin high for parachute charge
-#define PARACHUTE_DELAY 500
+#define PARACHUTE_DELAY 2000
 
 // Accelerometer values to determine changes in state
 #define MIN_ACCEL 2.0
