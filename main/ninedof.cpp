@@ -23,10 +23,6 @@ void ninedof_init() {
 }
 
 void ninedof_read(bool filter) {
-  char test90[20];
-  gyro.x = imu.calcGyro(imu.gx);
-  sprintf(test90,"%f",gyro.x);
-  datalog_write(test90);
 #ifndef SIM
     if (imu.gyroAvailable()) {
         imu.readGyro();
