@@ -3,7 +3,7 @@
 #include <SPI.h>
 
 #include "ninedof.h"
-
+#include "datalog.h"
 #include "sim.h"
 
 struct acc_s acc, acc_prev;
@@ -14,14 +14,19 @@ struct att_s att, att_prev;
 LSM9DS1 imu;
 
 void ninedof_init() {
-    imu.settings.device.commInterface = IMU_MODE_I2C;
-    imu.settings.device.mAddress = LSM9DS1_M;
-    imu.settings.device.agAddress = LSM9DS1_AG;
-
-    imu.begin();
+  imu.settings.device.commInterface = IMU_MODE_I2C;
+  imu.settings.device.mAddress = LSM9DS1_M;
+  imu.settings.device.agAddress = LSM9DS1_AG;
+  //  imu.settings.device.mAddress = LSM9DS1_AG;  
+  //  imu.settings.device.agAddress = LSM9DS1_M;
+  imu.begin();
 }
 
 void ninedof_read(bool filter) {
+  char test90[20];
+  gyro.x = imu.calcGyro(imu.gx);
+  sprintf(test90,"%f",gyro.x);
+  datalog_write(test90);
 #ifndef SIM
     if (imu.gyroAvailable()) {
         imu.readGyro();

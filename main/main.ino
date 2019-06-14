@@ -21,9 +21,15 @@
 #include "datalog.h"
 #include "communication.h"
 #include "gps.h"
+#include <EEPROM.h>
 
 /* MAIN PROGRAM FUNCTIONS */
 void setup() {
+    // Clear EEPROM REMOVE TODO
+    for (int i = 0 ; i < EEPROM.length() ; i++) {
+      EEPROM.write(i, 0);
+    }
+  
     // Initialize debug leds
     debug_init();
 

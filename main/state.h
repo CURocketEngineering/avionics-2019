@@ -17,7 +17,7 @@
 #include "gps.h"
 
 // Delay to rate limit idle function
-#define IDLE_DELAY 1000
+#define IDLE_DELAY 100
 
 // Define enum type variables
 enum state_e {
@@ -66,5 +66,10 @@ void state_loop();
 void toggleRelay(bool on, byte relayAddress);
 const byte qwiicRelayAddressAp = 0x18; //Apogee
 const byte qwiicRelayAddressMa = 0x19; //Main
+#define RELAY_ADDR 0x6D
+#define TOGGLE_RELAY_ONE 0x01
+#define TOGGLE_RELAY_TWO 0x02
+#define TOGGLE_RELAY_THREE 0x03
+#define TOGGLE_RELAY_FOUR 0x04
 
 #endif

@@ -25,6 +25,6 @@
 #define NINEDOF_UP acc.z
 
 // Whether to run simulator
-//#define SIM
+#define SIM
 
 #endif

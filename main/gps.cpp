@@ -1,5 +1,5 @@
 /*
- * Definition file for accelerometer
+ * Definition file for gps
  */
 
 /* LIBRARIES */
@@ -8,6 +8,7 @@
 #include "pins.h"
 #include "gps.h"
 #include "util.h"
+#include "datalog.h"
 
 struct gps_s gps;
 
@@ -26,6 +27,9 @@ void gps_read() {
 
           // ID
           ptr = util_getField(ptr, field, sizeof(field));
+	  //datalog_write(sentence);
+	  char test54[20];
+	  
 
           if (strcmp(field, "$GPRMC") == 0) {
                // Time
@@ -41,6 +45,9 @@ void gps_read() {
                // Latitude
                ptr = util_getField(ptr, field, sizeof(field));
                gps.lat = atof(field)/100.0;
+	       sprintf(test54,"%f",atof(field));
+	       //test54 << atof(field)/100.0;
+	       //datalog_write(test54);
 
                // N/S
                ptr = util_getField(ptr, field, sizeof(field));

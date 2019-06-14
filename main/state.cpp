@@ -415,6 +415,7 @@ void state_init() {
     digitalWrite(TERM_MAIN, LOW);
     pinMode(TERM_DROGUE, OUTPUT);
     digitalWrite(TERM_DROGUE, LOW);
+    Wire.begin();
 
     // Check for saved data in EEPROM
     bool stored = true;
@@ -459,11 +460,14 @@ void state_init() {
 }
 
 void toggleRelay(bool on, byte relayAddress){
+  Wire.begin();
   if (on) {
-    Wire.beginTransmission(relayAddress);
-    Wire.write(COMMAND_RELAY_ON);
+    Wire.beginTransmission(RELAY_ADDR);
+    Wire.write(TOGGLE_RELAY_ONE);
+    Wire.endTransmission();
   } else {
-    Wire.write(COMMAND_RELAY_OFF);
+    Wire.beginTransmission(RELAY_ADDR);
+    Wire.write(TOGGLE_RELAY_ONE);
     Wire.endTransmission();
   }
 }
