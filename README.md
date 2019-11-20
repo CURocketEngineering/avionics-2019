@@ -1,3 +1,6 @@
+## Deprecated
+For more information, visit the [new, Python implementation](https://github.com/CURocketEngineering/avionics_main).
+
 ![CURocket Logo](pics/logo.png)
 
 ### About
